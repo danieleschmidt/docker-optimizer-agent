@@ -87,3 +87,52 @@ class DockerfileAnalysis(BaseModel):
     def has_optimization_opportunities(self) -> bool:
         """Check if any optimization opportunities were found."""
         return len(self.optimization_opportunities) > 0
+
+
+class BuildStage(BaseModel):
+    """Represents a build stage in a multi-stage Dockerfile."""
+
+    name: str = Field(..., description="Stage name or alias")
+    base_image: str = Field(..., description="Base image for this stage")
+    commands: List[str] = Field(default_factory=list, description="Commands in this stage")
+    purpose: str = Field(..., description="Purpose: 'build', 'runtime', or 'intermediate'")
+    dependencies: List[str] = Field(default_factory=list, description="Dependencies installed")
+
+    @property
+    def is_build_stage(self) -> bool:
+        """Check if this is a build stage."""
+        return self.purpose == "build"
+
+    @property
+    def is_runtime_stage(self) -> bool:
+        """Check if this is a runtime stage."""
+        return self.purpose == "runtime"
+
+
+class MultiStageOpportunity(BaseModel):
+    """Analysis of multi-stage build optimization opportunity."""
+
+    recommended: bool = Field(..., description="Whether multi-stage build is recommended")
+    has_build_dependencies: bool = Field(..., description="Whether build dependencies were found")
+    build_dependencies: List[str] = Field(default_factory=list, description="Build-only dependencies")
+    runtime_dependencies: List[str] = Field(default_factory=list, description="Runtime dependencies")
+    benefits: List[str] = Field(default_factory=list, description="Expected benefits")
+    estimated_size_reduction: str = Field(..., description="Estimated size reduction")
+    complexity_score: int = Field(..., description="Implementation complexity (1-10)")
+
+
+class MultiStageOptimization(BaseModel):
+    """Result of multi-stage build optimization."""
+
+    original_dockerfile: str = Field(..., description="Original Dockerfile content")
+    optimized_dockerfile: str = Field(..., description="Optimized multi-stage Dockerfile")
+    stages: List[BuildStage] = Field(default_factory=list, description="Build stages created")
+    estimated_size_reduction: int = Field(..., description="Estimated size reduction in MB")
+    security_improvements: int = Field(default=0, description="Number of security improvements")
+    size_reduction: int = Field(..., description="Size reduction in MB")
+    explanation: str = Field(..., description="Explanation of optimizations applied")
+
+    @property
+    def has_multiple_stages(self) -> bool:
+        """Check if optimization resulted in multiple stages."""
+        return len(self.stages) > 1

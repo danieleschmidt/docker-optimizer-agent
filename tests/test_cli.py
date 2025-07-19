@@ -196,3 +196,92 @@ RUN apk add --no-cache curl
         assert "Docker Optimizer Agent" in result.output
         assert "--dockerfile" in result.output
         assert "--output" in result.output
+
+    def test_cli_multistage_optimization(self):
+        """Test CLI multi-stage optimization."""
+        dockerfile_content = """
+FROM python:3.11
+RUN apt-get update && apt-get install -y gcc build-essential
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . /app
+WORKDIR /app
+CMD ["python", "app.py"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, ['--dockerfile', dockerfile_path, '--multistage'])
+
+            assert result.exit_code == 0
+            assert "Multi-Stage Build Optimization Results" in result.output
+            assert "Build Stages:" in result.output
+            assert "builder" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_multistage_json_output(self):
+        """Test CLI multi-stage optimization with JSON output."""
+        dockerfile_content = """
+FROM node:18
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+CMD ["npm", "start"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, ['--dockerfile', dockerfile_path, '--multistage', '--format', 'json'])
+
+            assert result.exit_code == 0
+            # Should be valid JSON
+            output_data = json.loads(result.output)
+            assert 'optimized_dockerfile' in output_data
+            assert 'stages' in output_data
+            assert 'estimated_size_reduction' in output_data
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_multistage_output_to_file(self):
+        """Test CLI multi-stage optimization with file output."""
+        dockerfile_content = """
+FROM golang:1.21
+COPY . /app
+WORKDIR /app
+RUN go build -o main .
+CMD ["./main"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.optimized', delete=False) as outf:
+            output_path = outf.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--multistage',
+                '--output', output_path
+            ])
+
+            assert result.exit_code == 0
+            assert f"written to {output_path}" in result.output
+
+            # Check output file exists and has content
+            output_content = Path(output_path).read_text()
+            assert "Multi-Stage Build Optimization" in output_content
+            assert "FROM golang:" in output_content
+            assert "FROM alpine:" in output_content  # Should use minimal runtime
+        finally:
+            Path(dockerfile_path).unlink()
+            Path(output_path).unlink()

@@ -7,6 +7,7 @@ from typing import Optional
 import click
 
 from .models import OptimizationResult
+from .multistage import MultiStageOptimizer
 from .optimizer import DockerfileOptimizer
 
 
@@ -36,12 +37,18 @@ from .optimizer import DockerfileOptimizer
     help="Output format (default: text)",
 )
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
+@click.option(
+    "--multistage",
+    is_flag=True,
+    help="Generate multi-stage build optimization"
+)
 def main(
     dockerfile: str,
     output: Optional[str],
     analysis_only: bool,
     format: str,
     verbose: bool,
+    multistage: bool,
 ) -> None:
     """Docker Optimizer Agent - Optimize Dockerfiles for security and size.
 
@@ -52,6 +59,7 @@ def main(
     """
     try:
         optimizer = DockerfileOptimizer()
+        multistage_optimizer = MultiStageOptimizer()
 
         # Read Dockerfile
         dockerfile_path = Path(dockerfile)
@@ -65,6 +73,10 @@ def main(
             # Only analyze, don't optimize
             analysis = optimizer.analyze_dockerfile(dockerfile_content)
             _output_analysis(analysis, format, verbose)
+        elif multistage:
+            # Multi-stage optimization
+            result = multistage_optimizer.generate_multistage_dockerfile(dockerfile_content)
+            _output_multistage_result(result, output, format, verbose)
         else:
             # Full optimization
             result = optimizer.optimize_dockerfile(dockerfile_content)
@@ -162,6 +174,46 @@ def _output_result(
     if output_path:
         Path(output_path).write_text(output_content, encoding="utf-8")
         click.echo(f"✅ Optimized Dockerfile written to {output_path}")
+    else:
+        click.echo(output_content)
+
+
+def _output_multistage_result(result, output_path: Optional[str], format: str, verbose: bool) -> None:
+    """Output multi-stage optimization results."""
+    if format == "json":
+        import json
+        output_content = json.dumps(result.dict(), indent=2)
+    elif format == "yaml":
+        import yaml
+        output_content = yaml.dump(result.dict(), default_flow_style=False)
+    else:
+        # Text format
+        summary_lines = [
+            "🚀 Multi-Stage Build Optimization Results",
+            "=" * 45,
+            f"Estimated Size Reduction: {result.estimated_size_reduction}MB",
+            f"Security Improvements: {result.security_improvements}",
+            f"Number of Stages: {len(result.stages)}",
+            f"Explanation: {result.explanation}",
+        ]
+
+        if result.has_multiple_stages:
+            summary_lines.append("\n📋 Build Stages:")
+            for i, stage in enumerate(result.stages, 1):
+                summary_lines.append(f"  {i}. {stage.name} ({stage.purpose}) - {stage.base_image}")
+
+        summary_lines.extend([
+            "\n📄 Optimized Multi-Stage Dockerfile:",
+            "-" * 40,
+            result.optimized_dockerfile
+        ])
+
+        output_content = "\n".join(summary_lines)
+
+    # Output to file or stdout
+    if output_path:
+        Path(output_path).write_text(output_content, encoding="utf-8")
+        click.echo(f"✅ Multi-stage Dockerfile written to {output_path}")
     else:
         click.echo(output_content)
 

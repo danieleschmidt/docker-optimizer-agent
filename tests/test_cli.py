@@ -285,3 +285,133 @@ CMD ["./main"]
         finally:
             Path(dockerfile_path).unlink()
             Path(output_path).unlink()
+
+    def test_cli_security_scan(self):
+        """Test CLI security scan functionality."""
+        dockerfile_content = """
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y openssl=1.1.0g-2ubuntu4
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, ['--dockerfile', dockerfile_path, '--security-scan'])
+
+            assert result.exit_code == 0
+            assert "Security Vulnerability Scan Results" in result.output
+            assert "Security Score:" in result.output
+            assert "Total Vulnerabilities:" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_security_scan_json_output(self):
+        """Test CLI security scan with JSON output."""
+        dockerfile_content = """
+FROM alpine:3.14
+RUN apk add --no-cache nginx=1.18.0-r13
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--security-scan',
+                '--format', 'json'
+            ])
+
+            assert result.exit_code == 0
+            # Should be valid JSON
+            output_data = json.loads(result.output)
+            assert 'vulnerability_report' in output_data
+            assert 'security_score' in output_data
+            assert 'suggestions' in output_data
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_security_scan_yaml_output(self):
+        """Test CLI security scan with YAML output."""
+        dockerfile_content = """
+FROM debian:10
+RUN apt-get update && apt-get install -y curl
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--security-scan',
+                '--format', 'yaml'
+            ])
+
+            assert result.exit_code == 0
+            assert 'vulnerability_report:' in result.output
+            assert 'security_score:' in result.output
+            assert 'suggestions:' in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_security_scan_output_to_file(self):
+        """Test CLI security scan with file output."""
+        dockerfile_content = """
+FROM ubuntu:20.04
+RUN apt-get update && apt-get install -y python3
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.security', delete=False) as outf:
+            output_path = outf.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--security-scan',
+                '--output', output_path
+            ])
+
+            assert result.exit_code == 0
+            assert f"written to {output_path}" in result.output
+
+            # Check output file exists and has content
+            output_content = Path(output_path).read_text()
+            assert "Security Vulnerability Scan Results" in output_content
+            assert "Security Score:" in output_content
+        finally:
+            Path(dockerfile_path).unlink()
+            Path(output_path).unlink()
+
+    def test_cli_security_scan_verbose_mode(self):
+        """Test CLI security scan with verbose mode."""
+        dockerfile_content = """
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y openssl
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--security-scan',
+                '--verbose'
+            ])
+
+            assert result.exit_code == 0
+            assert "Security Vulnerability Scan Results" in result.output
+            # Verbose mode should show more details - may include CVE details or recommendations
+            assert len(result.output) > 100  # Should have substantial output
+        finally:
+            Path(dockerfile_path).unlink()

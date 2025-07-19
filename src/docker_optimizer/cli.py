@@ -6,6 +6,7 @@ from typing import Optional
 
 import click
 
+from .external_security import ExternalSecurityScanner
 from .models import OptimizationResult
 from .multistage import MultiStageOptimizer
 from .optimizer import DockerfileOptimizer
@@ -42,6 +43,11 @@ from .optimizer import DockerfileOptimizer
     is_flag=True,
     help="Generate multi-stage build optimization"
 )
+@click.option(
+    "--security-scan",
+    is_flag=True,
+    help="Perform external security vulnerability scan"
+)
 def main(
     dockerfile: str,
     output: Optional[str],
@@ -49,6 +55,7 @@ def main(
     format: str,
     verbose: bool,
     multistage: bool,
+    security_scan: bool,
 ) -> None:
     """Docker Optimizer Agent - Optimize Dockerfiles for security and size.
 
@@ -60,6 +67,7 @@ def main(
     try:
         optimizer = DockerfileOptimizer()
         multistage_optimizer = MultiStageOptimizer()
+        security_scanner = ExternalSecurityScanner()
 
         # Read Dockerfile
         dockerfile_path = Path(dockerfile)
@@ -77,6 +85,12 @@ def main(
             # Multi-stage optimization
             result = multistage_optimizer.generate_multistage_dockerfile(dockerfile_content)
             _output_multistage_result(result, output, format, verbose)
+        elif security_scan:
+            # External security vulnerability scan
+            vulnerability_report = security_scanner.scan_dockerfile_for_vulnerabilities(dockerfile_content)
+            security_score = security_scanner.calculate_security_score(vulnerability_report)
+            suggestions = security_scanner.suggest_security_improvements(vulnerability_report)
+            _output_security_scan_result(vulnerability_report, security_score, suggestions, output, format, verbose)
         else:
             # Full optimization
             result = optimizer.optimize_dockerfile(dockerfile_content)
@@ -214,6 +228,70 @@ def _output_multistage_result(result, output_path: Optional[str], format: str, v
     if output_path:
         Path(output_path).write_text(output_content, encoding="utf-8")
         click.echo(f"✅ Multi-stage Dockerfile written to {output_path}")
+    else:
+        click.echo(output_content)
+
+
+def _output_security_scan_result(vulnerability_report, security_score, suggestions, output_path: Optional[str], format: str, verbose: bool) -> None:
+    """Output security scan results."""
+    if format == "json":
+        import json
+        output_data = {
+            "vulnerability_report": vulnerability_report.dict(),
+            "security_score": security_score.dict(),
+            "suggestions": suggestions
+        }
+        output_content = json.dumps(output_data, indent=2)
+    elif format == "yaml":
+        import yaml
+        output_data = {
+            "vulnerability_report": vulnerability_report.dict(),
+            "security_score": security_score.dict(),
+            "suggestions": suggestions
+        }
+        output_content = yaml.dump(output_data, default_flow_style=False)
+    else:
+        # Text format
+        summary_lines = [
+            "🔒 Security Vulnerability Scan Results",
+            "=" * 42,
+            f"Security Score: {security_score.score}/100 (Grade: {security_score.grade})",
+            f"Total Vulnerabilities: {vulnerability_report.total_vulnerabilities}",
+        ]
+
+        if vulnerability_report.total_vulnerabilities > 0:
+            summary_lines.extend([
+                f"  Critical: {vulnerability_report.critical_count}",
+                f"  High: {vulnerability_report.high_count}",
+                f"  Medium: {vulnerability_report.medium_count}",
+                f"  Low: {vulnerability_report.low_count}",
+            ])
+
+        summary_lines.append(f"\nAnalysis: {security_score.analysis}")
+
+        if vulnerability_report.cve_details and verbose:
+            summary_lines.append("\n🚨 Top Vulnerabilities:")
+            for i, cve in enumerate(vulnerability_report.cve_details[:5], 1):
+                summary_lines.append(f"  {i}. {cve.cve_id} ({cve.severity}) - {cve.package}")
+                if cve.fixed_version:
+                    summary_lines.append(f"     Fix: Update to {cve.fixed_version}")
+
+        if suggestions:
+            summary_lines.append("\n💡 Security Recommendations:")
+            for i, suggestion in enumerate(suggestions, 1):
+                summary_lines.append(f"  {i}. {suggestion}")
+
+        if security_score.recommendations:
+            summary_lines.append("\n📋 General Recommendations:")
+            for i, rec in enumerate(security_score.recommendations, 1):
+                summary_lines.append(f"  {i}. {rec}")
+
+        output_content = "\n".join(summary_lines)
+
+    # Output to file or stdout
+    if output_path:
+        Path(output_path).write_text(output_content, encoding="utf-8")
+        click.echo(f"✅ Security scan results written to {output_path}")
     else:
         click.echo(output_content)
 

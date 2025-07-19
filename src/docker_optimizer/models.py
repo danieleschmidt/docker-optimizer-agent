@@ -136,3 +136,73 @@ class MultiStageOptimization(BaseModel):
     def has_multiple_stages(self) -> bool:
         """Check if optimization resulted in multiple stages."""
         return len(self.stages) > 1
+
+
+class CVEDetails(BaseModel):
+    """Details of a specific CVE vulnerability."""
+
+    cve_id: str = Field(..., description="CVE identifier")
+    severity: str = Field(..., description="Vulnerability severity")
+    package: str = Field(..., description="Affected package name")
+    installed_version: str = Field(..., description="Currently installed version")
+    fixed_version: Optional[str] = Field(None, description="Version that fixes the vulnerability")
+    description: str = Field(..., description="Vulnerability description")
+
+    @property
+    def has_fix(self) -> bool:
+        """Check if a fix is available."""
+        return self.fixed_version is not None
+
+
+class VulnerabilityReport(BaseModel):
+    """Report of vulnerabilities found in a Docker image or Dockerfile."""
+
+    total_vulnerabilities: int = Field(..., description="Total number of vulnerabilities")
+    critical_count: int = Field(default=0, description="Number of critical vulnerabilities")
+    high_count: int = Field(default=0, description="Number of high severity vulnerabilities")
+    medium_count: int = Field(default=0, description="Number of medium severity vulnerabilities")
+    low_count: int = Field(default=0, description="Number of low severity vulnerabilities")
+    cve_details: List[CVEDetails] = Field(default_factory=list, description="Detailed CVE information")
+
+    @property
+    def has_critical_vulnerabilities(self) -> bool:
+        """Check if there are any critical vulnerabilities."""
+        return self.critical_count > 0
+
+    @property
+    def has_high_vulnerabilities(self) -> bool:
+        """Check if there are any high severity vulnerabilities."""
+        return self.high_count > 0
+
+    @property
+    def severity_distribution(self) -> dict:
+        """Get distribution of vulnerabilities by severity."""
+        return {
+            "critical": self.critical_count,
+            "high": self.high_count,
+            "medium": self.medium_count,
+            "low": self.low_count
+        }
+
+
+class SecurityScore(BaseModel):
+    """Security score assessment for a Docker image."""
+
+    score: int = Field(..., description="Security score from 0-100 (higher is better)")
+    grade: str = Field(..., description="Letter grade (A-F)")
+    analysis: str = Field(..., description="Analysis explanation")
+    recommendations: List[str] = Field(default_factory=list, description="Security recommendations")
+
+    @validator('score')
+    def validate_score(cls, v: int) -> int:
+        """Validate score is between 0 and 100."""
+        if not 0 <= v <= 100:
+            raise ValueError('Score must be between 0 and 100')
+        return v
+
+    @validator('grade')
+    def validate_grade(cls, v: str) -> str:
+        """Validate grade is a valid letter grade."""
+        if v not in ['A', 'B', 'C', 'D', 'F']:
+            raise ValueError('Grade must be one of: A, B, C, D, F')
+        return v

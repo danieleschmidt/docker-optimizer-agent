@@ -3,6 +3,7 @@
 import json
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 from click.testing import CliRunner
 
@@ -413,5 +414,149 @@ RUN apt-get update && apt-get install -y openssl
             assert "Security Vulnerability Scan Results" in result.output
             # Verbose mode should show more details - may include CVE details or recommendations
             assert len(result.output) > 100  # Should have substantial output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_performance_optimization(self):
+        """Test CLI performance optimization."""
+        dockerfile_content = """
+FROM python:3.9
+RUN pip install requests
+RUN pip install flask
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--performance'
+            ])
+
+            assert result.exit_code == 0
+            assert "Optimized Dockerfile" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_performance_with_report(self):
+        """Test CLI performance optimization with performance report."""
+        dockerfile_content = """
+FROM python:3.9
+RUN pip install requests
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--performance',
+                '--performance-report'
+            ])
+
+            assert result.exit_code == 0
+            assert "Performance Metrics:" in result.output
+            assert "Processing Time:" in result.output
+            assert "Memory Usage:" in result.output
+            assert "Cache Hit Ratio:" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_batch_processing(self):
+        """Test CLI batch processing."""
+        dockerfile1_content = """
+FROM python:3.9
+RUN pip install requests
+"""
+        dockerfile2_content = """
+FROM node:16
+RUN npm install express
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f1:
+            f1.write(dockerfile1_content)
+            dockerfile1_path = f1.name
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f2:
+            f2.write(dockerfile2_content)
+            dockerfile2_path = f2.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--batch', dockerfile1_path,
+                '--batch', dockerfile2_path
+            ])
+
+            assert result.exit_code == 0
+            assert "Results for:" in result.output
+            assert dockerfile1_path in result.output
+            assert dockerfile2_path in result.output
+        finally:
+            Path(dockerfile1_path).unlink()
+            Path(dockerfile2_path).unlink()
+
+    def test_cli_batch_with_performance(self):
+        """Test CLI batch processing with performance optimization."""
+        dockerfile1_content = """
+FROM python:3.9
+RUN pip install requests
+"""
+        dockerfile2_content = """
+FROM node:16
+RUN npm install express
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f1:
+            f1.write(dockerfile1_content)
+            dockerfile1_path = f1.name
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f2:
+            f2.write(dockerfile2_content)
+            dockerfile2_path = f2.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--batch', dockerfile1_path,
+                '--batch', dockerfile2_path,
+                '--performance',
+                '--performance-report'
+            ])
+
+            assert result.exit_code == 0
+            assert "Results for:" in result.output
+            assert "Performance Report" in result.output
+            assert "Processing Time:" in result.output
+        finally:
+            Path(dockerfile1_path).unlink()
+            Path(dockerfile2_path).unlink()
+
+    def test_cli_performance_json_output(self):
+        """Test CLI performance optimization with JSON output."""
+        dockerfile_content = """
+FROM python:3.9
+RUN pip install requests
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--performance',
+                '--performance-report',
+                '--format', 'json'
+            ])
+
+            assert result.exit_code == 0
+            # Should contain valid JSON
+            assert '"processing_time"' in result.output
+            assert '"memory_usage_mb"' in result.output
+            assert '"cache_hits"' in result.output
         finally:
             Path(dockerfile_path).unlink()

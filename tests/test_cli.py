@@ -250,6 +250,100 @@ CMD ["npm", "start"]
         finally:
             Path(dockerfile_path).unlink()
 
+    def test_cli_error_handling(self):
+        """Test CLI error handling with invalid dockerfile."""
+        result = self.runner.invoke(main, ['--dockerfile', 'nonexistent.dockerfile'])
+
+        assert result.exit_code in [1, 2]  # Allow both error codes
+        assert "Error:" in result.output or "does not exist" in result.output
+
+    def test_cli_verbose_error_handling(self):
+        """Test CLI verbose error handling."""
+        result = self.runner.invoke(main, ['--dockerfile', 'nonexistent.dockerfile', '--verbose'])
+
+        assert result.exit_code in [1, 2]  # Allow both error codes
+        assert "Error:" in result.output or "does not exist" in result.output
+
+    def test_cli_yaml_format_output(self):
+        """Test CLI YAML format output."""
+        dockerfile_content = """
+FROM ubuntu:20.04
+RUN apt-get update
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, ['--dockerfile', dockerfile_path, '--analysis-only', '--format', 'yaml'])
+
+            assert result.exit_code == 0
+            # Should contain YAML-style content
+            assert "security_score:" in result.output or "estimated_size:" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_batch_processing_performance(self):
+        """Test CLI batch processing with performance mode."""
+        dockerfile_content = """
+FROM python:3.11-slim
+RUN pip install requests
+COPY . /app
+WORKDIR /app
+CMD ["python", "app.py"]
+"""
+
+        dockerfiles = []
+        try:
+            # Create multiple test dockerfiles
+            for i in range(3):
+                with tempfile.NamedTemporaryFile(mode='w', suffix=f'.dockerfile{i}', delete=False) as f:
+                    f.write(dockerfile_content)
+                    dockerfiles.append(f.name)
+
+            # Test batch processing with performance
+            batch_args = ['--performance']
+            for dockerfile in dockerfiles:
+                batch_args.extend(['--batch', dockerfile])
+
+            result = self.runner.invoke(main, batch_args)
+
+            assert result.exit_code == 0
+            assert "Results for:" in result.output or "Optimization Results" in result.output
+        finally:
+            for dockerfile in dockerfiles:
+                Path(dockerfile).unlink()
+
+    def test_cli_batch_processing_with_performance_report(self):
+        """Test CLI batch processing with performance report."""
+        dockerfile_content = """
+FROM alpine:latest
+RUN apk add --no-cache curl
+"""
+
+        dockerfiles = []
+        try:
+            # Create multiple test dockerfiles
+            for i in range(2):
+                with tempfile.NamedTemporaryFile(mode='w', suffix=f'.dockerfile{i}', delete=False) as f:
+                    f.write(dockerfile_content)
+                    dockerfiles.append(f.name)
+
+            # Test batch processing with performance report
+            batch_args = ['--performance', '--performance-report']
+            for dockerfile in dockerfiles:
+                batch_args.extend(['--batch', dockerfile])
+
+            result = self.runner.invoke(main, batch_args)
+
+            assert result.exit_code == 0
+            # Should contain performance metrics
+            assert "processed" in result.output.lower() or "performance" in result.output.lower()
+        finally:
+            for dockerfile in dockerfiles:
+                Path(dockerfile).unlink()
+
     def test_cli_multistage_output_to_file(self):
         """Test CLI multi-stage optimization with file output."""
         dockerfile_content = """

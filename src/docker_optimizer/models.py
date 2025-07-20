@@ -1,6 +1,6 @@
 """Data models for Docker optimization results."""
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field, validator
 
@@ -175,7 +175,7 @@ class VulnerabilityReport(BaseModel):
         return self.high_count > 0
 
     @property
-    def severity_distribution(self) -> dict:
+    def severity_distribution(self) -> Dict[str, int]:
         """Get distribution of vulnerabilities by severity."""
         return {
             "critical": self.critical_count,
@@ -206,3 +206,57 @@ class SecurityScore(BaseModel):
         if v not in ['A', 'B', 'C', 'D', 'F']:
             raise ValueError('Grade must be one of: A, B, C, D, F')
         return v
+
+
+class LayerInfo(BaseModel):
+    """Information about a specific Docker layer."""
+
+    layer_id: str = Field(..., description="Layer ID or hash")
+    command: str = Field(..., description="Command that created this layer")
+    size_bytes: int = Field(..., description="Layer size in bytes")
+    created: Optional[str] = Field(None, description="Layer creation timestamp")
+    estimated_size_bytes: Optional[int] = Field(None, description="Estimated size for analysis")
+
+    @property
+    def size_mb(self) -> float:
+        """Get layer size in megabytes."""
+        return self.size_bytes / (1024 * 1024)
+
+    @property
+    def size_human(self) -> str:
+        """Get human-readable size string."""
+        if self.size_bytes < 1024:
+            return f"{self.size_bytes}B"
+        elif self.size_bytes < 1024 * 1024:
+            return f"{self.size_bytes / 1024:.1f}KB"
+        elif self.size_bytes < 1024 * 1024 * 1024:
+            return f"{self.size_bytes / (1024 * 1024):.1f}MB"
+        else:
+            return f"{self.size_bytes / (1024 * 1024 * 1024):.1f}GB"
+
+
+class ImageAnalysis(BaseModel):
+    """Analysis of Docker image layers and sizes."""
+
+    image_name: str = Field(..., description="Docker image name")
+    layers: List[LayerInfo] = Field(default_factory=list, description="Layer information")
+    total_size: int = Field(default=0, description="Total image size in bytes")
+    docker_available: bool = Field(default=True, description="Whether Docker is available")
+    analysis_method: str = Field(default="docker_history", description="Method used for analysis")
+
+    @property
+    def total_size_mb(self) -> float:
+        """Get total size in megabytes."""
+        return self.total_size / (1024 * 1024)
+
+    @property
+    def layer_count(self) -> int:
+        """Get number of layers."""
+        return len(self.layers)
+
+    @property
+    def largest_layer(self) -> Optional[LayerInfo]:
+        """Get the largest layer by size."""
+        if not self.layers:
+            return None
+        return max(self.layers, key=lambda layer: layer.size_bytes)

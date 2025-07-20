@@ -5,7 +5,7 @@ import hashlib
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import psutil
 from pydantic import BaseModel, Field
@@ -39,16 +39,16 @@ class PerformanceMetrics(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    def timer(self):
+    def timer(self) -> "PerformanceMetrics":
         """Context manager for timing operations."""
         return self
 
-    def __enter__(self):
+    def __enter__(self) -> "PerformanceMetrics":
         """Start timing."""
         self.start_time = time.time()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """End timing and calculate duration."""
         self.end_time = time.time()
         if self.start_time:
@@ -58,9 +58,9 @@ class PerformanceMetrics(BaseModel):
         """Get current memory usage in MB."""
         process = psutil.Process()
         memory_info = process.memory_info()
-        return memory_info.rss / 1024 / 1024  # Convert to MB
+        return float(memory_info.rss) / 1024 / 1024  # Convert to MB
 
-    def update_memory_usage(self):
+    def update_memory_usage(self) -> None:
         """Update current memory usage."""
         self.memory_usage_mb = self.get_memory_usage()
 
@@ -91,7 +91,7 @@ class OptimizationCache:
         """Generate cache key from Dockerfile content."""
         return hashlib.sha256(dockerfile_content.encode()).hexdigest()
 
-    def _evict_expired(self):
+    def _evict_expired(self) -> None:
         """Remove expired entries from cache."""
         expired_keys = [
             key for key, entry in self._cache.items()
@@ -101,20 +101,20 @@ class OptimizationCache:
         for key in expired_keys:
             self._remove_key(key)
 
-    def _remove_key(self, key: str):
+    def _remove_key(self, key: str) -> None:
         """Remove key from cache and access order."""
         if key in self._cache:
             del self._cache[key]
         if key in self._access_order:
             self._access_order.remove(key)
 
-    def _evict_lru(self):
+    def _evict_lru(self) -> None:
         """Evict least recently used entry."""
         if self._access_order:
             lru_key = self._access_order[0]
             self._remove_key(lru_key)
 
-    def _update_access_order(self, key: str):
+    def _update_access_order(self, key: str) -> None:
         """Update access order for LRU tracking."""
         if key in self._access_order:
             self._access_order.remove(key)
@@ -136,7 +136,7 @@ class OptimizationCache:
 
         return None
 
-    def set(self, dockerfile_content: str, result: OptimizationResult):
+    def set(self, dockerfile_content: str, result: OptimizationResult) -> None:
         """Cache optimization result."""
         key = self._generate_key(dockerfile_content)
 
@@ -152,7 +152,7 @@ class OptimizationCache:
         self._cache[key] = entry
         self._update_access_order(key)
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear all cache entries."""
         self._cache.clear()
         self._access_order.clear()
@@ -215,7 +215,7 @@ class ParallelAnalyzer:
 
         return valid_results
 
-    def close(self):
+    def close(self) -> None:
         """Close thread pool executor."""
         self.executor.shutdown(wait=True)
 
@@ -239,7 +239,7 @@ class LargeDockerfileHandler:
 
         # Split by lines to maintain Dockerfile structure
         lines = dockerfile_content.split('\n')
-        current_chunk_lines = []
+        current_chunk_lines: List[str] = []
         current_size = 0
 
         for line in lines:
@@ -338,16 +338,16 @@ class PerformanceOptimizer:
         """Optimize multiple Dockerfiles with performance enhancements."""
         with self.metrics.timer():
             # Check cache for each Dockerfile
-            cached_results = []
-            uncached_dockerfiles = []
+            cached_results: List[Tuple[int, OptimizationResult]] = []
+            uncached_dockerfiles: List[Tuple[int, str]] = []
 
-            for dockerfile in dockerfiles:
+            for i, dockerfile in enumerate(dockerfiles):
                 cached_result = self.cache.get(dockerfile)
                 if cached_result:
-                    cached_results.append((len(cached_results) + len(uncached_dockerfiles), cached_result))
+                    cached_results.append((i, cached_result))
                     self.metrics.cache_hits += 1
                 else:
-                    uncached_dockerfiles.append((len(cached_results) + len(uncached_dockerfiles), dockerfile))
+                    uncached_dockerfiles.append((i, dockerfile))
                     self.metrics.cache_misses += 1
 
             # Process uncached Dockerfiles in parallel
@@ -360,7 +360,7 @@ class PerformanceOptimizer:
                     self.cache.set(dockerfile, result)
 
                 # Combine with cached results in original order
-                all_results = [None] * len(dockerfiles)
+                all_results: List[Optional[OptimizationResult]] = [None] * len(dockerfiles)
 
                 for index, result in cached_results:
                     all_results[index] = result
@@ -369,7 +369,8 @@ class PerformanceOptimizer:
                     all_results[index] = result
 
                 self.metrics.dockerfiles_processed += len(uncached_dockerfiles)
-                return all_results
+                # Filter out None values (shouldn't happen if logic is correct)
+                return [result for result in all_results if result is not None]
             else:
                 # All results were cached
                 return [result for _, result in sorted(cached_results)]
@@ -383,10 +384,10 @@ class PerformanceOptimizer:
             "cache_ttl_seconds": self.cache.ttl_seconds
         }
 
-    def clear_cache(self):
+    def clear_cache(self) -> None:
         """Clear optimization cache."""
         self.cache.clear()
 
-    def close(self):
+    def close(self) -> None:
         """Clean up resources."""
         self.parallel_analyzer.close()

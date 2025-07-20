@@ -3,7 +3,7 @@
 import asyncio
 import sys
 from pathlib import Path
-from typing import Optional, List
+from typing import List, Optional
 
 import click
 
@@ -18,7 +18,7 @@ from .performance import PerformanceOptimizer
 @click.option(
     "--dockerfile",
     "-f",
-    type=click.Path(exists=True, readable=True),
+    type=click.Path(),
     default="Dockerfile",
     help="Path to the Dockerfile to optimize (default: ./Dockerfile)",
 )
@@ -89,7 +89,7 @@ def main(
         optimizer = DockerfileOptimizer()
         multistage_optimizer = MultiStageOptimizer()
         security_scanner = ExternalSecurityScanner()
-        
+
         # Initialize performance optimizer if requested
         perf_optimizer = PerformanceOptimizer() if performance else None
 
@@ -105,7 +105,7 @@ def main(
             dockerfile_path = Path(dockerfiles_to_process[0])
             if not dockerfile_path.exists():
                 click.echo(f"Error: Dockerfile not found at {dockerfile_path}", err=True)
-                sys.exit(1)
+                sys.exit(2)
 
             dockerfile_content = dockerfile_path.read_text(encoding="utf-8")
 
@@ -127,7 +127,7 @@ def main(
                 # Performance-optimized processing
                 result = perf_optimizer.optimize_with_performance(dockerfile_content)
                 _output_result(result, output, format, verbose)
-                
+
                 if performance_report:
                     _output_performance_report(perf_optimizer.get_performance_report(), format)
             else:
@@ -346,18 +346,18 @@ def _output_security_scan_result(vulnerability_report, security_score, suggestio
 
 
 async def _process_batch_with_performance(
-    dockerfiles: List[str], 
-    perf_optimizer: PerformanceOptimizer, 
-    output_path: Optional[str], 
-    format: str, 
-    verbose: bool, 
+    dockerfiles: List[str],
+    perf_optimizer: PerformanceOptimizer,
+    output_path: Optional[str],
+    format: str,
+    verbose: bool,
     show_performance_report: bool
 ) -> None:
     """Process multiple Dockerfiles with performance optimization."""
     # Read all Dockerfile contents
     dockerfile_contents = []
     valid_paths = []
-    
+
     for dockerfile_path in dockerfiles:
         path = Path(dockerfile_path)
         if path.exists():
@@ -366,28 +366,28 @@ async def _process_batch_with_performance(
             valid_paths.append(dockerfile_path)
         else:
             click.echo(f"Warning: Dockerfile not found at {dockerfile_path}", err=True)
-    
+
     if not dockerfile_contents:
         click.echo("Error: No valid Dockerfiles found for batch processing", err=True)
         sys.exit(1)
-    
+
     # Process batch with performance optimization
     results = await perf_optimizer.optimize_multiple_with_performance(dockerfile_contents)
-    
+
     # Output results
     for i, (dockerfile_path, result) in enumerate(zip(valid_paths, results)):
         click.echo(f"\n{'='*50}")
         click.echo(f"Results for: {dockerfile_path}")
         click.echo(f"{'='*50}")
-        
+
         # Generate output path for this Dockerfile
         batch_output_path = None
         if output_path:
             base_path = Path(output_path)
             batch_output_path = str(base_path.parent / f"{base_path.stem}_{i+1}{base_path.suffix}")
-        
+
         _output_result(result, batch_output_path, format, verbose)
-    
+
     # Show performance report if requested
     if show_performance_report:
         click.echo(f"\n{'='*50}")
@@ -397,10 +397,10 @@ async def _process_batch_with_performance(
 
 
 def _process_batch_regular(
-    dockerfiles: List[str], 
-    optimizer: DockerfileOptimizer, 
-    output_path: Optional[str], 
-    format: str, 
+    dockerfiles: List[str],
+    optimizer: DockerfileOptimizer,
+    output_path: Optional[str],
+    format: str,
     verbose: bool
 ) -> None:
     """Process multiple Dockerfiles with regular optimization."""
@@ -409,20 +409,20 @@ def _process_batch_regular(
         if not path.exists():
             click.echo(f"Warning: Dockerfile not found at {dockerfile_path}", err=True)
             continue
-        
+
         dockerfile_content = path.read_text(encoding="utf-8")
         result = optimizer.optimize_dockerfile(dockerfile_content)
-        
+
         click.echo(f"\n{'='*50}")
         click.echo(f"Results for: {dockerfile_path}")
         click.echo(f"{'='*50}")
-        
+
         # Generate output path for this Dockerfile
         batch_output_path = None
         if output_path:
             base_path = Path(output_path)
             batch_output_path = str(base_path.parent / f"{base_path.stem}_{i+1}{base_path.suffix}")
-        
+
         _output_result(result, batch_output_path, format, verbose)
 
 

@@ -1,7 +1,7 @@
 """Multi-stage build optimization engine."""
 
 import re
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from .models import BuildStage, MultiStageOpportunity, MultiStageOptimization
 from .parser import DockerfileParser
@@ -170,11 +170,11 @@ class MultiStageOptimizer:
 
     def extract_build_stages(self, dockerfile_content: str) -> List[BuildStage]:
         """Extract existing build stages from multi-stage Dockerfile."""
-        stages = []
+        stages: List[BuildStage] = []
         instructions = self.parser.parse(dockerfile_content)
 
         current_stage = None
-        stage_commands = []
+        stage_commands: List[str] = []
 
         for instruction in instructions:
             if instruction['instruction'] == 'FROM':
@@ -270,7 +270,7 @@ class MultiStageOptimizer:
 
         return suggestions
 
-    def calculate_multistage_benefits(self, original_size: str, build_deps: List[str]) -> Dict:
+    def calculate_multistage_benefits(self, original_size: str, build_deps: List[str]) -> Dict[str, Union[int, bool, List[str]]]:
         """Calculate benefits of multi-stage build."""
         # Estimate size reduction based on build dependencies
         size_reduction_mb = len(build_deps) * 30  # Rough estimate: 30MB per build tool

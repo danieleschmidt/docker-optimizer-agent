@@ -80,8 +80,8 @@ RUN apt-get install -y curl
 
         assert isinstance(result, OptimizationResult)
         # Verify optimization occurred (either size change or layer optimizations or security fixes)
-        assert (result.original_size != result.optimized_size or 
-                len(result.layer_optimizations) > 0 or 
+        assert (result.original_size != result.optimized_size or
+                len(result.layer_optimizations) > 0 or
                 len(result.security_fixes) > 0)
         # Verify optimization improvements were made
         assert "ubuntu:22.04" in result.optimized_dockerfile  # Latest tag was fixed

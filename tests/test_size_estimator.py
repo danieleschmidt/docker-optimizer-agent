@@ -167,3 +167,37 @@ RUN pip install tensorflow torch numpy pandas scipy matplotlib
 
         # Should estimate typical requirements file
         assert size >= 50
+
+    def test_analyze_dockerfile_layers(self):
+        """Test layer analysis integration."""
+        dockerfile_content = """
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y python3
+COPY . /app
+WORKDIR /app
+CMD ["python3", "app.py"]
+"""
+        analysis = self.estimator.analyze_dockerfile_layers(dockerfile_content)
+        assert analysis.image_name == "dockerfile_analysis"
+        assert len(analysis.layers) == 5
+        assert analysis.total_size > 0
+
+    def test_get_detailed_size_breakdown(self):
+        """Test detailed size breakdown functionality."""
+        dockerfile_content = """
+FROM ubuntu:22.04
+RUN apt-get update
+RUN apt-get install -y python3
+COPY . /app
+WORKDIR /app
+CMD ["python3", "app.py"]
+"""
+        breakdown = self.estimator.get_detailed_size_breakdown(dockerfile_content)
+        
+        assert "traditional_estimate" in breakdown
+        assert "layer_analysis" in breakdown
+        assert "estimated_layers" in breakdown
+        assert "dockerfile_efficiency_score" in breakdown
+        
+        # Should have lower efficiency due to separate RUN commands
+        assert breakdown["dockerfile_efficiency_score"] < 95  # Should be penalized but not too harshly

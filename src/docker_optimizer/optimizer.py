@@ -316,8 +316,8 @@ class DockerfileOptimizer:
             )
             # Then handle remaining apt-get install commands
             content = re.sub(
-                r"apt-get install(?!\s+--no-install-recommends)", 
-                "apt-get install --no-install-recommends", 
+                r"apt-get install(?!\s+--no-install-recommends)",
+                "apt-get install --no-install-recommends",
                 content
             )
             # Add cleanup to the last RUN command that contains apt-get, not to the entire content

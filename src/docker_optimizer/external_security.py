@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Iterator, List, Union
 
 from .models import CVEDetails, SecurityScore, VulnerabilityReport
 
@@ -152,7 +152,7 @@ class TrivyScanner:
         except (json.JSONDecodeError, KeyError, Exception):
             return VulnerabilityReport(total_vulnerabilities=0)
 
-    def _count_vulnerabilities_by_severity(self, vulnerabilities: List[Dict]) -> Dict[str, int]:
+    def _count_vulnerabilities_by_severity(self, vulnerabilities: List[Dict[str, str]]) -> Dict[str, int]:
         """Count vulnerabilities by severity level."""
         counts = {"critical": 0, "high": 0, "medium": 0, "low": 0}
 
@@ -175,7 +175,7 @@ class TrivyScanner:
         return ""
 
     @contextmanager
-    def _create_temporary_dockerfile(self, dockerfile_content: str):
+    def _create_temporary_dockerfile(self, dockerfile_content: str) -> Iterator[Path]:
         """Create a temporary Dockerfile for scanning."""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
             f.write(dockerfile_content)
@@ -303,7 +303,7 @@ class ExternalSecurityScanner:
         suggestions = []
 
         # Group vulnerabilities by package
-        package_vulns = {}
+        package_vulns: Dict[str, List[CVEDetails]] = {}
         for cve in vulnerability_report.cve_details:
             if cve.package not in package_vulns:
                 package_vulns[cve.package] = []
@@ -335,7 +335,7 @@ class ExternalSecurityScanner:
 
         return suggestions
 
-    def compare_base_image_security(self, images: List[str]) -> List[Dict]:
+    def compare_base_image_security(self, images: List[str]) -> List[Dict[str, Union[str, int]]]:
         """Compare security of multiple base images.
 
         Args:
@@ -344,7 +344,7 @@ class ExternalSecurityScanner:
         Returns:
             List of image security comparisons, sorted by security score
         """
-        comparisons = []
+        comparisons: List[Dict[str, Union[str, int]]] = []
 
         for image in images:
             report = self.scan_base_image_vulnerabilities(image)

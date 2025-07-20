@@ -3,12 +3,19 @@
 import asyncio
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import click
 
 from .external_security import ExternalSecurityScanner
-from .models import OptimizationResult
+from .models import (
+    DockerfileAnalysis,
+    ImageAnalysis,
+    MultiStageOptimization,
+    OptimizationResult,
+    SecurityScore,
+    VulnerabilityReport,
+)
 from .multistage import MultiStageOptimizer
 from .optimizer import DockerfileOptimizer
 from .performance import PerformanceOptimizer
@@ -61,6 +68,16 @@ from .performance import PerformanceOptimizer
     help="Process multiple Dockerfiles (can be specified multiple times)"
 )
 @click.option(
+    "--layer-analysis",
+    is_flag=True,
+    help="Perform detailed Docker layer analysis and size estimation"
+)
+@click.option(
+    "--analyze-image",
+    type=str,
+    help="Analyze layers of an existing Docker image (e.g., 'ubuntu:22.04')"
+)
+@click.option(
     "--performance-report",
     is_flag=True,
     help="Show performance metrics after optimization"
@@ -74,7 +91,9 @@ def main(
     multistage: bool,
     security_scan: bool,
     performance: bool,
-    batch: tuple,
+    batch: Tuple[str, ...],
+    layer_analysis: bool,
+    analyze_image: Optional[str],
     performance_report: bool,
 ) -> None:
     """Docker Optimizer Agent - Optimize Dockerfiles for security and size.
@@ -109,14 +128,26 @@ def main(
 
             dockerfile_content = dockerfile_path.read_text(encoding="utf-8")
 
-            if analysis_only:
+            if analyze_image:
+                # Analyze existing Docker image layers
+                from .size_estimator import SizeEstimator
+                size_estimator = SizeEstimator()
+                image_analysis = size_estimator.analyze_image_layers(analyze_image)
+                _output_image_analysis(image_analysis, format, verbose)
+            elif layer_analysis:
+                # Perform detailed layer analysis
+                from .size_estimator import SizeEstimator
+                size_estimator = SizeEstimator()
+                layer_breakdown = size_estimator.get_detailed_size_breakdown(dockerfile_content)
+                _output_layer_analysis(layer_breakdown, format, verbose)
+            elif analysis_only:
                 # Only analyze, don't optimize
                 analysis = optimizer.analyze_dockerfile(dockerfile_content)
                 _output_analysis(analysis, format, verbose)
             elif multistage:
                 # Multi-stage optimization
-                result = multistage_optimizer.generate_multistage_dockerfile(dockerfile_content)
-                _output_multistage_result(result, output, format, verbose)
+                multistage_result = multistage_optimizer.generate_multistage_dockerfile(dockerfile_content)
+                _output_multistage_result(multistage_result, output, format, verbose)
             elif security_scan:
                 # External security vulnerability scan
                 vulnerability_report = security_scanner.scan_dockerfile_for_vulnerabilities(dockerfile_content)
@@ -154,7 +185,7 @@ def main(
         sys.exit(1)
 
 
-def _output_analysis(analysis, format: str, verbose: bool) -> None:
+def _output_analysis(analysis: DockerfileAnalysis, format: str, verbose: bool) -> None:
     """Output analysis results."""
     if format == "json":
         import json
@@ -241,7 +272,7 @@ def _output_result(
         click.echo(output_content)
 
 
-def _output_multistage_result(result, output_path: Optional[str], format: str, verbose: bool) -> None:
+def _output_multistage_result(result: MultiStageOptimization, output_path: Optional[str], format: str, verbose: bool) -> None:
     """Output multi-stage optimization results."""
     if format == "json":
         import json
@@ -281,7 +312,7 @@ def _output_multistage_result(result, output_path: Optional[str], format: str, v
         click.echo(output_content)
 
 
-def _output_security_scan_result(vulnerability_report, security_score, suggestions, output_path: Optional[str], format: str, verbose: bool) -> None:
+def _output_security_scan_result(vulnerability_report: VulnerabilityReport, security_score: SecurityScore, suggestions: List[str], output_path: Optional[str], format: str, verbose: bool) -> None:
     """Output security scan results."""
     if format == "json":
         import json
@@ -426,7 +457,7 @@ def _process_batch_regular(
         _output_result(result, batch_output_path, format, verbose)
 
 
-def _output_performance_report(performance_report: dict, format: str) -> None:
+def _output_performance_report(performance_report: Dict[str, Any], format: str) -> None:
     """Output performance metrics report."""
     if format == "json":
         import json
@@ -445,6 +476,154 @@ def _output_performance_report(performance_report: dict, format: str) -> None:
         click.echo(f"Cache Misses: {performance_report['cache_misses']}")
         click.echo(f"Cache Hit Ratio: {performance_report['cache_hit_ratio']:.1%}")
         click.echo(f"Cache Size: {performance_report['cache_size']}/{performance_report['cache_max_size']}")
+
+
+def _output_image_analysis(analysis: ImageAnalysis, format: str, verbose: bool) -> None:
+    """Output Docker image layer analysis."""
+    if format == "json":
+        import json
+        # Convert to dict for JSON serialization
+        analysis_dict = {
+            "image_name": analysis.image_name,
+            "total_size": analysis.total_size,
+            "total_size_mb": analysis.total_size_mb,
+            "layer_count": analysis.layer_count,
+            "docker_available": analysis.docker_available,
+            "analysis_method": analysis.analysis_method,
+            "layers": [
+                {
+                    "layer_id": layer.layer_id,
+                    "command": layer.command,
+                    "size_bytes": layer.size_bytes,
+                    "size_human": layer.size_human,
+                    "created": layer.created
+                }
+                for layer in analysis.layers
+            ]
+        }
+        click.echo(json.dumps(analysis_dict, indent=2))
+    elif format == "yaml":
+        import yaml
+        analysis_dict = {
+            "image_name": analysis.image_name,
+            "total_size": analysis.total_size,
+            "total_size_mb": analysis.total_size_mb,
+            "layer_count": analysis.layer_count,
+            "docker_available": analysis.docker_available,
+            "analysis_method": analysis.analysis_method,
+            "layers": [
+                {
+                    "layer_id": layer.layer_id,
+                    "command": layer.command,
+                    "size_bytes": layer.size_bytes,
+                    "size_human": layer.size_human,
+                    "created": layer.created
+                }
+                for layer in analysis.layers
+            ]
+        }
+        click.echo(yaml.dump(analysis_dict, default_flow_style=False))
+    else:
+        # Text format
+        click.echo(f"🔍 Docker Image Analysis: {analysis.image_name}")
+        click.echo("=" * 50)
+        click.echo(f"Total Size: {analysis.total_size_mb:.1f}MB")
+        click.echo(f"Layer Count: {analysis.layer_count}")
+        click.echo(f"Docker Available: {'Yes' if analysis.docker_available else 'No'}")
+        click.echo(f"Analysis Method: {analysis.analysis_method}")
+        
+        if analysis.layers:
+            click.echo("\n📦 Layer Details:")
+            click.echo("-" * 50)
+            for i, layer in enumerate(analysis.layers, 1):
+                click.echo(f"Layer {i}: {layer.layer_id}")
+                click.echo(f"  Size: {layer.size_human}")
+                if verbose:
+                    click.echo(f"  Command: {layer.command}")
+                    click.echo(f"  Created: {layer.created}")
+                click.echo()
+
+
+def _output_layer_analysis(breakdown: dict, format: str, verbose: bool) -> None:
+    """Output detailed layer analysis and size breakdown."""
+    if format == "json":
+        import json
+        # Convert ImageAnalysis to dict for JSON serialization
+        breakdown_dict = breakdown.copy()
+        layer_analysis = breakdown_dict["layer_analysis"]
+        breakdown_dict["layer_analysis"] = {
+            "image_name": layer_analysis.image_name,
+            "total_size": layer_analysis.total_size,
+            "total_size_mb": layer_analysis.total_size_mb,
+            "layer_count": layer_analysis.layer_count,
+            "docker_available": layer_analysis.docker_available,
+            "analysis_method": layer_analysis.analysis_method,
+            "layers": [
+                {
+                    "layer_id": layer.layer_id,
+                    "command": layer.command,
+                    "size_bytes": layer.size_bytes,
+                    "estimated_size_bytes": layer.estimated_size_bytes,
+                    "size_human": layer.size_human
+                }
+                for layer in layer_analysis.layers
+            ]
+        }
+        click.echo(json.dumps(breakdown_dict, indent=2))
+    elif format == "yaml":
+        import yaml
+        breakdown_dict = breakdown.copy()
+        layer_analysis = breakdown_dict["layer_analysis"]
+        breakdown_dict["layer_analysis"] = {
+            "image_name": layer_analysis.image_name,
+            "total_size": layer_analysis.total_size,
+            "total_size_mb": layer_analysis.total_size_mb,
+            "layer_count": layer_analysis.layer_count,
+            "docker_available": layer_analysis.docker_available,
+            "analysis_method": layer_analysis.analysis_method,
+            "layers": [
+                {
+                    "layer_id": layer.layer_id,
+                    "command": layer.command,
+                    "size_bytes": layer.size_bytes,
+                    "estimated_size_bytes": layer.estimated_size_bytes,
+                    "size_human": layer.size_human
+                }
+                for layer in layer_analysis.layers
+            ]
+        }
+        click.echo(yaml.dump(breakdown_dict, default_flow_style=False))
+    else:
+        # Text format
+        click.echo("🏗️  Dockerfile Layer Analysis")
+        click.echo("=" * 50)
+        click.echo(f"Traditional Size Estimate: {breakdown['traditional_estimate']}")
+        click.echo(f"Layer-Based Size Estimate: {breakdown['total_estimated_size_mb']:.1f}MB")
+        click.echo(f"Estimated Layers: {breakdown['estimated_layers']}")
+        click.echo(f"Largest Layer: {breakdown['largest_layer_mb']:.1f}MB")
+        click.echo(f"Efficiency Score: {breakdown['dockerfile_efficiency_score']}/100")
+        
+        # Efficiency recommendations
+        score = breakdown['dockerfile_efficiency_score']
+        if score >= 80:
+            click.echo("✅ Excellent: Dockerfile is well-optimized")
+        elif score >= 60:
+            click.echo("⚠️  Good: Some optimization opportunities exist")
+        elif score >= 40:
+            click.echo("🔧 Fair: Consider combining RUN commands and reducing layers")
+        else:
+            click.echo("❌ Poor: Significant optimization needed")
+        
+        if verbose:
+            layer_analysis = breakdown["layer_analysis"]
+            click.echo("\n📦 Layer Breakdown:")
+            click.echo("-" * 50)
+            for i, layer in enumerate(layer_analysis.layers, 1):
+                estimated_mb = (layer.estimated_size_bytes or 0) / (1024 * 1024)
+                click.echo(f"Layer {i}: {layer.layer_id}")
+                click.echo(f"  Estimated Size: {estimated_mb:.1f}MB")
+                click.echo(f"  Command: {layer.command}")
+                click.echo()
 
 
 if __name__ == "__main__":

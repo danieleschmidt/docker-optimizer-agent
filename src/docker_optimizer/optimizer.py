@@ -218,13 +218,13 @@ class DockerfileOptimizer:
         # Fix latest tag
         if "latest" in security_issues[0] if security_issues else False:
             if "ubuntu:latest" in content:
-                content = content.replace("ubuntu:latest", "ubuntu:22.04-slim")
+                content = content.replace("ubuntu:latest", "ubuntu:22.04")
                 fixes.append(
                     SecurityFix(
                         vulnerability="Unspecified version tag",
                         severity="MEDIUM",
                         description="Using 'latest' tag is unpredictable and insecure",
-                        fix="Changed to ubuntu:22.04-slim for specific version and smaller size",
+                        fix="Changed to ubuntu:22.04 for specific version",
                     )
                 )
             elif "alpine:latest" in content:
@@ -310,20 +310,33 @@ class DockerfileOptimizer:
 
         # Add package manager optimizations
         if "apt-get install" in content and "--no-install-recommends" not in content:
+            # First replace specific patterns to avoid duplicates
             content = content.replace(
-                "apt-get install -y", "apt-get install -y --no-install-recommends"
+                "apt-get install -y", "apt-get install --no-install-recommends -y"
             )
-            content = content.replace(
-                "apt-get install", "apt-get install --no-install-recommends"
+            # Then handle remaining apt-get install commands
+            content = re.sub(
+                r"apt-get install(?!\s+--no-install-recommends)", 
+                "apt-get install --no-install-recommends", 
+                content
             )
-            if "&& rm -rf /var/lib/apt/lists/*" not in content:
-                content = (
-                    content.replace(
-                        "apt-get install -y --no-install-recommends",
-                        "apt-get install -y --no-install-recommends",
-                    )
-                    + " && rm -rf /var/lib/apt/lists/*"
-                )
+            # Add cleanup to the last RUN command that contains apt-get, not to the entire content
+            if "&& rm -rf /var/lib/apt/lists/*" not in content and "apt-get" in content:
+                # Find the last RUN command with apt-get and add cleanup
+                lines = content.split('\n')
+                for i in range(len(lines) - 1, -1, -1):
+                    if lines[i].strip().startswith('RUN') and 'apt-get' in lines[i]:
+                        if not lines[i].endswith(' \\'):
+                            lines[i] += " && rm -rf /var/lib/apt/lists/*"
+                        else:
+                            # Find the end of this RUN command
+                            j = i
+                            while j < len(lines) - 1 and lines[j].endswith(' \\'):
+                                j += 1
+                            if j < len(lines):
+                                lines[j] += " && rm -rf /var/lib/apt/lists/*"
+                        break
+                content = '\n'.join(lines)
 
         return content, optimizations
 
@@ -331,9 +344,12 @@ class DockerfileOptimizer:
         """Optimize the base image selection."""
         content = dockerfile_content
 
-        # Suggest slimmer alternatives
+        # Suggest slimmer alternatives for ubuntu
         if "FROM ubuntu:" in content and "slim" not in content:
-            content = re.sub(r"FROM ubuntu:(\d+\.\d+)", r"FROM ubuntu:\1-slim", content)
+            # Replace ubuntu:latest with ubuntu:22.04 (not slim as latest-slim doesn't exist)
+            if "ubuntu:latest" in content:
+                content = content.replace("ubuntu:latest", "ubuntu:22.04")
+            # Note: We avoid adding -slim for now as not all ubuntu:version-slim images exist
 
         return content
 

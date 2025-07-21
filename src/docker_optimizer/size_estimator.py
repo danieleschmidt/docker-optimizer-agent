@@ -1,6 +1,6 @@
 """Size estimation utilities for Docker images."""
 
-from typing import Optional
+from typing import Any, Dict
 
 from .layer_analyzer import DockerLayerAnalyzer
 from .models import ImageAnalysis
@@ -286,11 +286,11 @@ class SizeEstimator:
         """Analyze existing Docker image layers."""
         return self.layer_analyzer.analyze_image_layers(image_name)
 
-    def get_detailed_size_breakdown(self, dockerfile_content: str) -> dict:
+    def get_detailed_size_breakdown(self, dockerfile_content: str) -> Dict[str, Any]:
         """Get detailed size breakdown including layer analysis."""
         layer_analysis = self.analyze_dockerfile_layers(dockerfile_content)
         traditional_estimate = self.estimate_size(dockerfile_content)
-        
+
         return {
             "traditional_estimate": traditional_estimate,
             "layer_analysis": layer_analysis,
@@ -304,31 +304,31 @@ class SizeEstimator:
         """Calculate efficiency score (0-100) based on layer analysis."""
         if not analysis.layers:
             return 50  # Neutral score if no analysis available
-        
+
         score = 100
-        
+
         # Penalty for too many layers (more than 8 is getting inefficient)
         if analysis.layer_count > 8:
             score -= min(30, (analysis.layer_count - 8) * 4)
-        
+
         # Penalty for separate RUN commands (indicates layer consolidation opportunity)
-        run_commands = [layer for layer in analysis.layers 
+        run_commands = [layer for layer in analysis.layers
                        if layer.command.upper().startswith('RUN')]
-        separate_run_commands = [layer for layer in run_commands 
+        separate_run_commands = [layer for layer in run_commands
                                if '&&' not in layer.command]
         if len(separate_run_commands) > 1:
             score -= min(25, (len(separate_run_commands) - 1) * 8)
-        
+
         # Penalty for very large individual layers (>100MB)
-        large_layers = [layer for layer in analysis.layers 
+        large_layers = [layer for layer in analysis.layers
                        if (layer.estimated_size_bytes or 0) > 100 * 1024 * 1024]
         if large_layers:
             score -= min(20, len(large_layers) * 5)
-        
+
         # Bonus for using combined RUN commands
-        combined_commands = sum(1 for layer in analysis.layers 
+        combined_commands = sum(1 for layer in analysis.layers
                               if '&&' in layer.command)
         if combined_commands > 0:
             score += min(10, combined_commands * 2)
-        
+
         return max(0, min(100, score))

@@ -27,7 +27,7 @@ class TestDockerIntegration:
                 capture_output=True,
                 check=False
             )
-        except:
+        except Exception:
             pass
 
     def _create_test_dockerfile(self, content: str, filename: str = "Dockerfile") -> str:

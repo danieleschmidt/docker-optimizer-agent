@@ -193,11 +193,11 @@ WORKDIR /app
 CMD ["python3", "app.py"]
 """
         breakdown = self.estimator.get_detailed_size_breakdown(dockerfile_content)
-        
+
         assert "traditional_estimate" in breakdown
         assert "layer_analysis" in breakdown
         assert "estimated_layers" in breakdown
         assert "dockerfile_efficiency_score" in breakdown
-        
+
         # Should have lower efficiency due to separate RUN commands
         assert breakdown["dockerfile_efficiency_score"] < 95  # Should be penalized but not too harshly

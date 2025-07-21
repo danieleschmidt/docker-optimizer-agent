@@ -2,7 +2,7 @@
 
 import re
 import subprocess
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from .models import ImageAnalysis, LayerInfo
 
@@ -10,7 +10,7 @@ from .models import ImageAnalysis, LayerInfo
 class DockerLayerAnalyzer:
     """Analyzes Docker images and Dockerfiles for accurate layer size information."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the layer analyzer."""
         self.docker_available = self._check_docker_availability()
 
@@ -73,28 +73,28 @@ class DockerLayerAnalyzer:
         """Parse Docker history output into LayerInfo objects."""
         layers = []
         lines = history_output.strip().split('\n')
-        
+
         # Skip header line if present
         if lines and 'IMAGE' in lines[0] and 'CREATED' in lines[0]:
             lines = lines[1:]
-        
+
         for line in lines:
             if not line.strip():
                 continue
-            
+
             # Parse the standard docker history format
             # Format: IMAGE  CREATED  CREATED BY  SIZE  COMMENT
             parts = line.split(None, 4)  # Split on whitespace, max 5 parts
             if len(parts) < 4:
                 continue
-            
+
             layer_id = parts[0][:12]  # First column: IMAGE (layer ID)
             created = parts[1] + " " + parts[2]  # CREATED (may have spaces)
-            
+
             # Find the size by looking for patterns like "45.2MB", "1.23KB", etc.
             size_match = re.search(r'(\d+(?:\.\d+)?(?:B|KB|MB|GB|TB))', line)
             size_str = size_match.group(1) if size_match else "0B"
-            
+
             # Extract the command part (everything after size)
             size_pos = line.find(size_str)
             if size_pos >= 0:
@@ -107,37 +107,38 @@ class DockerLayerAnalyzer:
                     command = command_part
             else:
                 command = "unknown"
-            
+
             # Parse size string to bytes
             size_bytes = self._parse_size_string(size_str)
-            
+
             # Clean up command (remove #(nop) prefix)
             if command.startswith("#(nop)"):
                 command = command[6:].strip()
-            
+
             layer = LayerInfo(
                 layer_id=layer_id,
                 command=command,
                 size_bytes=size_bytes,
-                created=created
+                created=created,
+                estimated_size_bytes=size_bytes
             )
             layers.append(layer)
-        
+
         return layers
 
     def _parse_size_string(self, size_str: str) -> int:
         """Parse Docker size string (e.g., '45.2MB', '1.23kB') to bytes."""
         if not size_str or size_str == '0B':
             return 0
-            
+
         # Extract number and unit
         match = re.match(r'([0-9.]+)\s*([A-Za-z]+)', size_str)
         if not match:
             return 0
-            
+
         number = float(match.group(1))
         unit = match.group(2).upper()
-        
+
         # Convert to bytes
         multipliers = {
             'B': 1,
@@ -146,28 +147,29 @@ class DockerLayerAnalyzer:
             'GB': 1024 * 1024 * 1024,
             'TB': 1024 * 1024 * 1024 * 1024
         }
-        
+
         return int(number * multipliers.get(unit, 1))
 
     def get_layer_sizes_for_dockerfile(self, dockerfile_content: str) -> ImageAnalysis:
         """Estimate layer sizes for a Dockerfile without building it."""
         layers = []
         instructions = self._parse_dockerfile_instructions(dockerfile_content)
-        
+
         for i, instruction in enumerate(instructions):
             # Estimate size based on instruction type and content
             estimated_size = self._estimate_instruction_size(instruction)
-            
+
             layer = LayerInfo(
                 layer_id=f"estimated_{i}",
                 command=instruction,
                 size_bytes=0,  # No actual size available
+                created=None,
                 estimated_size_bytes=estimated_size
             )
             layers.append(layer)
-        
+
         total_estimated_size = sum(layer.estimated_size_bytes or 0 for layer in layers)
-        
+
         return ImageAnalysis(
             image_name="dockerfile_analysis",
             layers=layers,
@@ -179,25 +181,25 @@ class DockerLayerAnalyzer:
     def _parse_dockerfile_instructions(self, dockerfile_content: str) -> List[str]:
         """Parse Dockerfile content into individual instructions."""
         instructions = []
-        
+
         for line in dockerfile_content.strip().split('\n'):
             line = line.strip()
             if line and not line.startswith('#'):
                 instructions.append(line)
-        
+
         return instructions
 
     def _estimate_instruction_size(self, instruction: str) -> int:
         """Estimate the size impact of a Dockerfile instruction."""
         instruction_upper = instruction.upper()
-        
+
         # FROM instructions typically don't add size (base image size is separate)
         if instruction_upper.startswith('FROM'):
             return 0
-        
+
         # RUN instructions with package management
         if instruction_upper.startswith('RUN'):
-            if any(pkg_mgr in instruction.lower() for pkg_mgr in 
+            if any(pkg_mgr in instruction.lower() for pkg_mgr in
                    ['apt-get install', 'yum install', 'apk add', 'pip install', 'npm install']):
                 # Count individual RUN commands vs combined commands
                 if '&&' in instruction:
@@ -211,29 +213,29 @@ class DockerLayerAnalyzer:
             else:
                 # Other RUN commands (file operations, etc.)
                 return 1024 * 1024  # 1MB estimate
-        
+
         # COPY/ADD instructions
         if instruction_upper.startswith(('COPY', 'ADD')):
             # Hard to estimate without actual files, use moderate estimate
             return 5 * 1024 * 1024  # 5MB estimate
-        
+
         # Other instructions (WORKDIR, ENV, EXPOSE, etc.) typically add minimal size
         return 0
 
-    def compare_dockerfile_efficiency(self, original_dockerfile: str, 
+    def compare_dockerfile_efficiency(self, original_dockerfile: str,
                                     optimized_dockerfile: str) -> Dict[str, int]:
         """Compare efficiency between original and optimized Dockerfiles."""
         original_analysis = self.get_layer_sizes_for_dockerfile(original_dockerfile)
         optimized_analysis = self.get_layer_sizes_for_dockerfile(optimized_dockerfile)
-        
+
         original_layers = len(original_analysis.layers)
         optimized_layers = len(optimized_analysis.layers)
         layer_reduction = original_layers - optimized_layers
-        
+
         original_size = original_analysis.total_size
         optimized_size = optimized_analysis.total_size
         size_reduction = original_size - optimized_size
-        
+
         return {
             "original_layers": original_layers,
             "optimized_layers": optimized_layers,

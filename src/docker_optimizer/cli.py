@@ -531,7 +531,7 @@ def _output_image_analysis(analysis: ImageAnalysis, format: str, verbose: bool) 
         click.echo(f"Layer Count: {analysis.layer_count}")
         click.echo(f"Docker Available: {'Yes' if analysis.docker_available else 'No'}")
         click.echo(f"Analysis Method: {analysis.analysis_method}")
-        
+
         if analysis.layers:
             click.echo("\n📦 Layer Details:")
             click.echo("-" * 50)
@@ -544,7 +544,7 @@ def _output_image_analysis(analysis: ImageAnalysis, format: str, verbose: bool) 
                 click.echo()
 
 
-def _output_layer_analysis(breakdown: dict, format: str, verbose: bool) -> None:
+def _output_layer_analysis(breakdown: Dict[str, Any], format: str, verbose: bool) -> None:
     """Output detailed layer analysis and size breakdown."""
     if format == "json":
         import json
@@ -602,7 +602,7 @@ def _output_layer_analysis(breakdown: dict, format: str, verbose: bool) -> None:
         click.echo(f"Estimated Layers: {breakdown['estimated_layers']}")
         click.echo(f"Largest Layer: {breakdown['largest_layer_mb']:.1f}MB")
         click.echo(f"Efficiency Score: {breakdown['dockerfile_efficiency_score']}/100")
-        
+
         # Efficiency recommendations
         score = breakdown['dockerfile_efficiency_score']
         if score >= 80:
@@ -613,7 +613,7 @@ def _output_layer_analysis(breakdown: dict, format: str, verbose: bool) -> None:
             click.echo("🔧 Fair: Consider combining RUN commands and reducing layers")
         else:
             click.echo("❌ Poor: Significant optimization needed")
-        
+
         if verbose:
             layer_analysis = breakdown["layer_analysis"]
             click.echo("\n📦 Layer Breakdown:")

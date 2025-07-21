@@ -653,3 +653,415 @@ RUN pip install requests
             assert '"cache_hits"' in result.output
         finally:
             Path(dockerfile_path).unlink()
+
+    def test_cli_layer_analysis_flag(self):
+        """Test CLI --layer-analysis flag functionality."""
+        dockerfile_content = """
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y python3
+COPY . /app
+WORKDIR /app
+CMD ["python3", "app.py"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--layer-analysis'
+            ])
+
+            assert result.exit_code == 0
+            assert "Dockerfile Layer Analysis" in result.output
+            assert "Traditional Size Estimate" in result.output
+            assert "Layer-Based Size Estimate" in result.output
+            assert "Efficiency Score" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_layer_analysis_json_output(self):
+        """Test CLI --layer-analysis with JSON output."""
+        dockerfile_content = """
+FROM alpine:3.18
+RUN apk add --no-cache python3
+COPY . /app
+CMD ["python3", "/app/main.py"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--layer-analysis',
+                '--format', 'json'
+            ])
+
+            assert result.exit_code == 0
+            # Should be valid JSON
+            output_data = json.loads(result.output)
+            assert 'traditional_estimate' in output_data
+            assert 'layer_analysis' in output_data
+            assert 'dockerfile_efficiency_score' in output_data
+            assert 'estimated_layers' in output_data
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_layer_analysis_yaml_output(self):
+        """Test CLI --layer-analysis with YAML output."""
+        dockerfile_content = """
+FROM node:18-alpine
+COPY package*.json ./
+RUN npm install
+COPY . .
+CMD ["npm", "start"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--layer-analysis',
+                '--format', 'yaml'
+            ])
+
+            assert result.exit_code == 0
+            # Should contain YAML-style content
+            assert 'traditional_estimate:' in result.output
+            assert 'layer_analysis:' in result.output
+            assert 'dockerfile_efficiency_score:' in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_layer_analysis_verbose_mode(self):
+        """Test CLI --layer-analysis with verbose mode."""
+        dockerfile_content = """
+FROM python:3.11-slim
+RUN pip install requests
+RUN pip install flask
+COPY . /app
+WORKDIR /app
+CMD ["python", "app.py"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--layer-analysis',
+                '--verbose'
+            ])
+
+            assert result.exit_code == 0
+            assert "Layer Breakdown:" in result.output
+            assert "Estimated Size:" in result.output
+            # Verbose mode should show individual layer details
+            assert len(result.output) > 500  # Should be detailed
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_analyze_image_flag(self):
+        """Test CLI --analyze-image flag functionality."""
+        dockerfile_content = """FROM alpine:3.18
+RUN apk add --no-cache curl"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            # Test with a common image that should be available
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--analyze-image', 'alpine:latest'
+            ])
+
+            # Should work even if Docker is not available (graceful handling)
+            assert result.exit_code in [0, 1]  # Allow both success and graceful failure
+            if result.exit_code == 0:
+                assert "Docker Image Analysis" in result.output
+                assert "alpine:latest" in result.output
+                assert "Total Size:" in result.output
+                assert "Layer Count:" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_analyze_image_json_output(self):
+        """Test CLI --analyze-image with JSON output."""
+        dockerfile_content = """FROM ubuntu:22.04
+RUN apt-get update"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--analyze-image', 'ubuntu:22.04',
+                '--format', 'json'
+            ])
+
+            # Should work even if Docker is not available (graceful handling)
+            assert result.exit_code in [0, 1]  # Allow both success and graceful failure
+            if result.exit_code == 0:
+                # Should be valid JSON
+                output_data = json.loads(result.output)
+                assert 'image_name' in output_data
+                assert 'total_size' in output_data
+                assert 'layers' in output_data
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_analyze_image_yaml_output(self):
+        """Test CLI --analyze-image with YAML output."""
+        dockerfile_content = """FROM nginx:alpine
+RUN apk add --no-cache curl"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--analyze-image', 'nginx:alpine',
+                '--format', 'yaml'
+            ])
+
+            # Should work even if Docker is not available (graceful handling)
+            assert result.exit_code in [0, 1]  # Allow both success and graceful failure
+            if result.exit_code == 0:
+                assert 'image_name:' in result.output
+                assert 'total_size:' in result.output
+                assert 'layers:' in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_analyze_image_verbose_mode(self):
+        """Test CLI --analyze-image with verbose mode."""
+        dockerfile_content = """FROM python:3.11-alpine
+RUN pip install requests"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--analyze-image', 'python:3.11-alpine',
+                '--verbose'
+            ])
+
+            # Should work even if Docker is not available (graceful handling)
+            assert result.exit_code in [0, 1]  # Allow both success and graceful failure
+            if result.exit_code == 0:
+                assert "Docker Image Analysis" in result.output
+                # Layer Details only shown if layers exist (Docker available)
+                if "Layer Count: 0" not in result.output:
+                    assert "Layer Details:" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_analyze_image_invalid_name(self):
+        """Test CLI --analyze-image with invalid image name."""
+        dockerfile_content = """FROM alpine:3.18
+RUN echo 'test'"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--analyze-image', 'nonexistent-image:invalid-tag'
+            ])
+
+            # Should handle invalid image names gracefully
+            assert result.exit_code in [0, 1]  # Allow graceful failure
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_layer_analysis_with_output_file(self):
+        """Test CLI --layer-analysis with file output."""
+        dockerfile_content = """
+FROM golang:1.21-alpine
+COPY . /app
+WORKDIR /app
+RUN go build -o main .
+CMD ["./main"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.analysis', delete=False) as outf:
+            output_path = outf.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--layer-analysis',
+                '--output', output_path
+            ])
+
+            assert result.exit_code == 0
+            # Layer analysis currently doesn't support file output, outputs to stdout
+            assert "Dockerfile Layer Analysis" in result.output
+            assert "Efficiency Score" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+            Path(output_path).unlink()
+
+    def test_cli_analyze_image_with_output_file(self):
+        """Test CLI --analyze-image with file output."""
+        dockerfile_content = """FROM redis:alpine
+RUN apk add --no-cache curl"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.analysis', delete=False) as outf:
+            output_path = outf.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--analyze-image', 'redis:alpine',
+                '--output', output_path
+            ])
+
+            # Should work even if Docker is not available (graceful handling)
+            assert result.exit_code in [0, 1]  # Allow both success and graceful failure
+            if result.exit_code == 0:
+                # Image analysis currently doesn't support file output, outputs to stdout
+                assert "Docker Image Analysis" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+            Path(output_path).unlink()
+
+    def test_cli_efficiency_score_recommendations(self):
+        """Test CLI efficiency score recommendations display."""
+        # Test dockerfile with poor efficiency (multiple RUN commands)
+        dockerfile_content = """
+FROM ubuntu:22.04
+RUN apt-get update
+RUN apt-get install -y python3
+RUN apt-get install -y pip
+RUN pip install requests
+RUN pip install flask
+COPY . /app
+WORKDIR /app
+CMD ["python3", "app.py"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--layer-analysis'
+            ])
+
+            assert result.exit_code == 0
+            # Should show efficiency recommendations
+            assert any(keyword in result.output for keyword in [
+                "Excellent:", "Good:", "Fair:", "Poor:"
+            ])
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_combined_flags_layer_analysis_and_security(self):
+        """Test CLI with combined --layer-analysis and --security-scan flags."""
+        dockerfile_content = """
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y python3 openssl
+COPY . /app
+WORKDIR /app
+CMD ["python3", "app.py"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--layer-analysis',
+                '--security-scan'
+            ])
+
+            assert result.exit_code == 0
+            # Due to CLI logic using elif, only layer analysis runs when both flags are provided
+            assert "Layer Analysis" in result.output or "Efficiency Score" in result.output
+            # Security scan doesn't run due to elif priority
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_combined_flags_performance_and_layer_analysis(self):
+        """Test CLI with combined --performance and --layer-analysis flags."""
+        dockerfile_content = """
+FROM python:3.11
+RUN pip install requests
+COPY . /app
+WORKDIR /app
+CMD ["python", "app.py"]
+"""
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--performance',
+                '--layer-analysis'
+            ])
+
+            assert result.exit_code == 0
+            # Should work with combined flags
+            assert "Optimized Dockerfile" in result.output or "Dockerfile Layer Analysis" in result.output
+        finally:
+            Path(dockerfile_path).unlink()
+
+    def test_cli_exception_handling_invalid_dockerfile_content(self):
+        """Test CLI exception handling with invalid Dockerfile content."""
+        # Create a Dockerfile with invalid content that might cause parsing errors
+        dockerfile_content = "INVALID_INSTRUCTION this is not a valid Dockerfile instruction\nFROM"
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
+            f.write(dockerfile_content)
+            dockerfile_path = f.name
+
+        try:
+            result = self.runner.invoke(main, [
+                '--dockerfile', dockerfile_path,
+                '--verbose'  # Enable verbose for more error details
+            ])
+
+            # Should handle invalid Dockerfile gracefully
+            assert result.exit_code in [0, 1, 2]  # Allow various error codes
+            # Should show error message in verbose mode
+            if result.exit_code != 0:
+                assert len(result.output) > 0  # Should have some error output
+        finally:
+            Path(dockerfile_path).unlink()

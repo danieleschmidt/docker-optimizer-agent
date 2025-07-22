@@ -94,9 +94,15 @@ class BuildStage(BaseModel):
 
     name: str = Field(..., description="Stage name or alias")
     base_image: str = Field(..., description="Base image for this stage")
-    commands: List[str] = Field(default_factory=list, description="Commands in this stage")
-    purpose: str = Field(..., description="Purpose: 'build', 'runtime', or 'intermediate'")
-    dependencies: List[str] = Field(default_factory=list, description="Dependencies installed")
+    commands: List[str] = Field(
+        default_factory=list, description="Commands in this stage"
+    )
+    purpose: str = Field(
+        ..., description="Purpose: 'build', 'runtime', or 'intermediate'"
+    )
+    dependencies: List[str] = Field(
+        default_factory=list, description="Dependencies installed"
+    )
 
     @property
     def is_build_stage(self) -> bool:
@@ -112,10 +118,18 @@ class BuildStage(BaseModel):
 class MultiStageOpportunity(BaseModel):
     """Analysis of multi-stage build optimization opportunity."""
 
-    recommended: bool = Field(..., description="Whether multi-stage build is recommended")
-    has_build_dependencies: bool = Field(..., description="Whether build dependencies were found")
-    build_dependencies: List[str] = Field(default_factory=list, description="Build-only dependencies")
-    runtime_dependencies: List[str] = Field(default_factory=list, description="Runtime dependencies")
+    recommended: bool = Field(
+        ..., description="Whether multi-stage build is recommended"
+    )
+    has_build_dependencies: bool = Field(
+        ..., description="Whether build dependencies were found"
+    )
+    build_dependencies: List[str] = Field(
+        default_factory=list, description="Build-only dependencies"
+    )
+    runtime_dependencies: List[str] = Field(
+        default_factory=list, description="Runtime dependencies"
+    )
     benefits: List[str] = Field(default_factory=list, description="Expected benefits")
     estimated_size_reduction: str = Field(..., description="Estimated size reduction")
     complexity_score: int = Field(..., description="Implementation complexity (1-10)")
@@ -125,10 +139,18 @@ class MultiStageOptimization(BaseModel):
     """Result of multi-stage build optimization."""
 
     original_dockerfile: str = Field(..., description="Original Dockerfile content")
-    optimized_dockerfile: str = Field(..., description="Optimized multi-stage Dockerfile")
-    stages: List[BuildStage] = Field(default_factory=list, description="Build stages created")
-    estimated_size_reduction: int = Field(..., description="Estimated size reduction in MB")
-    security_improvements: int = Field(default=0, description="Number of security improvements")
+    optimized_dockerfile: str = Field(
+        ..., description="Optimized multi-stage Dockerfile"
+    )
+    stages: List[BuildStage] = Field(
+        default_factory=list, description="Build stages created"
+    )
+    estimated_size_reduction: int = Field(
+        ..., description="Estimated size reduction in MB"
+    )
+    security_improvements: int = Field(
+        default=0, description="Number of security improvements"
+    )
     size_reduction: int = Field(..., description="Size reduction in MB")
     explanation: str = Field(..., description="Explanation of optimizations applied")
 
@@ -145,7 +167,9 @@ class CVEDetails(BaseModel):
     severity: str = Field(..., description="Vulnerability severity")
     package: str = Field(..., description="Affected package name")
     installed_version: str = Field(..., description="Currently installed version")
-    fixed_version: Optional[str] = Field(None, description="Version that fixes the vulnerability")
+    fixed_version: Optional[str] = Field(
+        None, description="Version that fixes the vulnerability"
+    )
     description: str = Field(..., description="Vulnerability description")
 
     @property
@@ -157,12 +181,24 @@ class CVEDetails(BaseModel):
 class VulnerabilityReport(BaseModel):
     """Report of vulnerabilities found in a Docker image or Dockerfile."""
 
-    total_vulnerabilities: int = Field(..., description="Total number of vulnerabilities")
-    critical_count: int = Field(default=0, description="Number of critical vulnerabilities")
-    high_count: int = Field(default=0, description="Number of high severity vulnerabilities")
-    medium_count: int = Field(default=0, description="Number of medium severity vulnerabilities")
-    low_count: int = Field(default=0, description="Number of low severity vulnerabilities")
-    cve_details: List[CVEDetails] = Field(default_factory=list, description="Detailed CVE information")
+    total_vulnerabilities: int = Field(
+        ..., description="Total number of vulnerabilities"
+    )
+    critical_count: int = Field(
+        default=0, description="Number of critical vulnerabilities"
+    )
+    high_count: int = Field(
+        default=0, description="Number of high severity vulnerabilities"
+    )
+    medium_count: int = Field(
+        default=0, description="Number of medium severity vulnerabilities"
+    )
+    low_count: int = Field(
+        default=0, description="Number of low severity vulnerabilities"
+    )
+    cve_details: List[CVEDetails] = Field(
+        default_factory=list, description="Detailed CVE information"
+    )
 
     @property
     def has_critical_vulnerabilities(self) -> bool:
@@ -181,7 +217,7 @@ class VulnerabilityReport(BaseModel):
             "critical": self.critical_count,
             "high": self.high_count,
             "medium": self.medium_count,
-            "low": self.low_count
+            "low": self.low_count,
         }
 
 
@@ -191,20 +227,22 @@ class SecurityScore(BaseModel):
     score: int = Field(..., description="Security score from 0-100 (higher is better)")
     grade: str = Field(..., description="Letter grade (A-F)")
     analysis: str = Field(..., description="Analysis explanation")
-    recommendations: List[str] = Field(default_factory=list, description="Security recommendations")
+    recommendations: List[str] = Field(
+        default_factory=list, description="Security recommendations"
+    )
 
-    @validator('score')
+    @validator("score")
     def validate_score(cls, v: int) -> int:
         """Validate score is between 0 and 100."""
         if not 0 <= v <= 100:
-            raise ValueError('Score must be between 0 and 100')
+            raise ValueError("Score must be between 0 and 100")
         return v
 
-    @validator('grade')
+    @validator("grade")
     def validate_grade(cls, v: str) -> str:
         """Validate grade is a valid letter grade."""
-        if v not in ['A', 'B', 'C', 'D', 'F']:
-            raise ValueError('Grade must be one of: A, B, C, D, F')
+        if v not in ["A", "B", "C", "D", "F"]:
+            raise ValueError("Grade must be one of: A, B, C, D, F")
         return v
 
 
@@ -215,7 +253,9 @@ class LayerInfo(BaseModel):
     command: str = Field(..., description="Command that created this layer")
     size_bytes: int = Field(..., description="Layer size in bytes")
     created: Optional[str] = Field(None, description="Layer creation timestamp")
-    estimated_size_bytes: Optional[int] = Field(None, description="Estimated size for analysis")
+    estimated_size_bytes: Optional[int] = Field(
+        None, description="Estimated size for analysis"
+    )
 
     @property
     def size_mb(self) -> float:
@@ -239,10 +279,16 @@ class ImageAnalysis(BaseModel):
     """Analysis of Docker image layers and sizes."""
 
     image_name: str = Field(..., description="Docker image name")
-    layers: List[LayerInfo] = Field(default_factory=list, description="Layer information")
+    layers: List[LayerInfo] = Field(
+        default_factory=list, description="Layer information"
+    )
     total_size: int = Field(default=0, description="Total image size in bytes")
-    docker_available: bool = Field(default=True, description="Whether Docker is available")
-    analysis_method: str = Field(default="docker_history", description="Method used for analysis")
+    docker_available: bool = Field(
+        default=True, description="Whether Docker is available"
+    )
+    analysis_method: str = Field(
+        default="docker_history", description="Method used for analysis"
+    )
 
     @property
     def total_size_mb(self) -> float:
@@ -260,3 +306,46 @@ class ImageAnalysis(BaseModel):
         if not self.layers:
             return None
         return max(self.layers, key=lambda layer: layer.size_bytes)
+
+
+class OptimizationSuggestion(BaseModel):
+    """Represents a real-time optimization suggestion."""
+
+    line_number: int = Field(
+        ..., description="Line number in Dockerfile where suggestion applies"
+    )
+    suggestion_type: str = Field(
+        ..., description="Type: security, optimization, best_practice"
+    )
+    priority: str = Field(
+        ..., description="Priority level: LOW, MEDIUM, HIGH, CRITICAL"
+    )
+    message: str = Field(..., description="Brief suggestion message")
+    explanation: str = Field(..., description="Detailed explanation of the suggestion")
+    fix_example: str = Field(..., description="Example of how to implement the fix")
+
+    @validator("priority")
+    def validate_priority(cls, v: str) -> str:
+        """Validate priority is one of the allowed values."""
+        allowed = {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
+        if v.upper() not in allowed:
+            raise ValueError(f'Priority must be one of: {", ".join(allowed)}')
+        return v.upper()
+
+
+class SuggestionContext(BaseModel):
+    """Context information for generating targeted suggestions."""
+
+    current_line: int = Field(default=0, description="Current line being analyzed")
+    has_security_scan: bool = Field(
+        default=False, description="Whether security scanning is enabled"
+    )
+    has_multistage: bool = Field(
+        default=False, description="Whether multi-stage build is used"
+    )
+    project_type: Optional[str] = Field(
+        default=None, description="Detected project type"
+    )
+    previous_suggestions: List[str] = Field(
+        default_factory=list, description="Previously shown suggestion types"
+    )

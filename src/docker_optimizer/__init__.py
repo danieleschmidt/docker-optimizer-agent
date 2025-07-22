@@ -9,19 +9,26 @@ from .models import (
     BuildStage,
     MultiStageOptimization,
     OptimizationResult,
+    OptimizationSuggestion,
     SecurityScore,
+    SuggestionContext,
     VulnerabilityReport,
 )
 from .multistage import MultiStageOptimizer
 from .optimizer import DockerfileOptimizer
+from .realtime_suggestions import ProjectType, RealtimeSuggestionEngine
 
 __all__ = [
     "DockerfileOptimizer",
     "OptimizationResult",
+    "OptimizationSuggestion",
     "MultiStageOptimizer",
     "MultiStageOptimization",
     "BuildStage",
     "ExternalSecurityScanner",
     "VulnerabilityReport",
-    "SecurityScore"
+    "SecurityScore",
+    "SuggestionContext",
+    "RealtimeSuggestionEngine",
+    "ProjectType",
 ]

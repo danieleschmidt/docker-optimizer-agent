@@ -48,39 +48,35 @@ from .performance import PerformanceOptimizer
 )
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 @click.option(
-    "--multistage",
-    is_flag=True,
-    help="Generate multi-stage build optimization"
+    "--multistage", is_flag=True, help="Generate multi-stage build optimization"
 )
 @click.option(
-    "--security-scan",
-    is_flag=True,
-    help="Perform external security vulnerability scan"
+    "--security-scan", is_flag=True, help="Perform external security vulnerability scan"
 )
 @click.option(
     "--performance",
     is_flag=True,
-    help="Enable performance optimizations (caching, parallel processing)"
+    help="Enable performance optimizations (caching, parallel processing)",
 )
 @click.option(
     "--batch",
     multiple=True,
-    help="Process multiple Dockerfiles (can be specified multiple times)"
+    help="Process multiple Dockerfiles (can be specified multiple times)",
 )
 @click.option(
     "--layer-analysis",
     is_flag=True,
-    help="Perform detailed Docker layer analysis and size estimation"
+    help="Perform detailed Docker layer analysis and size estimation",
 )
 @click.option(
     "--analyze-image",
     type=str,
-    help="Analyze layers of an existing Docker image (e.g., 'ubuntu:22.04')"
+    help="Analyze layers of an existing Docker image (e.g., 'ubuntu:22.04')",
 )
 @click.option(
     "--performance-report",
     is_flag=True,
-    help="Show performance metrics after optimization"
+    help="Show performance metrics after optimization",
 )
 def main(
     dockerfile: str,
@@ -123,7 +119,9 @@ def main(
             # Single Dockerfile processing
             dockerfile_path = Path(dockerfiles_to_process[0])
             if not dockerfile_path.exists():
-                click.echo(f"Error: Dockerfile not found at {dockerfile_path}", err=True)
+                click.echo(
+                    f"Error: Dockerfile not found at {dockerfile_path}", err=True
+                )
                 sys.exit(2)
 
             dockerfile_content = dockerfile_path.read_text(encoding="utf-8")
@@ -131,14 +129,18 @@ def main(
             if analyze_image:
                 # Analyze existing Docker image layers
                 from .size_estimator import SizeEstimator
+
                 size_estimator = SizeEstimator()
                 image_analysis = size_estimator.analyze_image_layers(analyze_image)
                 _output_image_analysis(image_analysis, format, verbose)
             elif layer_analysis:
                 # Perform detailed layer analysis
                 from .size_estimator import SizeEstimator
+
                 size_estimator = SizeEstimator()
-                layer_breakdown = size_estimator.get_detailed_size_breakdown(dockerfile_content)
+                layer_breakdown = size_estimator.get_detailed_size_breakdown(
+                    dockerfile_content
+                )
                 _output_layer_analysis(layer_breakdown, format, verbose)
             elif analysis_only:
                 # Only analyze, don't optimize
@@ -146,21 +148,40 @@ def main(
                 _output_analysis(analysis, format, verbose)
             elif multistage:
                 # Multi-stage optimization
-                multistage_result = multistage_optimizer.generate_multistage_dockerfile(dockerfile_content)
+                multistage_result = multistage_optimizer.generate_multistage_dockerfile(
+                    dockerfile_content
+                )
                 _output_multistage_result(multistage_result, output, format, verbose)
             elif security_scan:
                 # External security vulnerability scan
-                vulnerability_report = security_scanner.scan_dockerfile_for_vulnerabilities(dockerfile_content)
-                security_score = security_scanner.calculate_security_score(vulnerability_report)
-                suggestions = security_scanner.suggest_security_improvements(vulnerability_report)
-                _output_security_scan_result(vulnerability_report, security_score, suggestions, output, format, verbose)
+                vulnerability_report = (
+                    security_scanner.scan_dockerfile_for_vulnerabilities(
+                        dockerfile_content
+                    )
+                )
+                security_score = security_scanner.calculate_security_score(
+                    vulnerability_report
+                )
+                suggestions = security_scanner.suggest_security_improvements(
+                    vulnerability_report
+                )
+                _output_security_scan_result(
+                    vulnerability_report,
+                    security_score,
+                    suggestions,
+                    output,
+                    format,
+                    verbose,
+                )
             elif performance and perf_optimizer:
                 # Performance-optimized processing
                 result = perf_optimizer.optimize_with_performance(dockerfile_content)
                 _output_result(result, output, format, verbose)
 
                 if performance_report:
-                    _output_performance_report(perf_optimizer.get_performance_report(), format)
+                    _output_performance_report(
+                        perf_optimizer.get_performance_report(), format
+                    )
             else:
                 # Full optimization
                 result = optimizer.optimize_dockerfile(dockerfile_content)
@@ -169,12 +190,21 @@ def main(
             # Batch processing
             if performance and perf_optimizer:
                 # Use async batch processing for performance
-                asyncio.run(_process_batch_with_performance(
-                    dockerfiles_to_process, perf_optimizer, output, format, verbose, performance_report
-                ))
+                asyncio.run(
+                    _process_batch_with_performance(
+                        dockerfiles_to_process,
+                        perf_optimizer,
+                        output,
+                        format,
+                        verbose,
+                        performance_report,
+                    )
+                )
             else:
                 # Regular batch processing
-                _process_batch_regular(dockerfiles_to_process, optimizer, output, format, verbose)
+                _process_batch_regular(
+                    dockerfiles_to_process, optimizer, output, format, verbose
+                )
 
     except Exception as e:
         click.echo(f"Error: {str(e)}", err=True)
@@ -272,13 +302,20 @@ def _output_result(
         click.echo(output_content)
 
 
-def _output_multistage_result(result: MultiStageOptimization, output_path: Optional[str], format: str, verbose: bool) -> None:
+def _output_multistage_result(
+    result: MultiStageOptimization,
+    output_path: Optional[str],
+    format: str,
+    verbose: bool,
+) -> None:
     """Output multi-stage optimization results."""
     if format == "json":
         import json
+
         output_content = json.dumps(result.dict(), indent=2)
     elif format == "yaml":
         import yaml
+
         output_content = yaml.dump(result.dict(), default_flow_style=False)
     else:
         # Text format
@@ -294,13 +331,17 @@ def _output_multistage_result(result: MultiStageOptimization, output_path: Optio
         if result.has_multiple_stages:
             summary_lines.append("\n📋 Build Stages:")
             for i, stage in enumerate(result.stages, 1):
-                summary_lines.append(f"  {i}. {stage.name} ({stage.purpose}) - {stage.base_image}")
+                summary_lines.append(
+                    f"  {i}. {stage.name} ({stage.purpose}) - {stage.base_image}"
+                )
 
-        summary_lines.extend([
-            "\n📄 Optimized Multi-Stage Dockerfile:",
-            "-" * 40,
-            result.optimized_dockerfile
-        ])
+        summary_lines.extend(
+            [
+                "\n📄 Optimized Multi-Stage Dockerfile:",
+                "-" * 40,
+                result.optimized_dockerfile,
+            ]
+        )
 
         output_content = "\n".join(summary_lines)
 
@@ -312,22 +353,31 @@ def _output_multistage_result(result: MultiStageOptimization, output_path: Optio
         click.echo(output_content)
 
 
-def _output_security_scan_result(vulnerability_report: VulnerabilityReport, security_score: SecurityScore, suggestions: List[str], output_path: Optional[str], format: str, verbose: bool) -> None:
+def _output_security_scan_result(
+    vulnerability_report: VulnerabilityReport,
+    security_score: SecurityScore,
+    suggestions: List[str],
+    output_path: Optional[str],
+    format: str,
+    verbose: bool,
+) -> None:
     """Output security scan results."""
     if format == "json":
         import json
+
         output_data = {
             "vulnerability_report": vulnerability_report.dict(),
             "security_score": security_score.dict(),
-            "suggestions": suggestions
+            "suggestions": suggestions,
         }
         output_content = json.dumps(output_data, indent=2)
     elif format == "yaml":
         import yaml
+
         output_data = {
             "vulnerability_report": vulnerability_report.dict(),
             "security_score": security_score.dict(),
-            "suggestions": suggestions
+            "suggestions": suggestions,
         }
         output_content = yaml.dump(output_data, default_flow_style=False)
     else:
@@ -340,19 +390,23 @@ def _output_security_scan_result(vulnerability_report: VulnerabilityReport, secu
         ]
 
         if vulnerability_report.total_vulnerabilities > 0:
-            summary_lines.extend([
-                f"  Critical: {vulnerability_report.critical_count}",
-                f"  High: {vulnerability_report.high_count}",
-                f"  Medium: {vulnerability_report.medium_count}",
-                f"  Low: {vulnerability_report.low_count}",
-            ])
+            summary_lines.extend(
+                [
+                    f"  Critical: {vulnerability_report.critical_count}",
+                    f"  High: {vulnerability_report.high_count}",
+                    f"  Medium: {vulnerability_report.medium_count}",
+                    f"  Low: {vulnerability_report.low_count}",
+                ]
+            )
 
         summary_lines.append(f"\nAnalysis: {security_score.analysis}")
 
         if vulnerability_report.cve_details and verbose:
             summary_lines.append("\n🚨 Top Vulnerabilities:")
             for i, cve in enumerate(vulnerability_report.cve_details[:5], 1):
-                summary_lines.append(f"  {i}. {cve.cve_id} ({cve.severity}) - {cve.package}")
+                summary_lines.append(
+                    f"  {i}. {cve.cve_id} ({cve.severity}) - {cve.package}"
+                )
                 if cve.fixed_version:
                     summary_lines.append(f"     Fix: Update to {cve.fixed_version}")
 
@@ -382,7 +436,7 @@ async def _process_batch_with_performance(
     output_path: Optional[str],
     format: str,
     verbose: bool,
-    show_performance_report: bool
+    show_performance_report: bool,
 ) -> None:
     """Process multiple Dockerfiles with performance optimization."""
     # Read all Dockerfile contents
@@ -403,7 +457,9 @@ async def _process_batch_with_performance(
         sys.exit(1)
 
     # Process batch with performance optimization
-    results = await perf_optimizer.optimize_multiple_with_performance(dockerfile_contents)
+    results = await perf_optimizer.optimize_multiple_with_performance(
+        dockerfile_contents
+    )
 
     # Output results
     for i, (dockerfile_path, result) in enumerate(zip(valid_paths, results)):
@@ -415,7 +471,9 @@ async def _process_batch_with_performance(
         batch_output_path = None
         if output_path:
             base_path = Path(output_path)
-            batch_output_path = str(base_path.parent / f"{base_path.stem}_{i+1}{base_path.suffix}")
+            batch_output_path = str(
+                base_path.parent / f"{base_path.stem}_{i+1}{base_path.suffix}"
+            )
 
         _output_result(result, batch_output_path, format, verbose)
 
@@ -432,7 +490,7 @@ def _process_batch_regular(
     optimizer: DockerfileOptimizer,
     output_path: Optional[str],
     format: str,
-    verbose: bool
+    verbose: bool,
 ) -> None:
     """Process multiple Dockerfiles with regular optimization."""
     for i, dockerfile_path in enumerate(dockerfiles):
@@ -452,7 +510,9 @@ def _process_batch_regular(
         batch_output_path = None
         if output_path:
             base_path = Path(output_path)
-            batch_output_path = str(base_path.parent / f"{base_path.stem}_{i+1}{base_path.suffix}")
+            batch_output_path = str(
+                base_path.parent / f"{base_path.stem}_{i+1}{base_path.suffix}"
+            )
 
         _output_result(result, batch_output_path, format, verbose)
 
@@ -461,9 +521,11 @@ def _output_performance_report(performance_report: Dict[str, Any], format: str) 
     """Output performance metrics report."""
     if format == "json":
         import json
+
         click.echo(json.dumps(performance_report, indent=2))
     elif format == "yaml":
         import yaml
+
         click.echo(yaml.dump(performance_report, default_flow_style=False))
     else:
         # Text format
@@ -471,17 +533,22 @@ def _output_performance_report(performance_report: Dict[str, Any], format: str) 
         click.echo("-" * 25)
         click.echo(f"Processing Time: {performance_report['processing_time']:.2f}s")
         click.echo(f"Memory Usage: {performance_report['memory_usage_mb']:.1f}MB")
-        click.echo(f"Dockerfiles Processed: {performance_report['dockerfiles_processed']}")
+        click.echo(
+            f"Dockerfiles Processed: {performance_report['dockerfiles_processed']}"
+        )
         click.echo(f"Cache Hits: {performance_report['cache_hits']}")
         click.echo(f"Cache Misses: {performance_report['cache_misses']}")
         click.echo(f"Cache Hit Ratio: {performance_report['cache_hit_ratio']:.1%}")
-        click.echo(f"Cache Size: {performance_report['cache_size']}/{performance_report['cache_max_size']}")
+        click.echo(
+            f"Cache Size: {performance_report['cache_size']}/{performance_report['cache_max_size']}"
+        )
 
 
 def _output_image_analysis(analysis: ImageAnalysis, format: str, verbose: bool) -> None:
     """Output Docker image layer analysis."""
     if format == "json":
         import json
+
         # Convert to dict for JSON serialization
         analysis_dict = {
             "image_name": analysis.image_name,
@@ -496,14 +563,15 @@ def _output_image_analysis(analysis: ImageAnalysis, format: str, verbose: bool) 
                     "command": layer.command,
                     "size_bytes": layer.size_bytes,
                     "size_human": layer.size_human,
-                    "created": layer.created
+                    "created": layer.created,
                 }
                 for layer in analysis.layers
-            ]
+            ],
         }
         click.echo(json.dumps(analysis_dict, indent=2))
     elif format == "yaml":
         import yaml
+
         analysis_dict = {
             "image_name": analysis.image_name,
             "total_size": analysis.total_size,
@@ -517,10 +585,10 @@ def _output_image_analysis(analysis: ImageAnalysis, format: str, verbose: bool) 
                     "command": layer.command,
                     "size_bytes": layer.size_bytes,
                     "size_human": layer.size_human,
-                    "created": layer.created
+                    "created": layer.created,
                 }
                 for layer in analysis.layers
-            ]
+            ],
         }
         click.echo(yaml.dump(analysis_dict, default_flow_style=False))
     else:
@@ -544,10 +612,13 @@ def _output_image_analysis(analysis: ImageAnalysis, format: str, verbose: bool) 
                 click.echo()
 
 
-def _output_layer_analysis(breakdown: Dict[str, Any], format: str, verbose: bool) -> None:
+def _output_layer_analysis(
+    breakdown: Dict[str, Any], format: str, verbose: bool
+) -> None:
     """Output detailed layer analysis and size breakdown."""
     if format == "json":
         import json
+
         # Convert ImageAnalysis to dict for JSON serialization
         breakdown_dict = breakdown.copy()
         layer_analysis = breakdown_dict["layer_analysis"]
@@ -564,14 +635,15 @@ def _output_layer_analysis(breakdown: Dict[str, Any], format: str, verbose: bool
                     "command": layer.command,
                     "size_bytes": layer.size_bytes,
                     "estimated_size_bytes": layer.estimated_size_bytes,
-                    "size_human": layer.size_human
+                    "size_human": layer.size_human,
                 }
                 for layer in layer_analysis.layers
-            ]
+            ],
         }
         click.echo(json.dumps(breakdown_dict, indent=2))
     elif format == "yaml":
         import yaml
+
         breakdown_dict = breakdown.copy()
         layer_analysis = breakdown_dict["layer_analysis"]
         breakdown_dict["layer_analysis"] = {
@@ -587,10 +659,10 @@ def _output_layer_analysis(breakdown: Dict[str, Any], format: str, verbose: bool
                     "command": layer.command,
                     "size_bytes": layer.size_bytes,
                     "estimated_size_bytes": layer.estimated_size_bytes,
-                    "size_human": layer.size_human
+                    "size_human": layer.size_human,
                 }
                 for layer in layer_analysis.layers
-            ]
+            ],
         }
         click.echo(yaml.dump(breakdown_dict, default_flow_style=False))
     else:
@@ -598,13 +670,15 @@ def _output_layer_analysis(breakdown: Dict[str, Any], format: str, verbose: bool
         click.echo("🏗️  Dockerfile Layer Analysis")
         click.echo("=" * 50)
         click.echo(f"Traditional Size Estimate: {breakdown['traditional_estimate']}")
-        click.echo(f"Layer-Based Size Estimate: {breakdown['total_estimated_size_mb']:.1f}MB")
+        click.echo(
+            f"Layer-Based Size Estimate: {breakdown['total_estimated_size_mb']:.1f}MB"
+        )
         click.echo(f"Estimated Layers: {breakdown['estimated_layers']}")
         click.echo(f"Largest Layer: {breakdown['largest_layer_mb']:.1f}MB")
         click.echo(f"Efficiency Score: {breakdown['dockerfile_efficiency_score']}/100")
 
         # Efficiency recommendations
-        score = breakdown['dockerfile_efficiency_score']
+        score = breakdown["dockerfile_efficiency_score"]
         if score >= 80:
             click.echo("✅ Excellent: Dockerfile is well-optimized")
         elif score >= 60:

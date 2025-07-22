@@ -1,13 +1,13 @@
 """Test cases for real-time optimization suggestions."""
 
+
 import pytest
-from unittest.mock import Mock, patch
 
 from docker_optimizer.realtime_suggestions import (
-    RealtimeSuggestionEngine,
-    ProjectType,
-    SuggestionContext,
     OptimizationSuggestion,
+    ProjectType,
+    RealtimeSuggestionEngine,
+    SuggestionContext,
 )
 
 
@@ -30,7 +30,7 @@ CMD ["python", "app.py"]
 """
         project_type = self.engine.detect_project_type(dockerfile_content)
         assert project_type == ProjectType.PYTHON
-        
+
     def test_detect_project_type_nodejs(self):
         """Test project type detection for Node.js projects."""
         dockerfile_content = """
@@ -76,20 +76,20 @@ RUN pip install requirements.txt
 WORKDIR /app
 CMD ["python", "app.py"]
 """
-        
+
         suggestions = self.engine.generate_realtime_suggestions(dockerfile_content)
-        
+
         # Should detect multiple optimization opportunities
         assert len(suggestions) >= 3
-        
+
         # Should suggest specific Python version
         version_suggestions = [s for s in suggestions if "specific version" in s.message.lower()]
         assert len(version_suggestions) > 0
-        
+
         # Should suggest non-root user
         user_suggestions = [s for s in suggestions if "non-root" in s.message.lower()]
         assert len(user_suggestions) > 0
-        
+
         # Should suggest requirements.txt optimization
         pip_suggestions = [s for s in suggestions if "requirements.txt" in s.message.lower()]
         assert len(pip_suggestions) > 0
@@ -102,20 +102,20 @@ RUN apt-get update
 RUN apt-get install -y python3
 COPY . /app
 """
-        
+
         context = SuggestionContext(
             current_line=2,
             has_security_scan=False,
             has_multistage=False
         )
-        
+
         suggestions = self.engine.generate_interactive_suggestions(
             dockerfile_content, context
         )
-        
+
         # Should provide context-aware suggestions
         assert len(suggestions) > 0
-        
+
         # Should prioritize immediate improvements
         high_priority = [s for s in suggestions if s.priority == "HIGH"]
         assert len(high_priority) > 0
@@ -123,9 +123,9 @@ COPY . /app
     def test_suggest_base_image_optimization(self):
         """Test base image optimization suggestions."""
         dockerfile_content = "FROM ubuntu:latest\nRUN apt-get install python3"
-        
+
         suggestions = self.engine._suggest_base_image_optimization(dockerfile_content)
-        
+
         # Should suggest specific version and language-specific base image
         assert len(suggestions) >= 2
         assert any("specific version" in s.message for s in suggestions)
@@ -139,9 +139,9 @@ RUN apt-get update
 RUN apt-get install -y curl
 RUN pip install requests
 """
-        
+
         suggestions = self.engine._suggest_layer_optimization(dockerfile_content)
-        
+
         # Should suggest combining RUN commands
         assert len(suggestions) > 0
         assert any("combine" in s.message.lower() for s in suggestions)
@@ -153,16 +153,16 @@ FROM ubuntu:latest
 USER root
 RUN curl http://insecure.com/script.sh | bash
 """
-        
+
         suggestions = self.engine._suggest_security_improvements(dockerfile_content)
-        
+
         # Should suggest multiple security improvements
         assert len(suggestions) >= 2
-        
+
         # Should suggest non-root user
         user_suggestions = [s for s in suggestions if "non-root" in s.message.lower()]
         assert len(user_suggestions) > 0
-        
+
         # Should warn about insecure downloads
         security_suggestions = [s for s in suggestions if "insecure" in s.message.lower()]
         assert len(security_suggestions) > 0
@@ -175,21 +175,21 @@ USER appuser
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 """
-        
+
         context = SuggestionContext(
             current_line=4,
             has_security_scan=True,
             has_multistage=False
         )
-        
+
         suggestions = self.engine.generate_interactive_suggestions(
             dockerfile_content, context
         )
-        
+
         # Should not suggest improvements already implemented
         user_suggestions = [s for s in suggestions if "user" in s.message.lower()]
         version_suggestions = [s for s in suggestions if "version" in s.message.lower()]
-        
+
         # Should be fewer suggestions since good practices are already followed
         assert len(user_suggestions) == 0  # User is already non-root
         assert len(version_suggestions) == 0  # Version is already specific
@@ -200,12 +200,12 @@ RUN pip install --no-cache-dir -r requirements.txt
             "requirements.txt": "flask==2.3.0\nrequests==2.28.0",
             "app.py": "from flask import Flask\napp = Flask(__name__)",
         }
-        
+
         dockerfile = self.engine.generate_smart_dockerfile(
             project_type=ProjectType.PYTHON,
             project_files=project_files
         )
-        
+
         # Should generate a complete, optimized Dockerfile
         assert "FROM python:" in dockerfile
         assert "requirements.txt" in dockerfile
@@ -224,18 +224,18 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 CMD ["python3", "app.py"]
 """
-        
+
         suggestions = self.engine.generate_realtime_suggestions(dockerfile_content)
-        
+
         # Should have suggestions with different priorities
         priorities = {s.priority for s in suggestions}
         assert "HIGH" in priorities
         assert "MEDIUM" in priorities
-        
+
         # High priority should include security issues
         high_priority = [s for s in suggestions if s.priority == "HIGH"]
         security_related = [s for s in high_priority if any(
-            keyword in s.message.lower() 
+            keyword in s.message.lower()
             for keyword in ["security", "user", "root", "version"]
         )]
         assert len(security_related) > 0
@@ -243,7 +243,7 @@ CMD ["python3", "app.py"]
 
 class TestOptimizationSuggestion:
     """Test optimization suggestion model."""
-    
+
     def test_optimization_suggestion_creation(self):
         """Test OptimizationSuggestion model creation."""
         suggestion = OptimizationSuggestion(
@@ -254,7 +254,7 @@ class TestOptimizationSuggestion:
             explanation="Running as root increases security risk",
             fix_example="USER appuser"
         )
-        
+
         assert suggestion.line_number == 3
         assert suggestion.suggestion_type == "security"
         assert suggestion.priority == "HIGH"
@@ -274,7 +274,7 @@ class TestOptimizationSuggestion:
             fix_example="Test fix"
         )
         assert suggestion.priority == "MEDIUM"
-        
+
         # Invalid priority should raise error
         with pytest.raises(ValueError):
             OptimizationSuggestion(
@@ -289,7 +289,7 @@ class TestOptimizationSuggestion:
 
 class TestSuggestionContext:
     """Test suggestion context model."""
-    
+
     def test_suggestion_context_creation(self):
         """Test SuggestionContext model creation."""
         context = SuggestionContext(
@@ -298,7 +298,7 @@ class TestSuggestionContext:
             has_multistage=False,
             project_type=ProjectType.PYTHON
         )
-        
+
         assert context.current_line == 5
         assert context.has_security_scan is True
         assert context.has_multistage is False

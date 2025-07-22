@@ -349,3 +349,144 @@ class SuggestionContext(BaseModel):
     previous_suggestions: List[str] = Field(
         default_factory=list, description="Previously shown suggestion types"
     )
+
+
+class SecurityRule(BaseModel):
+    """Represents a custom security rule for Advanced Security Rule Engine."""
+
+    id: str = Field(..., description="Unique rule identifier")
+    name: str = Field(..., description="Human-readable rule name")
+    description: str = Field(..., description="Detailed description of the rule")
+    severity: str = Field(
+        ..., description="Severity level: LOW, MEDIUM, HIGH, CRITICAL"
+    )
+    category: str = Field(..., description="Rule category: security, performance, best_practice")
+    rule_type: str = Field(..., description="Rule type: pattern, function, compliance")
+    pattern: Optional[str] = Field(None, description="Regex pattern for pattern-type rules")
+    function_name: Optional[str] = Field(None, description="Function name for function-type rules")
+    message: str = Field(..., description="Violation message to display")
+    fix_example: Optional[str] = Field(None, description="Example of how to fix the violation")
+    compliance_frameworks: List[str] = Field(
+        default_factory=list, description="Compliance frameworks this rule applies to"
+    )
+    enabled: bool = Field(default=True, description="Whether this rule is enabled")
+
+    @validator("severity")
+    def validate_severity(cls, v: str) -> str:
+        """Validate severity is one of the allowed values."""
+        allowed = {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
+        if v.upper() not in allowed:
+            raise ValueError(f'Severity must be one of: {", ".join(allowed)}')
+        return v.upper()
+
+    @validator("rule_type")
+    def validate_rule_type(cls, v: str) -> str:
+        """Validate rule type is one of the allowed values."""
+        allowed = {"pattern", "function", "compliance"}
+        if v.lower() not in allowed:
+            raise ValueError(f'Rule type must be one of: {", ".join(allowed)}')
+        return v.lower()
+
+    @property
+    def is_critical(self) -> bool:
+        """Check if this rule has critical severity."""
+        return self.severity == "CRITICAL"
+
+    @property
+    def is_high_severity(self) -> bool:
+        """Check if this rule has high severity."""
+        return self.severity == "HIGH"
+
+
+class SecurityRuleSet(BaseModel):
+    """Represents a collection of security rules (policy)."""
+
+    name: str = Field(..., description="Policy name")
+    version: str = Field(..., description="Policy version")
+    description: str = Field(..., description="Policy description")
+    rules: List[SecurityRule] = Field(
+        default_factory=list, description="Security rules in this policy"
+    )
+    compliance_framework: Optional[str] = Field(
+        None, description="Compliance framework this policy implements"
+    )
+    author: Optional[str] = Field(None, description="Policy author")
+    created_at: Optional[str] = Field(None, description="Creation timestamp")
+
+    def get_rules_by_severity(self, severity: str) -> List[SecurityRule]:
+        """Get rules filtered by severity level."""
+        return [rule for rule in self.rules if rule.severity == severity.upper()]
+
+    def get_rules_by_category(self, category: str) -> List[SecurityRule]:
+        """Get rules filtered by category."""
+        return [rule for rule in self.rules if rule.category == category.lower()]
+
+    def get_enabled_rules(self) -> List[SecurityRule]:
+        """Get only enabled rules."""
+        return [rule for rule in self.rules if rule.enabled]
+
+    @property
+    def rule_count(self) -> int:
+        """Get total number of rules."""
+        return len(self.rules)
+
+    @property
+    def enabled_rule_count(self) -> int:
+        """Get number of enabled rules."""
+        return len(self.get_enabled_rules())
+
+
+class ComplianceViolation(BaseModel):
+    """Represents a compliance framework violation."""
+
+    framework: str = Field(..., description="Compliance framework name")
+    rule_id: str = Field(..., description="Rule identifier that was violated")
+    control_id: Optional[str] = Field(None, description="Specific control identifier")
+    severity: str = Field(..., description="Violation severity")
+    description: str = Field(..., description="Description of the violation")
+    requirement: str = Field(..., description="Compliance requirement that was violated")
+    remediation: str = Field(..., description="How to remediate this violation")
+    risk_level: str = Field(default="MEDIUM", description="Business risk level")
+
+    @validator("framework")
+    def validate_framework(cls, v: str) -> str:
+        """Validate compliance framework."""
+        allowed = {"SOC2", "PCI-DSS", "HIPAA", "GDPR", "ISO27001"}
+        if v.upper() not in allowed:
+            raise ValueError(f'Framework must be one of: {", ".join(allowed)}')
+        return v.upper()
+
+
+class SecurityRuleEngineResult(BaseModel):
+    """Complete result from Advanced Security Rule Engine analysis."""
+
+    violations: List[SecurityFix] = Field(
+        default_factory=list, description="Security rule violations found"
+    )
+    compliance_violations: List[ComplianceViolation] = Field(
+        default_factory=list, description="Compliance violations found"
+    )
+    policies_applied: List[str] = Field(
+        default_factory=list, description="Names of policies that were applied"
+    )
+    rules_evaluated: int = Field(default=0, description="Total number of rules evaluated")
+    execution_time_ms: float = Field(default=0.0, description="Analysis execution time in milliseconds")
+    security_score: Optional[SecurityScore] = Field(None, description="Overall security score")
+
+    @property
+    def total_violations(self) -> int:
+        """Get total number of violations."""
+        return len(self.violations) + len(self.compliance_violations)
+
+    @property
+    def has_critical_violations(self) -> bool:
+        """Check if there are any critical violations."""
+        return any(v.severity == "CRITICAL" for v in self.violations)
+
+    @property
+    def violation_summary(self) -> Dict[str, int]:
+        """Get summary of violations by severity."""
+        summary = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0}
+        for violation in self.violations:
+            summary[violation.severity] += 1
+        return summary

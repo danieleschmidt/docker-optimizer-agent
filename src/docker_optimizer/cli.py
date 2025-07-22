@@ -7,12 +7,14 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import click
 
+from .advanced_security import AdvancedSecurityEngine
 from .external_security import ExternalSecurityScanner
 from .models import (
     DockerfileAnalysis,
     ImageAnalysis,
     MultiStageOptimization,
     OptimizationResult,
+    SecurityRuleEngineResult,
     SecurityScore,
     VulnerabilityReport,
 )
@@ -78,6 +80,21 @@ from .performance import PerformanceOptimizer
     is_flag=True,
     help="Show performance metrics after optimization",
 )
+@click.option(
+    "--advanced-security",
+    is_flag=True,
+    help="Use Advanced Security Rule Engine with custom policies",
+)
+@click.option(
+    "--security-policy",
+    type=click.Path(exists=True),
+    help="Path to custom security policy file (JSON/YAML)",
+)
+@click.option(
+    "--compliance-check",
+    type=click.Choice(["SOC2", "PCI-DSS", "HIPAA"]),
+    help="Check compliance against specific framework",
+)
 def main(
     dockerfile: str,
     output: Optional[str],
@@ -91,6 +108,9 @@ def main(
     layer_analysis: bool,
     analyze_image: Optional[str],
     performance_report: bool,
+    advanced_security: bool,
+    security_policy: Optional[str],
+    compliance_check: Optional[str],
 ) -> None:
     """Docker Optimizer Agent - Optimize Dockerfiles for security and size.
 
@@ -104,6 +124,21 @@ def main(
         optimizer = DockerfileOptimizer()
         multistage_optimizer = MultiStageOptimizer()
         security_scanner = ExternalSecurityScanner()
+
+        # Initialize Advanced Security Engine if requested
+        advanced_security_engine = None
+        if advanced_security or security_policy or compliance_check:
+            advanced_security_engine = AdvancedSecurityEngine()
+            advanced_security_engine.load_default_policies()
+
+            if security_policy:
+                try:
+                    advanced_security_engine.load_custom_policy(Path(security_policy))
+                    if verbose:
+                        click.echo(f"✅ Loaded custom security policy: {security_policy}")
+                except Exception as e:
+                    click.echo(f"Error loading security policy: {e}", err=True)
+                    sys.exit(1)
 
         # Initialize performance optimizer if requested
         perf_optimizer = PerformanceOptimizer() if performance else None
@@ -152,6 +187,31 @@ def main(
                     dockerfile_content
                 )
                 _output_multistage_result(multistage_result, output, format, verbose)
+            elif advanced_security_engine:
+                # Advanced Security Rule Engine analysis
+                from .parser import DockerfileParser
+                parser = DockerfileParser()
+                parsed_instructions = parser.parse(dockerfile_content)
+
+                if compliance_check:
+                    # Compliance framework checking
+                    violations = advanced_security_engine.check_compliance(
+                        dockerfile_content, parsed_instructions, compliance_check
+                    )
+                    result = SecurityRuleEngineResult(
+                        violations=violations,
+                        policies_applied=[compliance_check],
+                        rules_evaluated=len(advanced_security_engine.loaded_policies),
+                        security_score=advanced_security_engine.get_security_score(violations)
+                    )
+                else:
+                    # Full advanced security analysis
+                    result = advanced_security_engine.analyze_with_timing(
+                        dockerfile_content, parsed_instructions
+                    )
+
+                _output_advanced_security_result(result, output, format, verbose)
+
             elif security_scan:
                 # External security vulnerability scan
                 vulnerability_report = (
@@ -175,8 +235,8 @@ def main(
                 )
             elif performance and perf_optimizer:
                 # Performance-optimized processing
-                result = perf_optimizer.optimize_with_performance(dockerfile_content)
-                _output_result(result, output, format, verbose)
+                perf_result = perf_optimizer.optimize_with_performance(dockerfile_content)
+                _output_result(perf_result, output, format, verbose)
 
                 if performance_report:
                     _output_performance_report(
@@ -184,8 +244,8 @@ def main(
                     )
             else:
                 # Full optimization
-                result = optimizer.optimize_dockerfile(dockerfile_content)
-                _output_result(result, output, format, verbose)
+                opt_result = optimizer.optimize_dockerfile(dockerfile_content)
+                _output_result(opt_result, output, format, verbose)
         else:
             # Batch processing
             if performance and perf_optimizer:
@@ -698,6 +758,164 @@ def _output_layer_analysis(
                 click.echo(f"  Estimated Size: {estimated_mb:.1f}MB")
                 click.echo(f"  Command: {layer.command}")
                 click.echo()
+
+
+def _output_advanced_security_result(
+    result: SecurityRuleEngineResult, output: Optional[str], format: str, verbose: bool
+) -> None:
+    """Output Advanced Security Rule Engine analysis results."""
+    if format == "json":
+        import json
+        result_dict = {
+            "violations": [
+                {
+                    "vulnerability": v.vulnerability,
+                    "severity": v.severity,
+                    "description": v.description,
+                    "fix": v.fix,
+                }
+                for v in result.violations
+            ],
+            "compliance_violations": [
+                {
+                    "framework": cv.framework,
+                    "rule_id": cv.rule_id,
+                    "severity": cv.severity,
+                    "description": cv.description,
+                    "requirement": cv.requirement,
+                    "remediation": cv.remediation,
+                }
+                for cv in result.compliance_violations
+            ],
+            "policies_applied": result.policies_applied,
+            "rules_evaluated": result.rules_evaluated,
+            "execution_time_ms": result.execution_time_ms,
+            "security_score": result.security_score.dict() if result.security_score else None,
+            "total_violations": result.total_violations,
+            "has_critical_violations": result.has_critical_violations,
+            "violation_summary": result.violation_summary,
+        }
+
+        if output:
+            Path(output).write_text(json.dumps(result_dict, indent=2))
+        else:
+            click.echo(json.dumps(result_dict, indent=2))
+
+    elif format == "yaml":
+        import yaml
+        result_dict = {
+            "advanced_security_analysis": {
+                "violations": [
+                    {
+                        "vulnerability": v.vulnerability,
+                        "severity": v.severity,
+                        "description": v.description,
+                        "fix": v.fix,
+                    }
+                    for v in result.violations
+                ],
+                "compliance_violations": [
+                    {
+                        "framework": cv.framework,
+                        "rule_id": cv.rule_id,
+                        "severity": cv.severity,
+                        "description": cv.description,
+                        "requirement": cv.requirement,
+                        "remediation": cv.remediation,
+                    }
+                    for cv in result.compliance_violations
+                ],
+                "summary": {
+                    "policies_applied": result.policies_applied,
+                    "rules_evaluated": result.rules_evaluated,
+                    "execution_time_ms": result.execution_time_ms,
+                    "total_violations": result.total_violations,
+                    "has_critical_violations": result.has_critical_violations,
+                    "violation_summary": result.violation_summary,
+                },
+                "security_score": result.security_score.dict() if result.security_score else None,
+            }
+        }
+
+        if output:
+            Path(output).write_text(yaml.dump(result_dict, default_flow_style=False))
+        else:
+            click.echo(yaml.dump(result_dict, default_flow_style=False))
+    else:
+        # Text format
+        click.echo("🔒 Advanced Security Analysis Results")
+        click.echo("=" * 50)
+
+        # Security Score
+        if result.security_score:
+            score = result.security_score
+            click.echo(f"Security Score: {score.score}/100 (Grade: {score.grade})")
+            click.echo(f"Analysis: {score.analysis}")
+            click.echo()
+
+        # Summary
+        click.echo("📊 Analysis Summary:")
+        click.echo(f"  Policies Applied: {', '.join(result.policies_applied)}")
+        click.echo(f"  Rules Evaluated: {result.rules_evaluated}")
+        click.echo(f"  Execution Time: {result.execution_time_ms:.2f}ms")
+        click.echo(f"  Total Violations: {result.total_violations}")
+        click.echo()
+
+        # Violation Summary
+        if result.violation_summary:
+            click.echo("📈 Violation Breakdown:")
+            summary = result.violation_summary
+            for severity, count in summary.items():
+                if count > 0:
+                    severity_emoji = {
+                        "CRITICAL": "🔴",
+                        "HIGH": "🟠",
+                        "MEDIUM": "🟡",
+                        "LOW": "🔵"
+                    }.get(severity, "⚪")
+                    click.echo(f"  {severity_emoji} {severity}: {count}")
+            click.echo()
+
+        # Security Violations
+        if result.violations:
+            click.echo("🚨 Security Violations Found:")
+            click.echo("-" * 50)
+            for i, violation in enumerate(result.violations, 1):
+                severity_emoji = {
+                    "CRITICAL": "🔴",
+                    "HIGH": "🟠",
+                    "MEDIUM": "🟡",
+                    "LOW": "🔵"
+                }.get(violation.severity, "⚪")
+
+                click.echo(f"{i}. {severity_emoji} {violation.vulnerability}")
+                click.echo(f"   Severity: {violation.severity}")
+                click.echo(f"   Description: {violation.description}")
+                click.echo(f"   Fix: {violation.fix}")
+                click.echo()
+
+        # Compliance Violations
+        if result.compliance_violations:
+            click.echo("⚖️  Compliance Violations:")
+            click.echo("-" * 50)
+            for i, cv in enumerate(result.compliance_violations, 1):
+                click.echo(f"{i}. {cv.framework} - {cv.rule_id}")
+                click.echo(f"   Severity: {cv.severity}")
+                click.echo(f"   Requirement: {cv.requirement}")
+                click.echo(f"   Description: {cv.description}")
+                click.echo(f"   Remediation: {cv.remediation}")
+                click.echo()
+
+        # Recommendations
+        if result.security_score and result.security_score.recommendations:
+            click.echo("💡 Security Recommendations:")
+            click.echo("-" * 50)
+            for i, rec in enumerate(result.security_score.recommendations, 1):
+                click.echo(f"{i}. {rec}")
+            click.echo()
+
+        if result.total_violations == 0:
+            click.echo("✅ No security violations found! Your Dockerfile follows security best practices.")
 
 
 if __name__ == "__main__":

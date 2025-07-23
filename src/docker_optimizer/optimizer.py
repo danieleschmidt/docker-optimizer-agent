@@ -1,8 +1,10 @@
 """Main Docker optimization engine."""
 
 import re
-from typing import Any, Dict, List
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
+from .language_optimizer import LanguageOptimizer, analyze_project_language
 from .models import (
     DockerfileAnalysis,
     LayerOptimization,
@@ -22,6 +24,7 @@ class DockerfileOptimizer:
         self.parser = DockerfileParser()
         self.security_analyzer = SecurityAnalyzer()
         self.size_estimator = SizeEstimator()
+        self.language_optimizer = LanguageOptimizer()
 
     def analyze_dockerfile(self, dockerfile_content: str) -> DockerfileAnalysis:
         """Analyze a Dockerfile for security issues and optimization opportunities.
@@ -407,3 +410,143 @@ class DockerfileOptimizer:
             estimated_mb = int(estimated_mb * 0.6)
 
         return f"{estimated_mb}MB"
+
+    def get_language_specific_recommendations(
+        self,
+        dockerfile_content: str,
+        project_path: Optional[Path] = None
+    ) -> List[dict]:
+        """Get language-specific optimization recommendations.
+
+        Args:
+            dockerfile_content: Content of the Dockerfile
+            project_path: Optional path to the project directory for analysis
+
+        Returns:
+            List of language-specific recommendations
+        """
+        recommendations = []
+
+        if project_path and project_path.exists():
+            # Analyze the project to detect language and framework
+            analysis = analyze_project_language(project_path)
+
+            if analysis["recommendations_available"]:
+                # Get language-specific suggestions
+                suggestions = self.language_optimizer.get_language_recommendations(
+                    analysis["language"],
+                    analysis.get("framework")
+                )
+
+                # Convert suggestions to recommendations format
+                for suggestion in suggestions:
+                    recommendations.append({
+                        "type": suggestion.type,
+                        "description": suggestion.description,
+                        "impact": suggestion.impact,
+                        "language": analysis["language"],
+                        "framework": analysis.get("framework"),
+                        "confidence": analysis["language_confidence"],
+                        "dockerfile_changes": suggestion.dockerfile_changes,
+                        "explanation": suggestion.explanation
+                    })
+
+                # Add project analysis summary
+                recommendations.insert(0, {
+                    "type": "project_analysis",
+                    "description": f"Detected {analysis['language']} project" + (
+                        f" with {analysis['framework']} framework" if analysis['framework'] else ""
+                    ),
+                    "impact": "info",
+                    "language": analysis["language"],
+                    "framework": analysis.get("framework"),
+                    "confidence": analysis["language_confidence"],
+                    "dockerfile_changes": [],
+                    "explanation": "Project type detection enables language-specific optimizations"
+                })
+        else:
+            # Fallback: try to detect language from Dockerfile content
+            detected_language = self._detect_language_from_dockerfile(dockerfile_content)
+            if detected_language:
+                suggestions = self.language_optimizer.get_language_recommendations(detected_language)
+
+                for suggestion in suggestions:
+                    recommendations.append({
+                        "type": suggestion.type,
+                        "description": suggestion.description,
+                        "impact": suggestion.impact,
+                        "language": detected_language,
+                        "framework": None,
+                        "confidence": 0.7,  # Medium confidence from Dockerfile analysis
+                        "dockerfile_changes": suggestion.dockerfile_changes,
+                        "explanation": suggestion.explanation
+                    })
+
+        return recommendations
+
+    def _detect_language_from_dockerfile(self, dockerfile_content: str) -> Optional[str]:
+        """Detect programming language from Dockerfile content.
+
+        Args:
+            dockerfile_content: Content of the Dockerfile
+
+        Returns:
+            Detected language or None
+        """
+        content_lower = dockerfile_content.lower()
+
+        # Language detection patterns
+        language_patterns = {
+            'python': ['python:', 'pip install', 'requirements.txt', 'python3'],
+            'nodejs': ['node:', 'npm install', 'package.json', 'yarn'],
+            'go': ['golang:', 'go build', 'go.mod', 'go install'],
+            'java': ['openjdk:', 'java -jar', 'maven', 'gradle', '.jar'],
+            'rust': ['rust:', 'cargo build', 'cargo.toml'],
+            'ruby': ['ruby:', 'bundle install', 'gemfile'],
+            'php': ['php:', 'composer install', 'composer.json']
+        }
+
+        # Score each language based on pattern matches
+        language_scores = {}
+        for language, patterns in language_patterns.items():
+            score = 0
+            for pattern in patterns:
+                if pattern in content_lower:
+                    score += 1
+
+            if score > 0:
+                language_scores[language] = score
+
+        # Return the language with the highest score
+        if language_scores:
+            return max(language_scores, key=language_scores.get)
+
+        return None
+
+    def optimize_dockerfile_with_language_analysis(
+        self,
+        dockerfile_content: str,
+        project_path: Optional[Path] = None
+    ) -> OptimizationResult:
+        """Optimize a Dockerfile with language-specific analysis.
+
+        Args:
+            dockerfile_content: The content of the Dockerfile to optimize
+            project_path: Optional path to project directory for language detection
+
+        Returns:
+            OptimizationResult: Enhanced optimization results with language-specific recommendations
+        """
+        # Get standard optimization result
+        result = self.optimize_dockerfile(dockerfile_content)
+
+        # Add language-specific recommendations
+        self.get_language_specific_recommendations(
+            dockerfile_content, project_path
+        )
+
+        # Enhance the result with language-specific information
+        # Note: This assumes OptimizationResult has a way to include additional recommendations
+        # If not, we'd need to modify the model or create a new enhanced result type
+
+        return result

@@ -12,18 +12,18 @@ class SizeEstimator:
 
     def __init__(self, config: Optional[Config] = None) -> None:
         """Initialize the size estimator with configuration.
-        
+
         Args:
             config: Optional configuration instance. If None, default config is used.
         """
         self.config = config or Config()
         self.layer_analyzer = DockerLayerAnalyzer()
-        
+
         # Load sizes from configuration instead of hardcoded values
         self.base_image_sizes = self.config.get_base_image_sizes()
         self.package_sizes = self.config.get_package_sizes()
         self.layer_settings = self.config.get_layer_estimation_settings()
-        
+
         # Legacy hardcoded fallback (kept for backward compatibility during transition)
         self._legacy_base_sizes = {
             # Alpine variants (MB)
@@ -73,7 +73,7 @@ class SizeEstimator:
             "openjdk:11-alpine": 156,
             "openjdk": 471,
         }
-        
+
         # Legacy package sizes (kept for backward compatibility during transition)
         self._legacy_package_sizes = {
             "curl": 2,
@@ -138,7 +138,7 @@ class SizeEstimator:
         fallback_size = self.config.get_image_size(base_image)
         if fallback_size != self.config._config["default_fallbacks"]["unknown_image_size_mb"]:
             return fallback_size
-            
+
         # Legacy fallback patterns
         if "alpine" in base_image.lower():
             return 20

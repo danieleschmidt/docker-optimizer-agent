@@ -205,23 +205,23 @@ CMD ["python3", "app.py"]
     def test_configuration_integration(self):
         """Test that size estimator uses configuration correctly."""
         from docker_optimizer.config import Config
-        
+
         # Create custom configuration
         custom_config = Config()
         custom_config._config["base_image_sizes"]["custom:test"] = 123
         custom_config._config["package_sizes"]["custom-package"] = 45
         custom_config._config["layer_estimation"]["copy_layer_mb"] = 20
-        
+
         # Create estimator with custom config
         estimator = SizeEstimator(config=custom_config)
-        
+
         # Test custom base image size
         size = estimator._get_base_image_size("FROM custom:test")
         assert size == 123
-        
+
         # Test custom package is available
         assert "custom-package" in estimator.package_sizes
         assert estimator.package_sizes["custom-package"] == 45
-        
+
         # Test custom layer settings
         assert estimator.layer_settings["copy_layer_mb"] == 20

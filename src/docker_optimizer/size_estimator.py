@@ -1,7 +1,8 @@
 """Size estimation utilities for Docker images."""
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
+from .config import Config
 from .layer_analyzer import DockerLayerAnalyzer
 from .models import ImageAnalysis
 
@@ -9,10 +10,22 @@ from .models import ImageAnalysis
 class SizeEstimator:
     """Estimates Docker image sizes based on Dockerfile content."""
 
-    def __init__(self) -> None:
-        """Initialize the size estimator with base image size data."""
+    def __init__(self, config: Optional[Config] = None) -> None:
+        """Initialize the size estimator with configuration.
+        
+        Args:
+            config: Optional configuration instance. If None, default config is used.
+        """
+        self.config = config or Config()
         self.layer_analyzer = DockerLayerAnalyzer()
-        self.base_image_sizes = {
+        
+        # Load sizes from configuration instead of hardcoded values
+        self.base_image_sizes = self.config.get_base_image_sizes()
+        self.package_sizes = self.config.get_package_sizes()
+        self.layer_settings = self.config.get_layer_estimation_settings()
+        
+        # Legacy hardcoded fallback (kept for backward compatibility during transition)
+        self._legacy_base_sizes = {
             # Alpine variants (MB)
             "alpine:3.18": 7,
             "alpine:3.17": 7,
@@ -60,9 +73,9 @@ class SizeEstimator:
             "openjdk:11-alpine": 156,
             "openjdk": 471,
         }
-
-        # Package size estimates (MB)
-        self.package_sizes = {
+        
+        # Legacy package sizes (kept for backward compatibility during transition)
+        self._legacy_package_sizes = {
             "curl": 2,
             "wget": 1,
             "git": 15,
@@ -121,13 +134,19 @@ class SizeEstimator:
             if self._matches_image_pattern(base_image, pattern):
                 return size
 
-        # Default fallback
+        # Use configured fallback or legacy fallback
+        fallback_size = self.config.get_image_size(base_image)
+        if fallback_size != self.config._config["default_fallbacks"]["unknown_image_size_mb"]:
+            return fallback_size
+            
+        # Legacy fallback patterns
         if "alpine" in base_image.lower():
             return 20
         elif "slim" in base_image.lower():
             return 50
         else:
-            return 100
+            fallback: int = self.config._config["default_fallbacks"]["unknown_image_size_mb"]
+            return fallback
 
     def _extract_base_image(self, dockerfile_content: str) -> str:
         """Extract the base image from Dockerfile."""
@@ -188,7 +207,7 @@ class SizeEstimator:
             for line in dockerfile_content.split("\n")
             if line.strip().startswith(("COPY ", "ADD "))
         ]
-        total_size += len(copy_lines) * 5  # Estimate 5MB per copy operation
+        total_size += len(copy_lines) * self.layer_settings["copy_layer_mb"]
 
         return total_size
 
@@ -209,7 +228,7 @@ class SizeEstimator:
                     and word not in ["apt-get", "install", "update", "upgrade"]
                 ]
             )
-            size = package_count * 10  # 10MB per unknown package
+            size = package_count * self.config._config["default_fallbacks"]["unknown_package_size_mb"]
 
         return size
 

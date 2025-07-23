@@ -86,15 +86,15 @@ class OptimizationCache:
 
     def __init__(self, max_size: Optional[int] = None, ttl_seconds: Optional[float] = None, config: Optional[Config] = None):
         """Initialize cache with size limit and TTL.
-        
+
         Args:
             max_size: Maximum cache size. If None, uses configuration.
-            ttl_seconds: Cache TTL in seconds. If None, uses configuration. 
+            ttl_seconds: Cache TTL in seconds. If None, uses configuration.
             config: Configuration instance. If None, default config is used.
         """
         self.config = config or Config()
         cache_settings = self.config.get_cache_settings()
-        
+
         self.max_size = max_size if max_size is not None else cache_settings["max_size"]
         self.ttl_seconds = ttl_seconds if ttl_seconds is not None else cache_settings["ttl_seconds"]
         self._cache: Dict[str, CacheEntry] = {}

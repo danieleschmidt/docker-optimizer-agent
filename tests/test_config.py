@@ -70,14 +70,14 @@ cache_settings:
 
         try:
             config = Config.from_file(config_path)
-            
+
             sizes = config.get_base_image_sizes()
             assert sizes["custom:latest"] == 100
             assert sizes["alpine:latest"] == 15
-            
+
             pkg_sizes = config.get_package_sizes()
             assert pkg_sizes["custom-package"] == 25
-            
+
             cache_settings = config.get_cache_settings()
             assert cache_settings["max_size"] == 500
             assert cache_settings["ttl_seconds"] == 1800
@@ -101,10 +101,10 @@ cache_settings:
 
         try:
             config = Config.from_file(config_path)
-            
+
             sizes = config.get_base_image_sizes()
             assert sizes["custom:latest"] == 100
-            
+
             cache_settings = config.get_cache_settings()
             assert cache_settings["max_size"] == 200
             assert cache_settings["ttl_seconds"] == 900
@@ -157,14 +157,14 @@ cache_settings:
 
         try:
             config = Config.from_file(config_path)
-            
+
             sizes = config.get_base_image_sizes()
             # Should have custom value
             assert sizes["custom:latest"] == 100
             # Should still have default values
             assert "alpine:latest" in sizes
             assert "ubuntu:20.04" in sizes
-            
+
             cache_settings = config.get_cache_settings()
             # Should have custom value
             assert cache_settings["max_size"] == 500
@@ -177,11 +177,11 @@ cache_settings:
         """Test loading config from home directory."""
         with patch.object(Path, 'home') as mock_home:
             mock_home.return_value = Path('/mock/home')
-            
+
             # Mock the existence check and file reading
             with patch.object(Path, 'exists', return_value=True), \
                  patch.object(Path, 'read_text', return_value='cache_settings:\n  max_size: 123'):
-                
+
                 config = Config()
                 # Should attempt to load from home directory
                 cache_settings = config.get_cache_settings()

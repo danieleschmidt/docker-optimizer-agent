@@ -1,6 +1,7 @@
 """Test cases for external security integration."""
 
-from unittest.mock import patch
+import logging
+from unittest.mock import patch, MagicMock
 
 from docker_optimizer.external_security import ExternalSecurityScanner, TrivyScanner
 from docker_optimizer.models import CVEDetails, SecurityScore, VulnerabilityReport
@@ -278,3 +279,64 @@ class TestTrivyScanner:
 
         # File should be cleaned up after context
         assert not temp_path.exists()
+
+    @patch('subprocess.run')
+    def test_error_handling_with_logging(self, mock_subprocess, caplog):
+        """Test that errors are properly logged instead of silently ignored."""
+        # Mock Trivy availability
+        self.trivy.trivy_available = True
+        
+        # Mock subprocess to raise an exception
+        mock_subprocess.side_effect = Exception("Unexpected error during scan")
+        
+        with caplog.at_level(logging.WARNING):
+            result = self.trivy.scan_dockerfile("FROM ubuntu:20.04")
+        
+        # Should return empty report
+        assert result.total_vulnerabilities == 0
+        
+        # Should log the error instead of silently ignoring it
+        assert len(caplog.records) > 0
+        assert "Unexpected error during scan" in caplog.text or "Error during Trivy scan" in caplog.text
+
+    @patch('subprocess.run')
+    def test_timeout_error_handling(self, mock_subprocess, caplog):
+        """Test that timeout errors are properly logged."""
+        import subprocess
+        
+        # Mock Trivy availability
+        self.trivy.trivy_available = True
+        
+        # Mock subprocess to raise TimeoutExpired
+        mock_subprocess.side_effect = subprocess.TimeoutExpired("trivy", 30)
+        
+        with caplog.at_level(logging.WARNING):
+            result = self.trivy.scan_dockerfile("FROM ubuntu:20.04")
+        
+        # Should return empty report
+        assert result.total_vulnerabilities == 0
+        
+        # Should log the timeout
+        assert len(caplog.records) > 0
+        assert "timeout" in caplog.text.lower() or "scan operation timed out" in caplog.text.lower()
+
+    @patch('subprocess.run')
+    def test_file_not_found_error_handling(self, mock_subprocess, caplog):
+        """Test that FileNotFoundError during Trivy availability check is properly handled and logged."""
+        # Mock subprocess to raise FileNotFoundError
+        mock_subprocess.side_effect = FileNotFoundError("trivy command not found")
+        
+        with caplog.at_level(logging.INFO):
+            # Create a new scanner instance to trigger the availability check
+            trivy_scanner = TrivyScanner()
+            result = trivy_scanner.scan_dockerfile("FROM ubuntu:20.04")
+        
+        # Should return empty report
+        assert result.total_vulnerabilities == 0
+        
+        # Scanner should be marked as unavailable
+        assert not trivy_scanner.trivy_available
+        
+        # Should log that Trivy is not available
+        assert len(caplog.records) > 0
+        assert "trivy not available" in caplog.text.lower() or "trivy command not found" in caplog.text.lower()

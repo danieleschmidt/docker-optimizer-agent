@@ -1,6 +1,7 @@
 """External security vulnerability scanning integration."""
 
 import json
+import logging
 import subprocess
 import tempfile
 from contextlib import contextmanager
@@ -8,6 +9,8 @@ from pathlib import Path
 from typing import Dict, Iterator, List, Union
 
 from .models import CVEDetails, SecurityScore, VulnerabilityReport
+
+logger = logging.getLogger(__name__)
 
 
 class TrivyScanner:
@@ -54,8 +57,12 @@ class TrivyScanner:
                     if base_image:
                         return self.scan_image(base_image)
 
-        except (subprocess.TimeoutExpired, FileNotFoundError, Exception):
-            pass
+        except subprocess.TimeoutExpired as e:
+            logger.warning("Trivy scan operation timed out after %s seconds", e.timeout)
+        except FileNotFoundError:
+            logger.info("Trivy command not found - skipping vulnerability scan")
+        except Exception as e:
+            logger.warning("Error during Trivy scan: %s", str(e))
 
         return VulnerabilityReport(total_vulnerabilities=0)
 
@@ -90,8 +97,12 @@ class TrivyScanner:
             if result.returncode == 0:
                 return self._parse_trivy_output(result.stdout)
 
-        except (subprocess.TimeoutExpired, FileNotFoundError, Exception):
-            pass
+        except subprocess.TimeoutExpired as e:
+            logger.warning("Trivy image scan timed out after %s seconds for image: %s", e.timeout, image_name)
+        except FileNotFoundError:
+            logger.info("Trivy command not found - skipping image vulnerability scan")
+        except Exception as e:
+            logger.warning("Error during Trivy image scan for %s: %s", image_name, str(e))
 
         return VulnerabilityReport(total_vulnerabilities=0)
 
@@ -104,7 +115,11 @@ class TrivyScanner:
                 timeout=10
             )
             return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired:
+            logger.warning("Trivy availability check timed out")
+            return False
+        except FileNotFoundError:
+            logger.info("Trivy not available - trivy command not found")
             return False
 
     def _parse_trivy_output(self, output: str) -> VulnerabilityReport:

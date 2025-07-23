@@ -2,6 +2,7 @@
 
 import asyncio
 import hashlib
+import logging
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -12,6 +13,8 @@ from pydantic import BaseModel, Field
 
 from .models import OptimizationResult
 from .optimizer import DockerfileOptimizer
+
+logger = logging.getLogger(__name__)
 
 
 class CacheEntry(BaseModel):
@@ -265,8 +268,8 @@ class LargeDockerfileHandler:
         try:
             result = self.optimizer.optimize_dockerfile(chunk)
             return result.explanation
-        except Exception:
-            # Return empty string for failed chunks
+        except Exception as e:
+            logger.warning("Failed to process Dockerfile chunk: %s", str(e))
             return ""
 
     def process_large_dockerfile(self, dockerfile_content: str) -> OptimizationResult:

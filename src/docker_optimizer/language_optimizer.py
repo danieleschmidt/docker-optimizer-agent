@@ -189,7 +189,7 @@ class ProjectTypeDetector:
         if not any(language_scores.values()):
             return 'unknown', 0.0
 
-        best_language = max(language_scores, key=language_scores.get)
+        best_language = max(language_scores, key=lambda x: language_scores[x])
         confidence = min(language_scores[best_language], 1.0)
 
         return best_language, confidence
@@ -239,7 +239,7 @@ class ProjectTypeDetector:
         if not framework_scores:
             return None, 0.0
 
-        best_framework = max(framework_scores, key=framework_scores.get)
+        best_framework = max(framework_scores, key=lambda x: framework_scores[x])
         confidence = framework_scores[best_framework]
 
         return best_framework, confidence
@@ -255,6 +255,7 @@ class LanguageOptimizer:
             config: Optional configuration instance
         """
         self.config = config or Config()
+        self.patterns: Dict[str, Dict[str, Any]] = {}
         self._load_optimization_patterns()
 
     def _load_optimization_patterns(self) -> None:
@@ -371,7 +372,8 @@ class LanguageOptimizer:
         self,
         language: str,
         framework: Optional[str] = None,
-        optimization_profile: str = 'production'
+        optimization_profile: Optional[str] = None,
+        profile: Optional[str] = None
     ) -> List[OptimizationSuggestion]:
         """Get optimization recommendations for a specific language.
 
@@ -383,67 +385,68 @@ class LanguageOptimizer:
         Returns:
             List of optimization suggestions
         """
+        # Handle both parameter names for backward compatibility
+        final_profile = optimization_profile or profile or 'production'
+
         suggestions = []
 
         if language not in self.patterns:
             # Generic suggestions for unknown languages
             suggestions.append(OptimizationSuggestion(
-                type="generic",
-                description="Use multi-stage builds to reduce image size",
-                impact="medium",
-                dockerfile_changes=["# Use multi-stage builds", "# Copy only necessary files"],
-                explanation="Multi-stage builds help separate build dependencies from runtime"
+                line_number=0,
+                suggestion_type="generic",
+                priority="MEDIUM",
+                message="Use multi-stage builds to reduce image size",
+                explanation="Multi-stage builds help separate build dependencies from runtime",
+                fix_example="# Use multi-stage builds\n# Copy only necessary files"
             ))
             return suggestions
 
         pattern = self.patterns[language]
 
         # Base image recommendations
-        base_images = pattern['base_images'].get(optimization_profile,
+        base_images = pattern['base_images'].get(final_profile,
                                                 pattern['base_images']['production'])
         suggestions.append(OptimizationSuggestion(
-            type="base_image",
-            description=f"Use optimized {language} base image: {base_images[0]}",
-            impact="high",
-            dockerfile_changes=[f"FROM {base_images[0]}"],
-            explanation=f"Optimized base image for {language} {optimization_profile} workloads"
+            line_number=1,
+            suggestion_type="base_image",
+            priority="HIGH",
+            message=f"Use optimized {language} base image: {base_images[0]}",
+            explanation=f"Optimized base image for {language} {final_profile} workloads",
+            fix_example=f"FROM {base_images[0]}"
         ))
 
         # Multi-stage build recommendation
         if pattern.get('multi_stage', False):
             suggestions.append(OptimizationSuggestion(
-                type="build_optimization",
-                description=f"Implement multi-stage build for {language}",
-                impact="high",
-                dockerfile_changes=[
-                    "# Build stage",
-                    f"FROM {pattern['base_images']['development'][0]} AS builder",
-                    "# ... build steps ...",
-                    "# Runtime stage",
-                    f"FROM {base_images[0]}",
-                    "# Copy built artifacts from builder stage"
-                ],
-                explanation="Separate build and runtime environments for smaller final image"
+                line_number=2,
+                suggestion_type="build_optimization",
+                priority="HIGH",
+                message=f"Implement multi-stage build for {language}",
+                explanation="Separate build and runtime environments for smaller final image",
+                fix_example=f"# Build stage\nFROM {pattern['base_images']['development'][0]} AS builder\n# ... build steps ...\n# Runtime stage\nFROM {base_images[0]}\n# Copy built artifacts from builder stage"
             ))
 
         # Language-specific optimizations
         for optimization in pattern.get('common_optimizations', []):
             suggestions.append(OptimizationSuggestion(
-                type="optimization",
-                description=optimization,
-                impact="medium",
-                dockerfile_changes=[f"# {optimization}"],
-                explanation=f"{language}-specific optimization"
+                line_number=3,
+                suggestion_type="optimization",
+                priority="MEDIUM",
+                message=optimization,
+                explanation=f"{language}-specific optimization",
+                fix_example=f"# {optimization}"
             ))
 
         # Security recommendations
         for security_rec in pattern.get('security_recommendations', []):
             suggestions.append(OptimizationSuggestion(
-                type="security",
-                description=security_rec,
-                impact="high",
-                dockerfile_changes=[f"# {security_rec}"],
-                explanation=f"Security best practice for {language}"
+                line_number=4,
+                suggestion_type="security",
+                priority="HIGH",
+                message=security_rec,
+                explanation=f"Security best practice for {language}",
+                fix_example=f"# {security_rec}"
             ))
 
         # Framework-specific recommendations
@@ -473,76 +476,60 @@ class LanguageOptimizer:
         framework_patterns = {
             'django': [
                 OptimizationSuggestion(
-                    type="framework_optimization",
-                    description="Collect static files in build stage for Django",
-                    impact="medium",
-                    dockerfile_changes=[
-                        "RUN python manage.py collectstatic --noinput",
-                        "# Serve static files efficiently"
-                    ],
-                    explanation="Pre-collect static files for better Django performance"
+                    line_number=5,
+                    suggestion_type="framework_optimization",
+                    priority="MEDIUM",
+                    message="Use collectstatic for Django static files in build stage",
+                    explanation="Pre-collect static files for better Django performance",
+                    fix_example="RUN python manage.py collectstatic --noinput\n# Serve static files efficiently"
                 ),
                 OptimizationSuggestion(
-                    type="framework_optimization",
-                    description="Use gunicorn for production Django deployment",
-                    impact="high",
-                    dockerfile_changes=[
-                        "RUN pip install gunicorn",
-                        'CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi"]'
-                    ],
-                    explanation="Gunicorn is a production-ready WSGI server for Django"
+                    line_number=6,
+                    suggestion_type="framework_optimization",
+                    priority="HIGH",
+                    message="Use gunicorn for production Django deployment",
+                    explanation="Gunicorn is a production-ready WSGI server for Django",
+                    fix_example="RUN pip install gunicorn\nCMD [\"gunicorn\", \"--bind\", \"0.0.0.0:8000\", \"myproject.wsgi\"]"
                 )
             ],
             'flask': [
                 OptimizationSuggestion(
-                    type="framework_optimization",
-                    description="Use gunicorn for production Flask deployment",
-                    impact="high",
-                    dockerfile_changes=[
-                        "RUN pip install gunicorn",
-                        'CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]'
-                    ],
-                    explanation="Gunicorn provides better performance than Flask dev server"
+                    line_number=7,
+                    suggestion_type="framework_optimization",
+                    priority="HIGH",
+                    message="Use gunicorn for production Flask deployment",
+                    explanation="Gunicorn provides better performance than Flask dev server",
+                    fix_example="RUN pip install gunicorn\nCMD [\"gunicorn\", \"--bind\", \"0.0.0.0:5000\", \"app:app\"]"
                 )
             ],
             'express': [
                 OptimizationSuggestion(
-                    type="framework_optimization",
-                    description="Use PM2 for production Express.js deployment",
-                    impact="medium",
-                    dockerfile_changes=[
-                        "RUN npm install -g pm2",
-                        'CMD ["pm2-runtime", "start", "server.js"]'
-                    ],
-                    explanation="PM2 provides process management and monitoring for Node.js"
+                    line_number=8,
+                    suggestion_type="framework_optimization",
+                    priority="MEDIUM",
+                    message="Use PM2 for production Express.js deployment",
+                    explanation="PM2 provides process management and monitoring for Node.js",
+                    fix_example="RUN npm install -g pm2\nCMD [\"pm2-runtime\", \"start\", \"server.js\"]"
                 )
             ],
             'nextjs': [
                 OptimizationSuggestion(
-                    type="framework_optimization",
-                    description="Use Next.js standalone output for smaller images",
-                    impact="high",
-                    dockerfile_changes=[
-                        "# next.config.js: output: 'standalone'",
-                        "COPY --from=builder /app/.next/standalone ./",
-                        "COPY --from=builder /app/.next/static ./.next/static"
-                    ],
-                    explanation="Standalone output reduces Next.js bundle size significantly"
+                    line_number=9,
+                    suggestion_type="framework_optimization",
+                    priority="HIGH",
+                    message="Use Next.js standalone output for smaller images",
+                    explanation="Standalone output reduces Next.js bundle size significantly",
+                    fix_example="# next.config.js: output: 'standalone'\nCOPY --from=builder /app/.next/standalone ./\nCOPY --from=builder /app/.next/static ./.next/static"
                 )
             ],
             'spring': [
                 OptimizationSuggestion(
-                    type="framework_optimization",
-                    description="Use Spring Boot layered JARs for better caching",
-                    impact="high",
-                    dockerfile_changes=[
-                        "RUN java -Djarmode=layertools -jar app.jar extract",
-                        "COPY --from=builder dependencies/ ./",
-                        "COPY --from=builder spring-boot-loader/ ./",
-                        "COPY --from=builder snapshot-dependencies/ ./",
-                        "COPY --from=builder application/ ./"
-                    ],
-                    explanation="Layered JARs improve Docker layer caching for Spring Boot"
+                    line_number=10,
+                    suggestion_type="framework_optimization",
+                    priority="HIGH",
+                    message="Use Spring Boot layered JARs for better caching",
+                    explanation="Layered JARs improve Docker layer caching for Spring Boot",
+                    fix_example="RUN java -Djarmode=layertools -jar app.jar extract\nCOPY --from=builder dependencies/ ./\nCOPY --from=builder spring-boot-loader/ ./\nCOPY --from=builder snapshot-dependencies/ ./\nCOPY --from=builder application/ ./"
                 )
             ]
         }

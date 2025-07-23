@@ -332,6 +332,26 @@ class OptimizationSuggestion(BaseModel):
             raise ValueError(f'Priority must be one of: {", ".join(allowed)}')
         return v.upper()
 
+    @property
+    def type(self) -> str:
+        """Backward compatibility property for suggestion_type."""
+        return self.suggestion_type
+
+    @property
+    def description(self) -> str:
+        """Backward compatibility property for message."""
+        return self.message
+
+    @property
+    def impact(self) -> str:
+        """Backward compatibility property for priority."""
+        return self.priority.lower()
+
+    @property
+    def dockerfile_changes(self) -> List[str]:
+        """Backward compatibility property for fix_example as list."""
+        return self.fix_example.split('\n') if self.fix_example else []
+
 
 class SuggestionContext(BaseModel):
     """Context information for generating targeted suggestions."""

@@ -415,7 +415,7 @@ class DockerfileOptimizer:
         self,
         dockerfile_content: str,
         project_path: Optional[Path] = None
-    ) -> List[dict]:
+    ) -> List[Dict[str, Any]]:
         """Get language-specific optimization recommendations.
 
         Args:
@@ -519,7 +519,7 @@ class DockerfileOptimizer:
 
         # Return the language with the highest score
         if language_scores:
-            return max(language_scores, key=language_scores.get)
+            return max(language_scores, key=lambda x: language_scores[x])
 
         return None
 

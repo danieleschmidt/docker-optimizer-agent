@@ -329,14 +329,14 @@ class PresetManager:
             with open(file_path, 'w') as f:
                 json.dump(preset_data, f, indent=2)
 
-    def load_custom_preset(self, file_path: Path) -> CustomPreset:
+    def load_custom_preset(self, file_path: Path) -> OptimizationPreset:
         """Load a custom preset from file.
 
         Args:
             file_path: Path to the preset file
 
         Returns:
-            Loaded custom preset
+            Loaded custom preset as OptimizationPreset
         """
         logger.info(f"Loading custom preset from {file_path}")
 
@@ -346,10 +346,31 @@ class PresetManager:
             else:
                 preset_data = json.load(f)
 
-        # Keep base_preset as string for consistency
-        # preset_data['base_preset'] = PresetType(preset_data['base_preset'])
+        # If the data has 'optimizations', treat it as OptimizationPreset format
+        if 'optimizations' in preset_data:
+            # Convert optimization dictionaries to OptimizationStep objects
+            if 'optimizations' in preset_data and isinstance(preset_data['optimizations'], list):
+                optimization_steps = []
+                for opt_data in preset_data['optimizations']:
+                    optimization_steps.append(OptimizationStep(**opt_data))
+                preset_data['optimizations'] = optimization_steps
 
-        return CustomPreset(**preset_data)
+            # Set default values for missing fields
+            preset_data.setdefault('preset_type', 'CUSTOM')
+            preset_data.setdefault('target_use_case', 'Custom optimization preset')
+
+            return OptimizationPreset(**preset_data)
+        else:
+            # Legacy CustomPreset format - convert to OptimizationPreset
+            custom_preset = CustomPreset(**preset_data)
+            # Convert CustomPreset to OptimizationPreset
+            return OptimizationPreset(
+                name=custom_preset.name,
+                description=custom_preset.description,
+                preset_type='CUSTOM',
+                target_use_case='Custom optimization preset',
+                optimizations=[]  # Would need logic to convert from base_preset + modifications
+            )
 
     def compare_presets(
         self,

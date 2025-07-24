@@ -6,11 +6,14 @@ This module provides intelligent optimization patterns based on:
 3. Framework-aware optimizations (Django, Express, Spring, etc.)
 """
 
+import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from .config import Config
 from .models import OptimizationSuggestion
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectTypeDetector:
@@ -235,6 +238,24 @@ class ProjectTypeDetector:
 
             if score > 0:
                 framework_scores[framework] = min(score, 1.0)
+
+        # Enhanced content analysis for Python frameworks
+        if self.detected_files.get('python_pip', False):
+            requirements_file = self.project_path / 'requirements.txt'
+            if requirements_file.exists():
+                try:
+                    content = requirements_file.read_text().lower()
+                    # Check for framework-specific dependencies
+                    if 'django' in content:
+                        framework_scores['django'] = max(framework_scores.get('django', 0), 0.8)
+                    if 'flask' in content:
+                        framework_scores['flask'] = max(framework_scores.get('flask', 0), 0.8)
+                    if 'fastapi' in content:
+                        framework_scores['fastapi'] = max(framework_scores.get('fastapi', 0), 0.8)
+                except Exception as e:
+                    # If we can't read the file, continue with existing scores
+                    # This is expected when the file doesn't exist or has permission issues
+                    logger.debug(f"Could not read requirements.txt: {e}")
 
         if not framework_scores:
             return None, 0.0

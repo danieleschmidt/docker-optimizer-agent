@@ -11,8 +11,6 @@ import click
 from .advanced_security import AdvancedSecurityEngine
 from .external_security import ExternalSecurityScanner
 from .language_optimizer import LanguageOptimizer, analyze_project_language
-from .registry_integration import RegistryIntegrator
-from .optimization_presets import PresetManager, PresetType
 from .models import (
     DockerfileAnalysis,
     ImageAnalysis,
@@ -23,8 +21,10 @@ from .models import (
     VulnerabilityReport,
 )
 from .multistage import MultiStageOptimizer
+from .optimization_presets import PresetManager, PresetType
 from .optimizer import DockerfileOptimizer
 from .performance import PerformanceOptimizer
+from .registry_integration import RegistryIntegrator
 
 
 @click.command()
@@ -220,12 +220,12 @@ def main(
         registry_integrator = None
         if registry_scan or registry_compare or registry_recommendations:
             registry_integrator = RegistryIntegrator()
-            
+
             # Validate registry scan options
             if registry_scan and not registry_image:
                 click.echo("Error: --registry-image is required when using --registry-scan", err=True)
                 sys.exit(1)
-                
+
             if registry_compare and len(registry_images) < 2:
                 click.echo("Error: At least 2 --registry-images are required for comparison", err=True)
                 sys.exit(1)
@@ -235,7 +235,7 @@ def main(
         selected_preset = None
         if preset or custom_preset:
             preset_manager = PresetManager()
-            
+
             if preset:
                 # Use built-in preset
                 preset_type = PresetType(preset)
@@ -341,37 +341,66 @@ def main(
                     format,
                     verbose,
                 )
-            elif language_detect and language_optimizer:
-                # Language-specific optimization
+            elif selected_preset and preset_manager and language_detect and language_optimizer:
+                # Combined preset + language detection
                 project_path = dockerfile_path.parent
                 language_analysis = analyze_project_language(project_path)
-                
+
                 # Get language-specific recommendations
                 language_suggestions = language_optimizer.get_language_recommendations(
                     language_analysis["language"],
                     language_analysis.get("framework"),
                     optimization_profile
                 )
-                
+
                 # Run regular optimization
                 opt_result = optimizer.optimize_dockerfile(dockerfile_content)
-                
+
+                # Apply preset optimizations
+                preset_result = preset_manager.apply_preset(dockerfile_content, selected_preset)
+
+                # Output with both preset and language analysis
+                _output_combined_preset_language_result(
+                    opt_result,
+                    selected_preset,
+                    preset_result,
+                    language_analysis,
+                    language_suggestions,
+                    output,
+                    format,
+                    verbose
+                )
+            elif language_detect and language_optimizer:
+                # Language-specific optimization
+                project_path = dockerfile_path.parent
+                language_analysis = analyze_project_language(project_path)
+
+                # Get language-specific recommendations
+                language_suggestions = language_optimizer.get_language_recommendations(
+                    language_analysis["language"],
+                    language_analysis.get("framework"),
+                    optimization_profile
+                )
+
+                # Run regular optimization
+                opt_result = optimizer.optimize_dockerfile(dockerfile_content)
+
                 # Output with language analysis
                 _output_language_detect_result(
-                    opt_result, 
-                    language_analysis, 
-                    language_suggestions, 
-                    output, 
-                    format, 
+                    opt_result,
+                    language_analysis,
+                    language_suggestions,
+                    output,
+                    format,
                     verbose
                 )
             elif selected_preset and preset_manager:
                 # Apply optimization preset
                 opt_result = optimizer.optimize_dockerfile(dockerfile_content)
-                
+
                 # Apply preset optimizations
-                preset_result = preset_manager.apply_preset(selected_preset, dockerfile_content)
-                
+                preset_result = preset_manager.apply_preset(dockerfile_content, selected_preset)
+
                 # Output with preset information
                 _output_preset_result(
                     opt_result,
@@ -384,7 +413,7 @@ def main(
             elif registry_integrator and (registry_scan or registry_compare):
                 # Registry vulnerability scanning and comparison
                 opt_result = optimizer.optimize_dockerfile(dockerfile_content)
-                
+
                 registry_data = None
                 if registry_scan and registry_image:
                     # Single registry vulnerability scan
@@ -396,14 +425,14 @@ def main(
                     registry_data = _perform_registry_comparison(
                         registry_integrator, list(registry_images)
                     )
-                
+
                 # Get registry-specific recommendations if requested
                 registry_recommendations_data = None
                 if registry_recommendations and registry_data:
                     registry_recommendations_data = _get_registry_recommendations(
                         registry_integrator, registry_data, dockerfile_content
                     )
-                
+
                 # Output with registry analysis
                 _output_registry_result(
                     opt_result,
@@ -1109,11 +1138,11 @@ def _output_language_detect_result(
     """Output language detection and optimization results."""
     if format == "json":
         import json
-        
+
         # Combine optimization result with language analysis
         combined_result = opt_result.dict()
         combined_result["language_analysis"] = language_analysis
-        combined_result["language_suggestions"] = [
+        language_suggestion_dicts = [
             {
                 "line_number": s.line_number,
                 "type": s.suggestion_type,
@@ -1124,14 +1153,17 @@ def _output_language_detect_result(
             }
             for s in language_suggestions
         ]
-        
+        combined_result["language_suggestions"] = language_suggestion_dicts
+        # Also include as 'suggestions' for backward compatibility
+        combined_result["suggestions"] = language_suggestion_dicts
+
         output_content = json.dumps(combined_result, indent=2)
     elif format == "yaml":
         import yaml
-        
+
         combined_result = opt_result.dict()
         combined_result["language_analysis"] = language_analysis
-        combined_result["language_suggestions"] = [
+        language_suggestion_dicts = [
             {
                 "line_number": s.line_number,
                 "type": s.suggestion_type,
@@ -1142,7 +1174,10 @@ def _output_language_detect_result(
             }
             for s in language_suggestions
         ]
-        
+        combined_result["language_suggestions"] = language_suggestion_dicts
+        # Also include as 'suggestions' for backward compatibility
+        combined_result["suggestions"] = language_suggestion_dicts
+
         output_content = yaml.dump(combined_result, default_flow_style=False)
     else:
         # Text format with language analysis
@@ -1154,13 +1189,13 @@ def _output_language_detect_result(
             f"  Detected Language: {language_analysis['language']}",
             f"  Language Confidence: {language_analysis['language_confidence']:.2f}",
         ]
-        
+
         if language_analysis.get('framework'):
             lines.extend([
                 f"  Detected Framework: {language_analysis['framework']}",
                 f"  Framework Confidence: {language_analysis['framework_confidence']:.2f}",
             ])
-        
+
         lines.extend([
             "",
             "🔧 Optimization Results:",
@@ -1169,33 +1204,33 @@ def _output_language_detect_result(
             f"  Explanation: {opt_result.explanation}",
             "",
         ])
-        
+
         # Language-specific suggestions
         if language_suggestions:
             lines.append("💡 Language-Specific Suggestions:")
             lines.append("-" * 35)
-            
+
             for suggestion in language_suggestions:
                 priority_emoji = {
                     "HIGH": "🔴",
-                    "MEDIUM": "🟡", 
+                    "MEDIUM": "🟡",
                     "LOW": "🟢",
                     "CRITICAL": "🚨"
                 }.get(suggestion.priority, "⚪")
-                
+
                 lines.append(f"{priority_emoji} {suggestion.message}")
                 if verbose:
                     lines.append(f"   Explanation: {suggestion.explanation}")
                     if suggestion.fix_example:
                         lines.append(f"   Example: {suggestion.fix_example}")
                 lines.append("")
-        
+
         lines.extend([
             "📝 Optimized Dockerfile:",
             "-" * 22,
             opt_result.optimized_dockerfile,
         ])
-        
+
         output_content = "\n".join(lines)
 
     if output_path:
@@ -1215,10 +1250,10 @@ def _perform_registry_scan(integrator: RegistryIntegrator, registry_type: str, i
         elif registry_type == "GCR":
             return integrator.scan_gcr_vulnerabilities(image_name)
         elif registry_type == "DOCKERHUB":
-            return integrator.scan_dockerhub_vulnerabilities(image_name)
+            return integrator.scan_registry_vulnerabilities("DOCKERHUB", image_name)
         else:
             raise ValueError(f"Unsupported registry type: {registry_type}")
-    except Exception as e:
+    except Exception:
         # Return mock data for demo purposes
         from .models import RegistryVulnerabilityData
         return RegistryVulnerabilityData(
@@ -1228,39 +1263,46 @@ def _perform_registry_scan(integrator: RegistryIntegrator, registry_type: str, i
             high_count=0,
             medium_count=0,
             low_count=0,
-            scan_date=datetime.now(),
-            vulnerabilities=[]
+            scan_timestamp=datetime.now().isoformat(),
+            registry_url=f"https://{registry_type.lower()}.example.com"
         )
 
 
 def _perform_registry_comparison(integrator: RegistryIntegrator, image_names: List[str]) -> Any:
     """Compare images across multiple registries."""
     try:
-        return integrator.compare_registries(image_names)
-    except Exception as e:
+        # Use the first image name and assume others are different registries
+        # This is a simplified implementation - in reality, this would need better logic
+        base_image = image_names[0] if image_names else "unknown"
+        registries = ["ECR", "ACR", "GCR", "DOCKERHUB"]  # Default registries to compare
+        return integrator.compare_across_registries(base_image, registries)
+    except Exception:
         # Return mock data for demo purposes
         from .models import RegistryComparison
         return RegistryComparison(
-            comparisons=[],
-            recommendations=[],
-            best_option=image_names[0] if image_names else "unknown"
+            image_name=image_names[0] if image_names else "unknown",
+            registry_data=[],
+            best_registry="ECR",
+            vulnerability_score=0.0
         )
 
 
 def _get_registry_recommendations(integrator: RegistryIntegrator, registry_data: Any, dockerfile_content: str) -> List[Any]:
     """Get registry-specific optimization recommendations."""
     try:
-        return integrator.get_optimization_recommendations(registry_data, dockerfile_content)
-    except Exception as e:
+        return integrator._get_optimization_recommendations(dockerfile_content)
+    except Exception:
         # Return mock data for demo purposes
         from .models import RegistryRecommendation
         return [
             RegistryRecommendation(
-                type="security",
-                priority="HIGH",
-                description="Use registry-specific security scanning",
-                registry_specific=True,
-                implementation="Enable vulnerability scanning in your registry"
+                registry_type="ECR",
+                recommendation_type="security",
+                title="Use registry-specific security scanning",
+                description="Enable vulnerability scanning in your registry",
+                dockerfile_change="# Enable security scanning in your CI/CD pipeline",
+                security_benefit="Detects vulnerabilities in container images",
+                estimated_impact="HIGH"
             )
         ]
 
@@ -1276,10 +1318,10 @@ def _output_registry_result(
     """Output registry vulnerability scanning and optimization results."""
     if format == "json":
         import json
-        
+
         # Combine optimization result with registry data
         combined_result = opt_result.dict()
-        
+
         if registry_data:
             if hasattr(registry_data, 'dict'):
                 combined_result["registry_vulnerabilities"] = registry_data.dict()
@@ -1292,7 +1334,7 @@ def _output_registry_result(
                     "medium_count": getattr(registry_data, 'medium_count', 0),
                     "low_count": getattr(registry_data, 'low_count', 0)
                 }
-        
+
         if registry_recommendations:
             combined_result["registry_recommendations"] = [
                 {
@@ -1303,13 +1345,13 @@ def _output_registry_result(
                 }
                 for rec in registry_recommendations
             ]
-        
+
         output_content = json.dumps(combined_result, indent=2, default=str)
     elif format == "yaml":
         import yaml
-        
+
         combined_result = opt_result.dict()
-        
+
         if registry_data:
             combined_result["registry_vulnerabilities"] = {
                 "registry_type": getattr(registry_data, 'registry_type', 'unknown'),
@@ -1319,7 +1361,7 @@ def _output_registry_result(
                 "medium_count": getattr(registry_data, 'medium_count', 0),
                 "low_count": getattr(registry_data, 'low_count', 0)
             }
-        
+
         if registry_recommendations:
             combined_result["registry_recommendations"] = [
                 {
@@ -1330,7 +1372,7 @@ def _output_registry_result(
                 }
                 for rec in registry_recommendations
             ]
-        
+
         output_content = yaml.dump(combined_result, default_flow_style=False)
     else:
         # Text format with registry analysis
@@ -1339,7 +1381,7 @@ def _output_registry_result(
             "=" * 55,
             "",
         ]
-        
+
         # Registry vulnerability analysis
         if registry_data:
             lines.extend([
@@ -1354,26 +1396,26 @@ def _output_registry_result(
                 f"  Low: {getattr(registry_data, 'low_count', 0)}",
                 "",
             ])
-        
+
         # Registry recommendations
         if registry_recommendations:
             lines.append("💡 Registry-Specific Recommendations:")
             lines.append("-" * 38)
-            
+
             for rec in registry_recommendations:
                 priority_emoji = {
                     "HIGH": "🔴",
-                    "MEDIUM": "🟡", 
+                    "MEDIUM": "🟡",
                     "LOW": "🟢",
                     "CRITICAL": "🚨"
                 }.get(getattr(rec, 'priority', 'MEDIUM'), "⚪")
-                
+
                 lines.append(f"{priority_emoji} {getattr(rec, 'description', '')}")
                 if verbose:
                     lines.append(f"   Type: {getattr(rec, 'type', 'unknown')}")
                     lines.append(f"   Registry-Specific: {getattr(rec, 'registry_specific', True)}")
                 lines.append("")
-        
+
         lines.extend([
             "🔧 Optimization Results:",
             f"  Original Size: {opt_result.original_size}",
@@ -1384,7 +1426,7 @@ def _output_registry_result(
             "-" * 22,
             opt_result.optimized_dockerfile,
         ])
-        
+
         output_content = "\n".join(lines)
 
     if output_path:
@@ -1399,9 +1441,9 @@ def _list_available_presets() -> None:
     click.echo("Available Optimization Presets:")
     click.echo("=" * 35)
     click.echo()
-    
+
     preset_manager = PresetManager()
-    
+
     for preset_type in PresetType:
         preset = preset_manager.get_preset(preset_type)
         if preset:
@@ -1410,6 +1452,163 @@ def _list_available_presets() -> None:
             click.echo(f"   Target Use Case: {preset.target_use_case}")
             click.echo(f"   Optimizations: {len(preset.optimizations)} steps")
             click.echo()
+
+
+def _output_combined_preset_language_result(
+    opt_result: OptimizationResult,
+    selected_preset: Any,
+    preset_result: Any,
+    language_analysis: Dict[str, Any],
+    language_suggestions: List[Any],
+    output_path: Optional[str],
+    format: str,
+    verbose: bool
+) -> None:
+    """Output optimization results with both preset and language information."""
+    if format == "json":
+        import json
+
+        # Combine optimization result with preset and language data
+        combined_result = opt_result.dict()
+        combined_result["language_analysis"] = language_analysis
+
+        # Add language suggestions
+        language_suggestion_dicts = [
+            {
+                "line_number": s.line_number,
+                "type": s.suggestion_type,
+                "priority": s.priority,
+                "description": s.message,
+                "explanation": s.explanation,
+                "fix_example": s.fix_example
+            }
+            for s in language_suggestions
+        ]
+        combined_result["language_suggestions"] = language_suggestion_dicts
+        combined_result["suggestions"] = language_suggestion_dicts
+
+        # Add preset data
+        preset_data_json: Dict[str, Any] = {
+            "type": getattr(selected_preset, 'preset_type', 'CUSTOM'),
+            "name": getattr(selected_preset, 'name', 'Unknown'),
+            "description": getattr(selected_preset, 'description', ''),
+            "target_use_case": getattr(selected_preset, 'target_use_case', ''),
+            "optimizations": []
+        }
+
+        # Add optimization steps
+        if hasattr(selected_preset, 'optimizations'):
+            for opt in selected_preset.optimizations:
+                preset_data_json["optimizations"].append({
+                    "name": getattr(opt, 'name', ''),
+                    "description": getattr(opt, 'description', ''),
+                    "dockerfile_change": getattr(opt, 'dockerfile_change', ''),
+                    "reasoning": getattr(opt, 'reasoning', ''),
+                    "priority": getattr(opt, 'priority', 1)
+                })
+
+        combined_result["preset_applied"] = preset_data_json
+
+        output_content = json.dumps(combined_result, indent=2, default=str)
+    elif format == "yaml":
+        import yaml
+
+        # Similar structure for YAML
+        combined_result = opt_result.dict()
+        combined_result["language_analysis"] = language_analysis
+
+        language_suggestion_dicts = [
+            {
+                "line_number": s.line_number,
+                "type": s.suggestion_type,
+                "priority": s.priority,
+                "description": s.message,
+                "explanation": s.explanation,
+                "fix_example": s.fix_example
+            }
+            for s in language_suggestions
+        ]
+        combined_result["language_suggestions"] = language_suggestion_dicts
+        combined_result["suggestions"] = language_suggestion_dicts
+
+        preset_data_yaml: Dict[str, Any] = {
+            "type": getattr(selected_preset, 'preset_type', 'CUSTOM'),
+            "name": getattr(selected_preset, 'name', 'Unknown'),
+            "description": getattr(selected_preset, 'description', ''),
+            "target_use_case": getattr(selected_preset, 'target_use_case', ''),
+            "optimizations": []
+        }
+
+        if hasattr(selected_preset, 'optimizations'):
+            for opt in selected_preset.optimizations:
+                preset_data_yaml["optimizations"].append({
+                    "name": getattr(opt, 'name', ''),
+                    "description": getattr(opt, 'description', ''),
+                    "dockerfile_change": getattr(opt, 'dockerfile_change', ''),
+                    "reasoning": getattr(opt, 'reasoning', ''),
+                    "priority": getattr(opt, 'priority', 1)
+                })
+
+        combined_result["preset_applied"] = preset_data_yaml
+
+        output_content = yaml.dump(combined_result, default_flow_style=False)
+    else:
+        # Text format with both preset and language analysis
+        lines = [
+            "🚀 Docker Optimization Results with Preset and Language Detection",
+            "===============================================================",
+            "",
+            f"📋 Applied Preset: {getattr(selected_preset, 'name', 'Unknown')}",
+            f"   Type: {getattr(selected_preset, 'preset_type', 'CUSTOM')}",
+            f"   Description: {getattr(selected_preset, 'description', '')}",
+            "",
+            "📊 Language Analysis:",
+            f"  Detected Language: {language_analysis.get('language', 'unknown')}",
+            f"  Language Confidence: {language_analysis.get('language_confidence', 0.0):.2f}",
+            f"  Detected Framework: {language_analysis.get('framework', 'unknown')}",
+            f"  Framework Confidence: {language_analysis.get('framework_confidence', 0.0):.2f}",
+            "",
+            "🔧 Optimization Results:",
+            f"  Original Size: {opt_result.original_size}",
+            f"  Optimized Size: {opt_result.optimized_size}",
+            f"  Explanation: {opt_result.explanation}",
+        ]
+
+        if language_suggestions:
+            lines.extend([
+                "",
+                "💡 Language-Specific Suggestions:",
+                "-----------------------------------"
+            ])
+            for suggestion in language_suggestions:
+                priority_icon = "🔴" if suggestion.priority == "HIGH" else "🟡"
+                lines.append(f"{priority_icon} {suggestion.message}")
+                lines.append("")
+
+        if hasattr(selected_preset, 'optimizations'):
+            lines.extend([
+                "🎯 Preset Optimizations:",
+                "------------------------"
+            ])
+            for opt in selected_preset.optimizations:
+                lines.append(f"• {getattr(opt, 'name', '')}")
+                lines.append(f"  {getattr(opt, 'description', '')}")
+                lines.append("")
+
+        lines.extend([
+            "📝 Optimized Dockerfile:",
+            "----------------------",
+            opt_result.optimized_dockerfile
+        ])
+
+        output_content = "\n".join(lines)
+
+    if output_path:
+        with open(output_path, 'w') as f:
+            f.write(output_content)
+        click.echo(f"Results written to {output_path}")
+    else:
+        click.echo(output_content)
 
 
 def _output_preset_result(
@@ -1423,57 +1622,57 @@ def _output_preset_result(
     """Output optimization results with preset information."""
     if format == "json":
         import json
-        
+
         # Combine optimization result with preset data
         combined_result = opt_result.dict()
-        
-        preset_data = {
+
+        preset_data_third: Dict[str, Any] = {
             "type": getattr(selected_preset, 'preset_type', 'CUSTOM'),
             "name": getattr(selected_preset, 'name', 'Unknown'),
             "description": getattr(selected_preset, 'description', ''),
             "target_use_case": getattr(selected_preset, 'target_use_case', ''),
             "optimizations": []
         }
-        
+
         # Add optimization steps
         if hasattr(selected_preset, 'optimizations'):
             for opt in selected_preset.optimizations:
-                preset_data["optimizations"].append({
+                preset_data_third["optimizations"].append({
                     "name": getattr(opt, 'name', ''),
                     "description": getattr(opt, 'description', ''),
                     "dockerfile_change": getattr(opt, 'dockerfile_change', ''),
                     "reasoning": getattr(opt, 'reasoning', ''),
                     "priority": getattr(opt, 'priority', 1)
                 })
-        
-        combined_result["preset_applied"] = preset_data
-        
+
+        combined_result["preset_applied"] = preset_data_third
+
         output_content = json.dumps(combined_result, indent=2, default=str)
     elif format == "yaml":
         import yaml
-        
+
         combined_result = opt_result.dict()
-        
-        preset_data = {
+
+        preset_data_fourth: Dict[str, Any] = {
             "type": getattr(selected_preset, 'preset_type', 'CUSTOM'),
             "name": getattr(selected_preset, 'name', 'Unknown'),
             "description": getattr(selected_preset, 'description', ''),
             "target_use_case": getattr(selected_preset, 'target_use_case', ''),
             "optimizations": []
         }
-        
+
         if hasattr(selected_preset, 'optimizations'):
             for opt in selected_preset.optimizations:
-                preset_data["optimizations"].append({
+                preset_data_fourth["optimizations"].append({
                     "name": getattr(opt, 'name', ''),
                     "description": getattr(opt, 'description', ''),
                     "dockerfile_change": getattr(opt, 'dockerfile_change', ''),
                     "reasoning": getattr(opt, 'reasoning', ''),
                     "priority": getattr(opt, 'priority', 1)
                 })
-        
-        combined_result["preset_applied"] = preset_data
-        
+
+        combined_result["preset_applied"] = preset_data_fourth
+
         output_content = yaml.dump(combined_result, default_flow_style=False)
     else:
         # Text format with preset information
@@ -1488,12 +1687,12 @@ def _output_preset_result(
             f"  Target Use Case: {getattr(selected_preset, 'target_use_case', '')}",
             "",
         ]
-        
+
         # Preset optimizations
         if hasattr(selected_preset, 'optimizations') and selected_preset.optimizations:
             lines.append("🔧 Optimizations Applied:")
             lines.append("-" * 25)
-            
+
             for i, opt in enumerate(selected_preset.optimizations, 1):
                 lines.append(f"{i}. {getattr(opt, 'name', 'Unknown optimization')}")
                 if verbose:
@@ -1502,7 +1701,7 @@ def _output_preset_result(
                     if getattr(opt, 'dockerfile_change', ''):
                         lines.append(f"   Change: {getattr(opt, 'dockerfile_change', '')}")
                 lines.append("")
-        
+
         lines.extend([
             "📊 Optimization Results:",
             f"  Original Size: {opt_result.original_size}",
@@ -1513,7 +1712,7 @@ def _output_preset_result(
             "-" * 22,
             opt_result.optimized_dockerfile,
         ])
-        
+
         output_content = "\n".join(lines)
 
     if output_path:

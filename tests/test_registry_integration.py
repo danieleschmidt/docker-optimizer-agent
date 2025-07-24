@@ -1,14 +1,14 @@
 """Tests for Docker registry integration functionality."""
 
-import pytest
 from unittest.mock import Mock, patch
-from pathlib import Path
+
+import pytest
 
 from docker_optimizer.registry_integration import (
-    RegistryIntegrator,
-    RegistryVulnerabilityData,
     RegistryComparison,
-    RegistryRecommendation
+    RegistryIntegrator,
+    RegistryRecommendation,
+    RegistryVulnerabilityData,
 )
 
 
@@ -22,9 +22,9 @@ class TestRegistryIntegrator:
     def test_ecr_vulnerability_scan(self):
         """Test pulling vulnerability data from AWS ECR."""
         image_name = "my-app:latest"
-        
+
         vulnerabilities = self.integrator.scan_ecr_vulnerabilities(image_name)
-        
+
         assert isinstance(vulnerabilities, RegistryVulnerabilityData)
         assert vulnerabilities.registry_type == "ECR"
         assert vulnerabilities.image_name == image_name
@@ -36,9 +36,9 @@ class TestRegistryIntegrator:
     def test_acr_vulnerability_scan(self):
         """Test pulling vulnerability data from Azure ACR."""
         image_name = "my-app:latest"
-        
+
         vulnerabilities = self.integrator.scan_acr_vulnerabilities(image_name)
-        
+
         assert isinstance(vulnerabilities, RegistryVulnerabilityData)
         assert vulnerabilities.registry_type == "ACR"
         assert vulnerabilities.image_name == image_name
@@ -46,9 +46,9 @@ class TestRegistryIntegrator:
     def test_gcr_vulnerability_scan(self):
         """Test pulling vulnerability data from Google GCR."""
         image_name = "my-app:latest"
-        
+
         vulnerabilities = self.integrator.scan_gcr_vulnerabilities(image_name)
-        
+
         assert isinstance(vulnerabilities, RegistryVulnerabilityData)
         assert vulnerabilities.registry_type == "GCR"
         assert vulnerabilities.image_name == image_name
@@ -57,9 +57,9 @@ class TestRegistryIntegrator:
         """Test comparing the same image across multiple registries."""
         image_name = "my-app:latest"
         registries = ["ECR", "ACR", "GCR"]
-        
+
         comparison = self.integrator.compare_across_registries(image_name, registries)
-        
+
         assert isinstance(comparison, RegistryComparison)
         assert comparison.image_name == image_name
         assert len(comparison.registry_data) == len(registries)
@@ -76,9 +76,9 @@ COPY . .
 EXPOSE 3000
 CMD ["npm", "start"]
 """
-        
+
         recommendations = self.integrator.get_registry_recommendations(dockerfile_content)
-        
+
         assert isinstance(recommendations, list)
         assert len(recommendations) > 0
         assert all(isinstance(rec, RegistryRecommendation) for rec in recommendations)
@@ -86,9 +86,9 @@ CMD ["npm", "start"]
     def test_registry_specific_base_images(self):
         """Test recommendations for registry-specific base images."""
         language = "python"
-        
+
         recommendations = self.integrator.get_registry_base_image_recommendations(language)
-        
+
         assert isinstance(recommendations, list)
         assert len(recommendations) > 0
         # Should recommend images from different registries
@@ -112,7 +112,7 @@ CMD ["npm", "start"]
         mock_get.return_value = mock_response
 
         result = self.integrator.scan_ecr_vulnerabilities("test-image:latest")
-        
+
         assert result.critical_count == 2
         assert result.high_count == 5
         assert result.medium_count == 10
@@ -126,7 +126,7 @@ CMD ["npm", "start"]
     def test_registry_availability_check(self):
         """Test checking if registries are available and accessible."""
         availability = self.integrator.check_registry_availability(["ECR", "ACR", "GCR"])
-        
+
         assert isinstance(availability, dict)
         assert all(registry in availability for registry in ["ECR", "ACR", "GCR"])
         assert all(isinstance(status, bool) for status in availability.values())

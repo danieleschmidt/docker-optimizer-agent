@@ -38,18 +38,18 @@ CMD ["python3", "app.py"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include preset information
             assert "preset_applied" in output_data
             assert output_data["preset_applied"]["type"] == "DEVELOPMENT"
             assert "optimizations" in output_data["preset_applied"]
-            
+
             # Should have development-specific optimizations
             optimizations = output_data["preset_applied"]["optimizations"]
             optimization_names = [opt["name"] for opt in optimizations]
             assert any("cache" in name for name in optimization_names)
             assert any("debug" in opt["description"].lower() for opt in optimizations)
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -75,16 +75,16 @@ CMD ["python3", "app.py"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include preset information
             assert "preset_applied" in output_data
             assert output_data["preset_applied"]["type"] == "PRODUCTION"
-            
+
             # Should have production-specific optimizations
             optimizations = output_data["preset_applied"]["optimizations"]
             optimization_names = [opt["name"] for opt in optimizations]
             assert any("slim" in name.lower() or "size" in name.lower() for name in optimization_names)
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -111,16 +111,16 @@ CMD ["npm", "start"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include preset information
             assert "preset_applied" in output_data
             assert output_data["preset_applied"]["type"] == "WEB_APP"
-            
+
             # Should have web app-specific optimizations
             optimizations = output_data["preset_applied"]["optimizations"]
             optimization_descriptions = [opt["description"] for opt in optimizations]
             assert any("static" in desc.lower() or "nginx" in desc.lower() for desc in optimization_descriptions)
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -147,16 +147,16 @@ CMD ["python", "train.py"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include preset information
             assert "preset_applied" in output_data
             assert output_data["preset_applied"]["type"] == "ML"
-            
+
             # Should have ML-specific optimizations
             optimizations = output_data["preset_applied"]["optimizations"]
             optimization_descriptions = [opt["description"] for opt in optimizations]
             assert any("gpu" in desc.lower() or "nvidia" in desc.lower() or "cuda" in desc.lower() for desc in optimization_descriptions)
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -183,16 +183,16 @@ CMD ["python", "process_data.py"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include preset information
             assert "preset_applied" in output_data
             assert output_data["preset_applied"]["type"] == "DATA_PROCESSING"
-            
+
             # Should have data processing-specific optimizations
             optimizations = output_data["preset_applied"]["optimizations"]
             optimization_descriptions = [opt["description"] for opt in optimizations]
             assert any("memory" in desc.lower() or "volume" in desc.lower() or "io" in desc.lower() for desc in optimization_descriptions)
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -222,7 +222,7 @@ CMD ["python3", "app.py"]"""
         with tempfile.TemporaryDirectory() as temp_dir:
             dockerfile_path = Path(temp_dir) / "Dockerfile"
             preset_path = Path(temp_dir) / "custom_preset.json"
-            
+
             dockerfile_path.write_text(dockerfile_content)
             preset_path.write_text(json.dumps(custom_preset, indent=2))
 
@@ -235,7 +235,7 @@ CMD ["python3", "app.py"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include custom preset information
             assert "preset_applied" in output_data
             assert output_data["preset_applied"]["name"] == "Custom Test Preset"
@@ -263,12 +263,12 @@ CMD ["python3", "app.py"]"""
             ])
 
             assert result.exit_code == 0
-            
+
             # Should include preset information in text output
             assert "Preset Applied:" in result.output
             assert "Type: PRODUCTION" in result.output
             assert "Optimizations Applied:" in result.output
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -283,7 +283,7 @@ CMD ["python3", "app.py"]"""
         with tempfile.TemporaryDirectory() as temp_dir:
             project_path = Path(temp_dir)
             dockerfile_path = project_path / "Dockerfile"
-            
+
             # Create Python project indicators
             (project_path / "requirements.txt").write_text("flask>=2.0")
             dockerfile_path.write_text(dockerfile_content)
@@ -298,7 +298,7 @@ CMD ["python3", "app.py"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include both preset and language analysis
             assert "preset_applied" in output_data
             assert "language_analysis" in output_data
@@ -311,7 +311,7 @@ CMD ["python3", "app.py"]"""
         result = self.runner.invoke(main, ["--list-presets"])
 
         assert result.exit_code == 0
-        
+
         # Should list all available presets
         assert "Available Optimization Presets:" in result.output
         assert "DEVELOPMENT" in result.output
@@ -342,6 +342,6 @@ WORKDIR /app"""
             # Should fail with proper error message
             assert result.exit_code != 0
             assert "Invalid preset" in result.output or "Error" in result.output
-            
+
         finally:
             Path(dockerfile_path).unlink()

@@ -9,6 +9,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from .config import Config
+from .logging_observability import ObservabilityManager, LogLevel
 from .models import (
     RegistryComparison,
     RegistryRecommendation,
@@ -21,13 +22,15 @@ logger = logging.getLogger(__name__)
 class RegistryIntegrator:
     """Integrates with Docker registries for vulnerability scanning and recommendations."""
 
-    def __init__(self, config: Optional[Config] = None) -> None:
+    def __init__(self, config: Optional[Config] = None, obs_manager: Optional[ObservabilityManager] = None) -> None:
         """Initialize the registry integrator.
 
         Args:
             config: Optional configuration instance
+            obs_manager: Optional observability manager for structured logging
         """
         self.config = config or Config()
+        self.obs_manager = obs_manager or ObservabilityManager(service_name="registry-integrator")
         self._setup_session()
         self._registry_endpoints = {
             'ECR': 'ecr',
@@ -35,6 +38,10 @@ class RegistryIntegrator:
             'GCR': 'gcr.io',
             'DOCKERHUB': 'registry-1.docker.io'
         }
+        
+        self.obs_manager.logger.info("Registry integrator initialized", extra={
+            "registry_endpoints": list(self._registry_endpoints.keys())
+        })
 
     def _setup_session(self) -> None:
         """Set up HTTP session with retry logic."""
@@ -160,16 +167,36 @@ class RegistryIntegrator:
         Raises:
             ValueError: If registry type is not supported
         """
-        registry_type = registry_type.upper()
+        with self.obs_manager.track_operation(
+            operation_type="registry_vulnerability_scan",
+        ) as context:
+            registry_type = registry_type.upper()
+            
+            self.obs_manager.logger.info("Starting vulnerability scan", context=context, extra={
+                "registry_type": registry_type,
+                "image_name": image_name
+            })
 
-        if registry_type == "ECR":
-            return self.scan_ecr_vulnerabilities(image_name)
-        elif registry_type == "ACR":
-            return self.scan_acr_vulnerabilities(image_name)
-        elif registry_type == "GCR":
-            return self.scan_gcr_vulnerabilities(image_name)
-        else:
-            raise ValueError(f"Unsupported registry type: {registry_type}")
+            if registry_type == "ECR":
+                result = self.scan_ecr_vulnerabilities(image_name)
+            elif registry_type == "ACR":
+                result = self.scan_acr_vulnerabilities(image_name)
+            elif registry_type == "GCR":
+                result = self.scan_gcr_vulnerabilities(image_name)
+            else:
+                error_msg = f"Unsupported registry type: {registry_type}"
+                self.obs_manager.logger.error(error_msg, context=context, extra={
+                    "supported_types": list(self._registry_endpoints.keys())
+                })
+                raise ValueError(error_msg)
+            
+            self.obs_manager.logger.info("Vulnerability scan completed", context=context, extra={
+                "vulnerabilities_found": len(result.vulnerabilities),
+                "critical_count": len([v for v in result.vulnerabilities if v.severity == "CRITICAL"]),
+                "high_count": len([v for v in result.vulnerabilities if v.severity == "HIGH"])
+            })
+            
+            return result
 
     def compare_across_registries(self, image_name: str, registries: List[str]) -> RegistryComparison:
         """Compare the same image across multiple registries.

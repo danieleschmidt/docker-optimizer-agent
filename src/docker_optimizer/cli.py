@@ -11,6 +11,7 @@ import click
 from .advanced_security import AdvancedSecurityEngine
 from .external_security import ExternalSecurityScanner
 from .language_optimizer import LanguageOptimizer, analyze_project_language
+from .logging_observability import ObservabilityManager, LogLevel
 from .models import (
     DockerfileAnalysis,
     ImageAnalysis,
@@ -185,6 +186,12 @@ def main(
     - Best practices (cleanup commands, efficient package installation)
     - Performance optimizations (caching, parallel processing)
     """
+    # Initialize observability manager
+    obs_manager = ObservabilityManager(
+        log_level=LogLevel.DEBUG if verbose else LogLevel.INFO,
+        service_name="docker-optimizer-cli"
+    )
+    
     # Handle list presets flag early
     if list_presets:
         _list_available_presets()
@@ -193,7 +200,7 @@ def main(
     try:
         optimizer = DockerfileOptimizer()
         multistage_optimizer = MultiStageOptimizer()
-        security_scanner = ExternalSecurityScanner()
+        security_scanner = ExternalSecurityScanner(obs_manager=obs_manager)
 
         # Initialize Advanced Security Engine if requested
         advanced_security_engine = None
@@ -219,7 +226,7 @@ def main(
         # Initialize registry integrator if requested
         registry_integrator = None
         if registry_scan or registry_compare or registry_recommendations:
-            registry_integrator = RegistryIntegrator()
+            registry_integrator = RegistryIntegrator(obs_manager=obs_manager)
 
             # Validate registry scan options
             if registry_scan and not registry_image:
@@ -476,6 +483,7 @@ def main(
                 )
 
     except Exception as e:
+        obs_manager.logger.error("CLI operation failed", exception=e)
         click.echo(f"Error: {str(e)}", err=True)
         if verbose:
             import traceback

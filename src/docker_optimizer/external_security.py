@@ -6,8 +6,9 @@ import subprocess
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Dict, Iterator, List, Union
+from typing import Dict, Iterator, List, Optional, Union
 
+from .logging_observability import ObservabilityManager
 from .models import CVEDetails, SecurityScore, VulnerabilityReport
 
 logger = logging.getLogger(__name__)
@@ -16,9 +17,14 @@ logger = logging.getLogger(__name__)
 class TrivyScanner:
     """Trivy vulnerability scanner integration."""
 
-    def __init__(self) -> None:
+    def __init__(self, obs_manager: Optional[ObservabilityManager] = None) -> None:
         """Initialize Trivy scanner."""
+        self.obs_manager = obs_manager or ObservabilityManager(service_name="trivy-scanner")
         self.trivy_available = self._check_trivy_availability()
+        
+        self.obs_manager.logger.info("Trivy scanner initialized", extra={
+            "trivy_available": self.trivy_available
+        })
 
     def scan_dockerfile(self, dockerfile_content: str) -> VulnerabilityReport:
         """Scan a Dockerfile for vulnerabilities.
@@ -29,42 +35,63 @@ class TrivyScanner:
         Returns:
             VulnerabilityReport: Vulnerability scan results
         """
-        if not self.trivy_available:
+        with self.obs_manager.track_operation(
+            operation_type="dockerfile_security_scan"
+        ) as context:
+            if not self.trivy_available:
+                self.obs_manager.logger.warning("Trivy not available, returning empty report", context=context)
+                return VulnerabilityReport(total_vulnerabilities=0)
+
+            dockerfile_lines = len(dockerfile_content.splitlines())
+            self.obs_manager.logger.info("Starting Dockerfile security scan", context=context, extra={
+                "dockerfile_lines": dockerfile_lines
+            })
+
+            try:
+                with self._create_temporary_dockerfile(dockerfile_content) as dockerfile_path:
+                    cmd = [
+                        "trivy",
+                        "config",
+                        "--format", "json",
+                        "--quiet",
+                        str(dockerfile_path)
+                    ]
+
+                    result = subprocess.run(
+                        cmd,
+                        capture_output=True,
+                        text=True,
+                        timeout=60
+                    )
+
+                    if result.returncode == 0:
+                        report = self._parse_trivy_output(result.stdout)
+                        self.obs_manager.logger.info("Dockerfile scan completed successfully", context=context, extra={
+                            "total_vulnerabilities": report.total_vulnerabilities,
+                            "critical_count": report.critical_count,
+                            "high_count": report.high_count
+                        })
+                        return report
+                    else:
+                        self.obs_manager.logger.warning("Direct scan failed, trying base image fallback", context=context, extra={
+                            "return_code": result.returncode,
+                            "stderr": result.stderr[:200]  # Truncate for logging
+                        })
+                        # Try fallback: scan the base image directly
+                        base_image = self._extract_base_image(dockerfile_content)
+                        if base_image:
+                            return self.scan_image(base_image)
+
+            except subprocess.TimeoutExpired as e:
+                self.obs_manager.logger.warning("Trivy scan operation timed out", context=context, extra={
+                    "timeout_seconds": e.timeout
+                })
+            except FileNotFoundError:
+                self.obs_manager.logger.info("Trivy command not found - skipping vulnerability scan", context=context)
+            except Exception as e:
+                self.obs_manager.logger.error("Error during Trivy scan", context=context, exception=e)
+
             return VulnerabilityReport(total_vulnerabilities=0)
-
-        try:
-            with self._create_temporary_dockerfile(dockerfile_content) as dockerfile_path:
-                cmd = [
-                    "trivy",
-                    "config",
-                    "--format", "json",
-                    "--quiet",
-                    str(dockerfile_path)
-                ]
-
-                result = subprocess.run(
-                    cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=60
-                )
-
-                if result.returncode == 0:
-                    return self._parse_trivy_output(result.stdout)
-                else:
-                    # Try fallback: scan the base image directly
-                    base_image = self._extract_base_image(dockerfile_content)
-                    if base_image:
-                        return self.scan_image(base_image)
-
-        except subprocess.TimeoutExpired as e:
-            logger.warning("Trivy scan operation timed out after %s seconds", e.timeout)
-        except FileNotFoundError:
-            logger.info("Trivy command not found - skipping vulnerability scan")
-        except Exception as e:
-            logger.warning("Error during Trivy scan: %s", str(e))
-
-        return VulnerabilityReport(total_vulnerabilities=0)
 
     def scan_image(self, image_name: str) -> VulnerabilityReport:
         """Scan a Docker image for vulnerabilities.
@@ -206,9 +233,10 @@ class TrivyScanner:
 class ExternalSecurityScanner:
     """Main external security scanner that integrates multiple tools."""
 
-    def __init__(self) -> None:
+    def __init__(self, obs_manager: Optional[ObservabilityManager] = None) -> None:
         """Initialize the external security scanner."""
-        self.trivy_scanner = TrivyScanner()
+        self.obs_manager = obs_manager or ObservabilityManager(service_name="external-security-scanner")
+        self.trivy_scanner = TrivyScanner(obs_manager=self.obs_manager)
 
     def scan_dockerfile_for_vulnerabilities(self, dockerfile_content: str) -> VulnerabilityReport:
         """Scan Dockerfile for vulnerabilities using external tools.

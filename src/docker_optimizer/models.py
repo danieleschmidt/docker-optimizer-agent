@@ -532,7 +532,7 @@ class RegistryVulnerabilityData(BaseModel):
     @property
     def severity_score(self) -> float:
         """Calculate a severity score for comparison (higher is worse)."""
-        return (self.critical_count * 10 + self.high_count * 5 + 
+        return (self.critical_count * 10 + self.high_count * 5 +
                 self.medium_count * 2 + self.low_count * 1)
 
 
@@ -632,7 +632,7 @@ class CustomPreset(BaseModel):
 
     name: str = Field(..., description="Name of the custom preset")
     description: str = Field(..., description="Description of the custom preset")
-    base_preset: str = Field(..., description="Base preset this is derived from")
+    base_preset: Optional[str] = Field(None, description="Base preset this is derived from")
     additional_optimizations: List[str] = Field(
         default_factory=list, description="Additional optimization descriptions"
     )

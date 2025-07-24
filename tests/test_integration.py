@@ -28,6 +28,8 @@ class TestDockerIntegration:
                 check=False
             )
         except Exception:
+            # Clean up may fail if Docker is not available or images don't exist
+            # This is expected in some test environments
             pass
 
     def _create_test_dockerfile(self, content: str, filename: str = "Dockerfile") -> str:

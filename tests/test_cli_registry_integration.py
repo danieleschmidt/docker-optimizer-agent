@@ -39,13 +39,13 @@ CMD ["python3", "app.py"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include registry vulnerability data
             assert "registry_vulnerabilities" in output_data
             assert output_data["registry_vulnerabilities"]["registry_type"] == "ECR"
             assert output_data["registry_vulnerabilities"]["image_name"] == "my-app:latest"
             assert "critical_count" in output_data["registry_vulnerabilities"]
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -72,12 +72,12 @@ CMD ["node", "server.js"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include registry vulnerability data
             assert "registry_vulnerabilities" in output_data
             assert output_data["registry_vulnerabilities"]["registry_type"] == "ACR"
             assert "myregistry.azurecr.io/myapp:v1.0" in output_data["registry_vulnerabilities"]["image_name"]
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -104,12 +104,12 @@ CMD ["./main"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include registry vulnerability data
             assert "registry_vulnerabilities" in output_data
             assert output_data["registry_vulnerabilities"]["registry_type"] == "GCR"
             assert "gcr.io/my-project/my-app:latest" in output_data["registry_vulnerabilities"]["image_name"]
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -131,19 +131,19 @@ CMD ["python3", "app.py"]"""
                 "--dockerfile", dockerfile_path,
                 "--registry-compare",
                 "--registry-images", "my-app:latest",
-                "--registry-images", "myregistry.azurecr.io/my-app:latest", 
+                "--registry-images", "myregistry.azurecr.io/my-app:latest",
                 "--registry-images", "gcr.io/my-project/my-app:latest",
                 "--format", "json"
             ])
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include registry comparison data
             assert "registry_comparison" in output_data
             assert len(output_data["registry_comparison"]["comparisons"]) >= 3
             assert "recommendations" in output_data["registry_comparison"]
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -169,7 +169,7 @@ WORKDIR /app"""
             # Should fail with proper error message
             assert result.exit_code != 0
             assert "registry-image" in result.output or "Error" in result.output
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -195,13 +195,13 @@ CMD ["python3", "app.py"]"""
             ])
 
             assert result.exit_code == 0
-            
+
             # Should include registry analysis in text output
             assert "Registry Vulnerability Analysis:" in result.output
             assert "Registry: ECR" in result.output
             assert "Image: my-app:latest" in result.output
             assert "Vulnerability Summary:" in result.output
-            
+
         finally:
             Path(dockerfile_path).unlink()
 
@@ -229,18 +229,18 @@ CMD ["python3", "app.py"]"""
 
             assert result.exit_code == 0
             output_data = json.loads(result.output)
-            
+
             # Should include registry-specific recommendations
             assert "registry_recommendations" in output_data
             recommendations = output_data["registry_recommendations"]
             assert len(recommendations) > 0
-            
+
             # Check recommendation structure
             for rec in recommendations:
                 assert "type" in rec
                 assert "priority" in rec
                 assert "description" in rec
                 assert "registry_specific" in rec
-            
+
         finally:
             Path(dockerfile_path).unlink()

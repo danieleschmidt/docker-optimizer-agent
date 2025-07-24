@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple, Iterator, Generator
+from typing import Any, Callable, Dict, Generator, List, Optional, Tuple
 
 import psutil
 

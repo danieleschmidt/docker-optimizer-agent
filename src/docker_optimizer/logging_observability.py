@@ -71,56 +71,56 @@ class OperationContext:
         self.metrics: Dict[str, Any] = {}
 
     def add_metric(self, name: str, value: Any, metric_type: MetricType = MetricType.GAUGE) -> None:
-        \"\"\"Add a metric to the operation context.
+        """Add a metric to the operation context.
         
         Args:
             name: Metric name
             value: Metric value
             metric_type: Type of metric
-        \"\"\"
+        """
         self.metrics[name] = {
-            \"value\": value,
-            \"type\": metric_type.value,
-            \"timestamp\": time.time()
+            "value": value,
+            "type": metric_type.value,
+            "timestamp": time.time()
         }
     
     def add_metadata(self, key: str, value: Any) -> None:
-        \"\"\"Add metadata to the operation context.
+        """Add metadata to the operation context.
         
         Args:
             key: Metadata key
             value: Metadata value
-        \"\"\"
+        """
         self.metadata[key] = value
     
     def get_duration(self) -> float:
-        \"\"\"Get operation duration in seconds.
+        """Get operation duration in seconds.
         
         Returns:
             Duration since start time
-        \"\"\"
+        """
         return time.time() - self.start_time
 
     def to_dict(self) -> Dict[str, Any]:
-        \"\"\"Convert context to dictionary for logging.\"\"\"
+        """Convert context to dictionary for logging."""
         context = {
-            \"operation_id\": self.operation_id,
-            \"operation_type\": self.operation_type,
-            \"start_time\": self.start_time,
-            \"duration_seconds\": self.get_duration()
+            "operation_id": self.operation_id,
+            "operation_type": self.operation_type,
+            "start_time": self.start_time,
+            "duration_seconds": self.get_duration()
         }
 
         if self.user_id:
-            context[\"user_id\"] = self.user_id
+            context["user_id"] = self.user_id
         if self.dockerfile_path:
-            context[\"dockerfile_path\"] = self.dockerfile_path
+            context["dockerfile_path"] = self.dockerfile_path
         if self.parent_id:
-            context[\"parent_id\"] = self.parent_id
+            context["parent_id"] = self.parent_id
         
         if self.metadata:
-            context[\"metadata\"] = self.metadata
+            context["metadata"] = self.metadata
         if self.metrics:
-            context[\"metrics\"] = self.metrics
+            context["metrics"] = self.metrics
 
         return context
 
@@ -173,87 +173,87 @@ class JSONFormatter(logging.Formatter):
 
 
 class PerformanceMetrics:
-    \"\"\"Performance metrics collector for comprehensive observability.\"\"\"
+    """Performance metrics collector for comprehensive observability."""
     
     def __init__(self):
-        \"\"\"Initialize performance metrics collector.\"\"\"
+        """Initialize performance metrics collector."""
         self.metrics: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
         self.counters: Dict[str, int] = defaultdict(int)
         self.timers: Dict[str, float] = {}
         self.gauges: Dict[str, float] = {}
     
     def increment_counter(self, name: str, value: int = 1, tags: Optional[Dict[str, str]] = None) -> None:
-        \"\"\"Increment a counter metric.
+        """Increment a counter metric.
         
         Args:
             name: Counter name
             value: Increment value
             tags: Optional tags for the metric
-        \"\"\"
+        """
         self.counters[name] += value
         self.metrics[name].append({
-            \"type\": \"counter\",
-            \"value\": value,
-            \"total\": self.counters[name],
-            \"timestamp\": time.time(),
-            \"tags\": tags or {}
+            "type": "counter",
+            "value": value,
+            "total": self.counters[name],
+            "timestamp": time.time(),
+            "tags": tags or {}
         })
     
     def set_gauge(self, name: str, value: float, tags: Optional[Dict[str, str]] = None) -> None:
-        \"\"\"Set a gauge metric.
+        """Set a gauge metric.
         
         Args:
             name: Gauge name
             value: Gauge value
             tags: Optional tags for the metric
-        \"\"\"
+        """
         self.gauges[name] = value
         self.metrics[name].append({
-            \"type\": \"gauge\",
-            \"value\": value,
-            \"timestamp\": time.time(),
-            \"tags\": tags or {}
+            "type": "gauge",
+            "value": value,
+            "timestamp": time.time(),
+            "tags": tags or {}
         })
     
     def record_timing(self, name: str, duration: float, tags: Optional[Dict[str, str]] = None) -> None:
-        \"\"\"Record a timing metric.
+        """Record a timing metric.
         
         Args:
             name: Timer name
             duration: Duration in seconds
             tags: Optional tags for the metric
-        \"\"\"
+        """
         self.metrics[name].append({
-            \"type\": \"timer\",
-            \"duration_seconds\": duration,
-            \"timestamp\": time.time(),
-            \"tags\": tags or {}
+            "type": "timer",
+            "duration_seconds": duration,
+            "timestamp": time.time(),
+            "tags": tags or {}
         })
     
     def get_summary(self) -> Dict[str, Any]:
-        \"\"\"Get performance metrics summary.
+        """Get performance metrics summary.
         
         Returns:
             Dictionary containing all metrics
-        \"\"\"
+        """
         return {
-            \"counters\": dict(self.counters),
-            \"gauges\": dict(self.gauges),
-            \"recent_metrics\": {
+            "counters": dict(self.counters),
+            "gauges": dict(self.gauges),
+            "recent_metrics": {
                 name: metrics[-10:]  # Last 10 entries
                 for name, metrics in self.metrics.items()
             },
-            \"timestamp\": time.time()
+            "timestamp": time.time()
         }
     
     @contextmanager
     def timer(self, name: str, tags: Optional[Dict[str, str]] = None) -> Generator[None, None, None]:
-        \"\"\"Context manager for timing operations.
+        """Context manager for timing operations.
         
         Args:
             name: Timer name
             tags: Optional tags for the metric
-        \"\"\"
+        """
         start_time = time.time()
         try:
             yield
@@ -263,14 +263,14 @@ class PerformanceMetrics:
 
 
 class ErrorTracker:
-    \"\"\"Error tracking system for comprehensive error analysis.\"\"\"
+    """Error tracking system for comprehensive error analysis."""
     
     def __init__(self, max_errors: int = 1000):
-        \"\"\"Initialize error tracker.
+        """Initialize error tracker.
         
         Args:
             max_errors: Maximum number of errors to keep in memory
-        \"\"\"
+        """
         self.max_errors = max_errors
         self.errors: List[Dict[str, Any]] = []
         self.error_counts: Dict[str, int] = defaultdict(int)
@@ -282,7 +282,7 @@ class ErrorTracker:
         context: Optional[OperationContext] = None,
         tags: Optional[Dict[str, str]] = None
     ) -> str:
-        \"\"\"Track an error with context.
+        """Track an error with context.
         
         Args:
             error: Exception that occurred
@@ -291,19 +291,19 @@ class ErrorTracker:
             
         Returns:
             Error ID for reference
-        \"\"\"
+        """
         error_id = str(uuid.uuid4())
         error_type = type(error).__name__
         timestamp = time.time()
         
         error_record = {
-            \"error_id\": error_id,
-            \"error_type\": error_type,
-            \"message\": str(error),
-            \"timestamp\": timestamp,
-            \"stack_trace\": traceback.format_exception(type(error), error, error.__traceback__),
-            \"tags\": tags or {},
-            \"context\": context.to_dict() if context else None
+            "error_id": error_id,
+            "error_type": error_type,
+            "message": str(error),
+            "timestamp": timestamp,
+            "stack_trace": traceback.format_exception(type(error), error, error.__traceback__),
+            "tags": tags or {},
+            "context": context.to_dict() if context else None
         }
         
         # Add to error list (maintain max size)
@@ -328,11 +328,11 @@ class ErrorTracker:
         return error_id
     
     def get_error_summary(self) -> Dict[str, Any]:
-        \"\"\"Get error tracking summary.
+        """Get error tracking summary.
         
         Returns:
             Dictionary containing error statistics
-        \"\"\"
+        """
         current_time = time.time()
         current_minute = int(current_time // 60)
         
@@ -343,24 +343,24 @@ class ErrorTracker:
             error_rates[error_type] = len(recent_minutes) / 5.0  # Errors per minute
         
         return {
-            \"total_errors\": len(self.errors),
-            \"error_counts_by_type\": dict(self.error_counts),
-            \"error_rates_per_minute\": error_rates,
-            \"recent_errors\": self.errors[-10:],  # Last 10 errors
-            \"timestamp\": current_time
+            "total_errors": len(self.errors),
+            "error_counts_by_type": dict(self.error_counts),
+            "error_rates_per_minute": error_rates,
+            "recent_errors": self.errors[-10:],  # Last 10 errors
+            "timestamp": current_time
         }
     
     def get_error_by_id(self, error_id: str) -> Optional[Dict[str, Any]]:
-        \"\"\"Get error details by ID.
+        """Get error details by ID.
         
         Args:
             error_id: Error ID to lookup
             
         Returns:
             Error record or None if not found
-        \"\"\"
+        """
         for error in self.errors:
-            if error[\"error_id\"] == error_id:
+            if error["error_id"] == error_id:
                 return error
         return None
 

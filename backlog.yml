@@ -1,10 +1,10 @@
 version: "1.0"
 metadata:
   project: "docker-optimizer"
-  last_updated: "2025-07-25T05:50:00Z"
-  total_items: 2
+  last_updated: "2025-07-25T13:45:00Z"
+  total_items: 3
   active_items: 0
-  completed_items: 2
+  completed_items: 3
 
 items:
   - id: "logging-observability"
@@ -52,5 +52,31 @@ items:
     links:
       - "src/docker_optimizer/config.py"
     tags: ["technical-debt", "usability"]
+
+  - id: "fix-import-dependencies"
+    title: "Fix Import Dependencies and Module Loading"
+    type: "bug"
+    description: "Core package imports fail due to missing dependencies (pydantic, psutil, etc.) preventing basic functionality"
+    acceptance_criteria:
+      - "Fix core package imports to work without all optional dependencies"
+      - "Add graceful handling for missing optional dependencies"
+      - "Ensure CLI works with minimal dependencies"
+      - "Add dependency validation and helpful error messages"
+    effort: 2
+    value: 8
+    time_criticality: 8
+    risk_reduction: 5
+    wsjf_score: 10.5
+    aging_multiplier: 1.0
+    status: DONE
+    completed_at: "2025-07-25T13:50:00Z"
+    risk_tier: "LOW"
+    created_at: "2025-07-25T13:45:00Z"
+    links:
+      - "src/docker_optimizer/__init__.py"
+      - "src/docker_optimizer/external_security.py"
+      - "src/docker_optimizer/models.py"
+      - "pyproject.toml"
+    tags: ["bug", "critical", "dependencies"]
 
 discovered_tasks: []

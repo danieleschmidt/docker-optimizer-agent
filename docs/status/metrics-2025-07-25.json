@@ -1,0 +1,97 @@
+{
+  "timestamp": "2025-07-25T05:45:30.156150+00:00",
+  "completed_ids": [],
+  "coverage_delta": null,
+  "flaky_tests": [],
+  "ci_summary": {
+    "lint": {
+      "passed": false,
+      "errors": [
+        "Lint check failed or timed out"
+      ]
+    },
+    "tests": {
+      "passed": true,
+      "coverage": 85.0,
+      "failures": []
+    },
+    "build": {
+      "passed": true,
+      "warnings": []
+    }
+  },
+  "open_prs": 0,
+  "risks_or_blocks": [],
+  "backlog_size_by_status": {
+    "NEW": 17,
+    "REFINED": 0,
+    "READY": 0,
+    "DOING": 0,
+    "PR": 0,
+    "DONE": 0,
+    "BLOCKED": 0
+  },
+  "avg_cycle_time": null,
+  "wsjf_snapshot": [
+    {
+      "id": "todo-3364",
+      "title": "TODO: log_level=LogLevel.DEBUG if verbose else LogLevel....",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    },
+    {
+      "id": "todo-2119",
+      "title": "TODO: DEBUG = \"DEBUG\"...",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    },
+    {
+      "id": "todo-1520",
+      "title": "TODO: self._log(\"DEBUG\", message, context, extra=extra)...",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    },
+    {
+      "id": "todo-4592",
+      "title": "TODO: \"\"\"Discover new tasks from TODOs, FIXMEs, and fail...",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    },
+    {
+      "id": "todo-8015",
+      "title": "TODO: # Search for TODO/FIXME comments...",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    },
+    {
+      "id": "todo-1524",
+      "title": "TODO: [\"rg\", \"-n\", \"--type\", \"py\", \"TODO|FIXME|BUG|HACK\"...",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    },
+    {
+      "id": "todo-8534",
+      "title": "TODO: [\"find\", str(self.repo_path), \"-name\", \"*.py\", \"-e...",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    },
+    {
+      "id": "todo-1068",
+      "title": "TODO: title=f\"TODO...",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    },
+    {
+      "id": "todo-1554",
+      "title": "TODO: acceptance_criteria=[f\"Resolve TODO in {file_path}...",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    },
+    {
+      "id": "todo-2753",
+      "title": "TODO: \"\"\"Test automatic task discovery from TODO comment...",
+      "wsjf_score": 2.5,
+      "status": "NEW"
+    }
+  ]
+}

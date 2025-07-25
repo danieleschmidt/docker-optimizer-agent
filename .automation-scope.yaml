@@ -1,0 +1,25 @@
+version: "1.0"
+scope:
+  base_path: "/root/repo"
+  allowed_targets:
+    - "src/**"
+    - "tests/**"
+    - "docs/**"
+    - "*.py"
+    - "*.yml"
+    - "*.yaml"
+    - "*.md"
+    - "pyproject.toml"
+    - "Makefile"
+  restricted_paths:
+    - ".github/**"
+    - ".git/**"
+  permissions:
+    read: true
+    write: true
+    execute: false
+    ci_modify: false
+  safety_checks:
+    require_tests: true
+    max_file_size_mb: 10
+    backup_before_edit: false

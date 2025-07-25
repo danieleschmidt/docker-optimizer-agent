@@ -199,3 +199,105 @@ cache_settings:
         size = self.config.get_package_size("unknown-package")
         assert isinstance(size, int)
         assert size > 0  # Should return a reasonable default
+
+    def test_enhanced_config_validation(self):
+        """Test comprehensive configuration validation."""
+        config = Config()
+        
+        # Test valid configuration
+        errors = config.validate_config()
+        assert len(errors) == 0, f"Valid config should have no errors, got: {errors}"
+        
+        # Test invalid configuration
+        config._config['cache_settings']['max_size'] = -1
+        config._config['layer_estimation']['base_layer_mb'] = 'invalid'
+        
+        errors = config.validate_config()
+        assert len(errors) >= 2
+        assert any('cache_settings.max_size' in error for error in errors)
+        assert any('layer_estimation.base_layer_mb' in error for error in errors)
+
+    def test_enhanced_error_messages(self):
+        """Test enhanced error messages with context and suggestions."""
+        with pytest.raises(ConfigError) as exc_info:
+            raise ConfigError(
+                "Test error",
+                field_path="test.field",
+                suggestions=["Try this", "Or this"]
+            )
+        
+        error_str = str(exc_info.value)
+        assert "Configuration error in 'test.field'" in error_str
+        assert "Suggestions:" in error_str
+        assert "Try this" in error_str
+
+    def test_cli_defaults(self):
+        """Test CLI defaults configuration."""
+        config = Config()
+        cli_defaults = config.get_cli_defaults()
+        
+        assert isinstance(cli_defaults, dict)
+        assert 'verbose' in cli_defaults
+        assert 'output_format' in cli_defaults
+        assert 'security_scan' in cli_defaults
+        
+        # Test defaults
+        assert cli_defaults['verbose'] is False
+        assert cli_defaults['output_format'] == 'text'
+        assert cli_defaults['security_scan'] is False
+
+    def test_supported_env_vars(self):
+        """Test supported environment variables documentation."""
+        config = Config()
+        env_vars = config.get_supported_env_vars()
+        
+        assert isinstance(env_vars, dict)
+        assert len(env_vars) > 0
+        
+        # Check key environment variables are documented
+        assert 'DOCKER_OPTIMIZER_CACHE_MAX_SIZE' in env_vars
+        assert 'DOCKER_OPTIMIZER_VERBOSE' in env_vars
+        assert 'DOCKER_OPTIMIZER_OUTPUT_FORMAT' in env_vars
+        
+        # Check descriptions are provided
+        for var, desc in env_vars.items():
+            assert isinstance(desc, str)
+            assert len(desc) > 0
+
+    @patch.dict(os.environ, {
+        'DOCKER_OPTIMIZER_CACHE_MAX_SIZE': '2000',
+        'DOCKER_OPTIMIZER_VERBOSE': 'true',
+        'DOCKER_OPTIMIZER_OUTPUT_FORMAT': 'json'
+    })
+    def test_comprehensive_env_overrides(self):
+        """Test comprehensive environment variable overrides."""
+        config = Config()
+        
+        # Test cache setting override
+        cache_settings = config.get_cache_settings()
+        assert cache_settings['max_size'] == 2000
+        
+        # Test CLI defaults overrides
+        cli_defaults = config.get_cli_defaults()
+        assert cli_defaults['verbose'] is True
+        assert cli_defaults['output_format'] == 'json'
+
+    @patch.dict(os.environ, {'DOCKER_OPTIMIZER_CACHE_MAX_SIZE': 'invalid'})
+    def test_env_override_validation(self):
+        """Test environment variable validation with helpful errors."""
+        with pytest.raises(ConfigError) as exc_info:
+            Config()
+        
+        error = exc_info.value
+        assert error.field_path == "cache_settings.max_size"
+        assert len(error.suggestions) > 0
+        assert "Example:" in str(error)
+
+    @patch.dict(os.environ, {'DOCKER_OPTIMIZER_OUTPUT_FORMAT': 'invalid_format'})
+    def test_env_validation_with_choices(self):
+        """Test environment variable validation with choice constraints."""
+        with pytest.raises(ConfigError) as exc_info:
+            Config()
+        
+        error = exc_info.value
+        assert "Must be one of: text, json, yaml" in str(error)

@@ -4,7 +4,7 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List, Union
 
 import yaml
 
@@ -13,7 +13,26 @@ logger = logging.getLogger(__name__)
 
 class ConfigError(Exception):
     """Configuration-related errors."""
-    pass
+    
+    def __init__(self, message: str, field_path: Optional[str] = None, suggestions: Optional[List[str]] = None):
+        """Initialize ConfigError with detailed context.
+        
+        Args:
+            message: Error message
+            field_path: Path to the problematic field (e.g., 'cache_settings.max_size')
+            suggestions: List of suggested fixes
+        """
+        super().__init__(message)
+        self.field_path = field_path
+        self.suggestions = suggestions or []
+        
+    def __str__(self) -> str:
+        msg = super().__str__()
+        if self.field_path:
+            msg = f"Configuration error in '{self.field_path}': {msg}"
+        if self.suggestions:
+            msg += "\nSuggestions:\n" + "\n".join(f"  - {s}" for s in self.suggestions)
+        return msg
 
 
 class Config:
@@ -47,11 +66,28 @@ class Config:
                 user_config = self._load_config_file(config_path)
                 self._merge_config(user_config)
                 logger.info("Loaded configuration from %s", config_path)
+            except ConfigError:
+                raise  # Re-raise ConfigError with full context
             except Exception as e:
-                logger.warning("Failed to load configuration from %s: %s", config_path, e)
+                raise ConfigError(
+                    f"Failed to load configuration from {config_path}: {e}",
+                    suggestions=[
+                        "Check that the file exists and is readable",
+                        "Verify the file format is valid YAML or JSON",
+                        "Check file permissions"
+                    ]
+                )
 
         # Apply environment variable overrides
         self._apply_env_overrides()
+        
+        # Validate final configuration
+        validation_errors = self.validate_config()
+        if validation_errors:
+            raise ConfigError(
+                "Configuration validation failed after loading",
+                suggestions=["Fix the following issues:"] + validation_errors
+            )
 
     @classmethod
     def from_file(cls, config_path: str) -> "Config":
@@ -219,22 +255,64 @@ class Config:
                 self._config[key] = value
 
     def _apply_env_overrides(self) -> None:
-        """Apply environment variable overrides."""
+        """Apply environment variable overrides with comprehensive validation."""
         env_mappings = {
-            'DOCKER_OPTIMIZER_CACHE_MAX_SIZE': ('cache_settings', 'max_size', int),
-            'DOCKER_OPTIMIZER_CACHE_TTL_SECONDS': ('cache_settings', 'ttl_seconds', int),
-            'DOCKER_OPTIMIZER_UNKNOWN_IMAGE_SIZE': ('default_fallbacks', 'unknown_image_size_mb', int),
-            'DOCKER_OPTIMIZER_UNKNOWN_PACKAGE_SIZE': ('default_fallbacks', 'unknown_package_size_mb', int),
+            # Cache settings
+            'DOCKER_OPTIMIZER_CACHE_MAX_SIZE': ('cache_settings', 'max_size', int, lambda x: x > 0, "Must be a positive integer"),
+            'DOCKER_OPTIMIZER_CACHE_TTL_SECONDS': ('cache_settings', 'ttl_seconds', int, lambda x: x > 0, "Must be a positive integer"),
+            
+            # Fallback settings
+            'DOCKER_OPTIMIZER_UNKNOWN_IMAGE_SIZE': ('default_fallbacks', 'unknown_image_size_mb', int, lambda x: x > 0, "Must be a positive integer"),
+            'DOCKER_OPTIMIZER_UNKNOWN_PACKAGE_SIZE': ('default_fallbacks', 'unknown_package_size_mb', int, lambda x: x > 0, "Must be a positive integer"),
+            
+            # Layer estimation
+            'DOCKER_OPTIMIZER_BASE_LAYER_MB': ('layer_estimation', 'base_layer_mb', int, lambda x: x > 0, "Must be a positive integer"),
+            'DOCKER_OPTIMIZER_PACKAGE_LAYER_MB': ('layer_estimation', 'package_layer_mb', int, lambda x: x > 0, "Must be a positive integer"),
+            'DOCKER_OPTIMIZER_COPY_LAYER_MB': ('layer_estimation', 'copy_layer_mb', int, lambda x: x > 0, "Must be a positive integer"),
+            'DOCKER_OPTIMIZER_RUN_LAYER_MB': ('layer_estimation', 'run_layer_mb', int, lambda x: x > 0, "Must be a positive integer"),
+            
+            # CLI behavior settings
+            'DOCKER_OPTIMIZER_VERBOSE': ('cli_defaults', 'verbose', bool, None, None),
+            'DOCKER_OPTIMIZER_OUTPUT_FORMAT': ('cli_defaults', 'output_format', str, lambda x: x in ['text', 'json', 'yaml'], "Must be one of: text, json, yaml"),
+            'DOCKER_OPTIMIZER_SECURITY_SCAN': ('cli_defaults', 'security_scan', bool, None, None),
         }
 
-        for env_var, (section, key, type_func) in env_mappings.items():
+        # Ensure cli_defaults section exists
+        if 'cli_defaults' not in self._config:
+            self._config['cli_defaults'] = {
+                'verbose': False,
+                'output_format': 'text',
+                'security_scan': False
+            }
+
+        for env_var, (section, key, type_func, validator, error_msg) in env_mappings.items():
             value = os.getenv(env_var)
             if value is not None:
                 try:
-                    self._config[section][key] = type_func(value)
+                    # Type conversion
+                    if type_func == bool:
+                        parsed_value = value.lower() in ('true', '1', 'yes', 'on')
+                    else:
+                        parsed_value = type_func(value)
+                    
+                    # Validation
+                    if validator and not validator(parsed_value):
+                        raise ConfigError(
+                            f"Invalid value for {env_var}: {error_msg}",
+                            field_path=f"{section}.{key}",
+                            suggestions=[f"Example: {env_var}=100" if type_func == int else f"Example: {env_var}=true"]
+                        )
+                    
+                    self._config[section][key] = parsed_value
                     logger.debug("Applied environment override: %s=%s", env_var, value)
+                    
                 except (ValueError, TypeError) as e:
-                    logger.warning("Invalid environment variable %s=%s: %s", env_var, value, e)
+                    error_msg = f"Invalid environment variable {env_var}={value}: {e}"
+                    suggestions = [
+                        f"Check that the value is a valid {type_func.__name__}",
+                        f"Example: {env_var}={'true' if type_func == bool else '100' if type_func == int else 'text'}"
+                    ]
+                    raise ConfigError(error_msg, field_path=f"{section}.{key}", suggestions=suggestions)
 
     def get_base_image_sizes(self) -> Dict[str, int]:
         """Get base image sizes configuration."""
@@ -286,23 +364,121 @@ class Config:
         """
         return self._config.copy()
 
+    def validate_config(self) -> List[str]:
+        """Validate current configuration and return list of issues.
+        
+        Returns:
+            List of validation error messages (empty if valid)
+        """
+        errors = []
+        
+        # Validate cache settings
+        cache = self._config.get('cache_settings', {})
+        if not isinstance(cache.get('max_size'), int) or cache.get('max_size', 0) <= 0:
+            errors.append("cache_settings.max_size must be a positive integer")
+        if not isinstance(cache.get('ttl_seconds'), int) or cache.get('ttl_seconds', 0) <= 0:
+            errors.append("cache_settings.ttl_seconds must be a positive integer")
+            
+        # Validate layer estimation
+        layer = self._config.get('layer_estimation', {})
+        for key in ['base_layer_mb', 'package_layer_mb', 'copy_layer_mb', 'run_layer_mb']:
+            if not isinstance(layer.get(key), int) or layer.get(key, 0) <= 0:
+                errors.append(f"layer_estimation.{key} must be a positive integer")
+                
+        # Validate fallbacks
+        fallbacks = self._config.get('default_fallbacks', {})
+        for key in ['unknown_image_size_mb', 'unknown_package_size_mb']:
+            if not isinstance(fallbacks.get(key), int) or fallbacks.get(key, 0) <= 0:
+                errors.append(f"default_fallbacks.{key} must be a positive integer")
+                
+        # Validate base image sizes
+        base_images = self._config.get('base_image_sizes', {})
+        if not isinstance(base_images, dict):
+            errors.append("base_image_sizes must be a dictionary")
+        else:
+            for image, size in base_images.items():
+                if not isinstance(size, int) or size <= 0:
+                    errors.append(f"base_image_sizes.{image} must be a positive integer")
+                    
+        # Validate package sizes
+        packages = self._config.get('package_sizes', {})
+        if not isinstance(packages, dict):
+            errors.append("package_sizes must be a dictionary")
+        else:
+            for package, size in packages.items():
+                if not isinstance(size, int) or size <= 0:
+                    errors.append(f"package_sizes.{package} must be a positive integer")
+        
+        return errors
+    
+    def get_cli_defaults(self) -> Dict[str, Any]:
+        """Get CLI default settings.
+        
+        Returns:
+            Dictionary of CLI default values
+        """
+        return self._config.get('cli_defaults', {
+            'verbose': False,
+            'output_format': 'text', 
+            'security_scan': False
+        })
+    
+    def get_supported_env_vars(self) -> Dict[str, str]:
+        """Get list of supported environment variables with descriptions.
+        
+        Returns:
+            Dictionary mapping env var names to descriptions
+        """
+        return {
+            'DOCKER_OPTIMIZER_CACHE_MAX_SIZE': 'Maximum cache size (positive integer)',
+            'DOCKER_OPTIMIZER_CACHE_TTL_SECONDS': 'Cache TTL in seconds (positive integer)',
+            'DOCKER_OPTIMIZER_UNKNOWN_IMAGE_SIZE': 'Fallback size for unknown images in MB (positive integer)',
+            'DOCKER_OPTIMIZER_UNKNOWN_PACKAGE_SIZE': 'Fallback size for unknown packages in MB (positive integer)',
+            'DOCKER_OPTIMIZER_BASE_LAYER_MB': 'Base layer size estimate in MB (positive integer)',
+            'DOCKER_OPTIMIZER_PACKAGE_LAYER_MB': 'Package layer size estimate in MB (positive integer)',
+            'DOCKER_OPTIMIZER_COPY_LAYER_MB': 'Copy layer size estimate in MB (positive integer)',
+            'DOCKER_OPTIMIZER_RUN_LAYER_MB': 'Run layer size estimate in MB (positive integer)',
+            'DOCKER_OPTIMIZER_VERBOSE': 'Enable verbose output (true/false)',
+            'DOCKER_OPTIMIZER_OUTPUT_FORMAT': 'Default output format (text/json/yaml)',
+            'DOCKER_OPTIMIZER_SECURITY_SCAN': 'Enable security scanning by default (true/false)',
+        }
+
     def save_to_file(self, config_path: str, format: str = "yaml") -> None:
-        """Save current configuration to file.
+        """Save current configuration to file with validation.
 
         Args:
             config_path: Path where to save configuration
             format: File format ('yaml' or 'json')
+            
+        Raises:
+            ConfigError: If configuration is invalid or cannot be saved
         """
+        # Validate configuration before saving
+        validation_errors = self.validate_config()
+        if validation_errors:
+            raise ConfigError(
+                "Cannot save invalid configuration",
+                suggestions=["Fix the following validation errors:"] + validation_errors
+            )
+        
         path = Path(config_path)
 
         try:
             if format.lower() == "json":
-                content = json.dumps(self._config, indent=2)
+                content = json.dumps(self._config, indent=2, sort_keys=True)
             else:
-                content = yaml.dump(self._config, default_flow_style=False, indent=2)
+                content = yaml.dump(self._config, default_flow_style=False, indent=2, sort_keys=True)
 
+            # Create parent directory if it doesn't exist
+            path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content)
             logger.info("Configuration saved to %s", config_path)
 
         except Exception as e:
-            raise ConfigError(f"Failed to save configuration to {config_path}: {e}") from e
+            raise ConfigError(
+                f"Failed to save configuration to {config_path}: {e}",
+                suggestions=[
+                    "Check that the directory exists and is writable",
+                    "Ensure you have permission to write to the target directory"
+                ]
+            ) from e

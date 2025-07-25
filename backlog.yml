@@ -1,0 +1,56 @@
+version: "1.0"
+metadata:
+  project: "docker-optimizer"
+  last_updated: "2025-07-25T05:50:00Z"
+  total_items: 2
+  active_items: 0
+  completed_items: 2
+
+items:
+  - id: "logging-observability"
+    title: "Logging & Observability"
+    type: "enhancement"
+    description: "Structured logging with contextual information, performance metrics collection and reporting, error tracking and diagnostic information"
+    acceptance_criteria:
+      - "Implement structured logging with JSON format"
+      - "Add performance metrics collection"
+      - "Create error tracking system with diagnostic info"
+      - "Add logging configuration options"
+    effort: 2
+    value: 4
+    time_criticality: 2
+    risk_reduction: 3
+    wsjf_score: 4.5
+    aging_multiplier: 1.0
+    status: DONE
+    completed_at: "2025-07-25T05:50:00Z"
+    risk_tier: "LOW"
+    created_at: "2025-07-25T00:00:00Z"
+    links:
+      - "src/docker_optimizer/logging_observability.py"
+    tags: ["technical-debt", "production", "monitoring"]
+
+  - id: "config-management-enhancement"
+    title: "Configuration Management Enhancement"
+    type: "enhancement"
+    description: "User configuration files (~/.docker-optimizer.yml), environment variable support for all options, configuration validation and helpful error messages"
+    acceptance_criteria:
+      - "Enhance existing config.py with better validation"
+      - "Add comprehensive error messages for invalid configs"
+      - "Support all CLI options via environment variables"
+      - "Add config file schema validation"
+    effort: 1
+    value: 3
+    time_criticality: 1
+    risk_reduction: 2
+    wsjf_score: 6.0
+    aging_multiplier: 1.0
+    status: DONE
+    completed_at: "2025-07-25T05:50:00Z"
+    risk_tier: "LOW"
+    created_at: "2025-07-25T00:00:00Z"
+    links:
+      - "src/docker_optimizer/config.py"
+    tags: ["technical-debt", "usability"]
+
+discovered_tasks: []

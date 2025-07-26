@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-07-26T10:00:00Z",
+  "completed_ids": [],
+  "coverage_delta": "0%",
+  "flaky_tests": [],
+  "ci_summary": "no_test_env",
+  "open_prs": 0,
+  "risks_or_blocks": ["Test environment requires Python dependencies setup"],
+  "backlog_size_by_status": {
+    "NEW": 0,
+    "REFINED": 0,
+    "READY": 0,
+    "DOING": 0,
+    "DONE": 3
+  },
+  "avg_cycle_time": "0",
+  "dora": {
+    "deploy_freq": "0_per_day",
+    "lead_time": "0_hours",
+    "change_fail_rate": "0%",
+    "mttr": "0_hours"
+  },
+  "rerere_auto_resolved_total": 0,
+  "merge_driver_hits_total": 0,
+  "ci_failure_rate": "0%",
+  "pr_backoff_state": "inactive",
+  "wsjf_snapshot": []
+}

@@ -1,0 +1,172 @@
+repos:
+  # General formatting and validation
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: detect-private-key
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: name-tests-test
+      - id: requirements-txt-fixer
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  # Python code formatting with Black
+  - repo: https://github.com/psf/black
+    rev: 23.7.0
+    hooks:
+      - id: black
+        args: ['--line-length=88', '--target-version=py39']
+        language_version: python3
+
+  # Python import sorting with isort
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: ['--profile=black', '--line-length=88']
+
+  # Python linting with Ruff (faster alternative to flake8)
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.284
+    hooks:
+      - id: ruff
+        args: ['--fix', '--exit-non-zero-on-fix']
+
+  # Python type checking with mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.5.1
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-requests, types-PyYAML, types-click]
+        args: ['--config-file=pyproject.toml']
+
+  # Security scanning with bandit
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: ['-c', 'pyproject.toml']
+        additional_dependencies: ['bandit[toml]']
+
+  # Documentation linting
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args: ['--config=pyproject.toml']
+
+  # YAML formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.1
+    hooks:
+      - id: prettier
+        types: [yaml]
+        exclude: '^docs/'
+
+  # Dockerfile linting
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        args: ['--ignore', 'DL3008', '--ignore', 'DL3009']
+
+  # Shell script linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.5
+    hooks:
+      - id: shellcheck
+
+  # Commit message formatting
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.6.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+
+  # Secrets detection
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+
+  # License checking
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.1
+    hooks:
+      - id: insert-license
+        files: \.py$
+        args:
+          - --license-filepath
+          - .license_header.txt
+          - --comment-style
+          - '#'
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.35.0
+    hooks:
+      - id: markdownlint
+        args: ['--config', '.markdownlint.json']
+
+  # Python dependency scanning
+  - repo: https://github.com/PyCQA/safety
+    rev: 2.3.4
+    hooks:
+      - id: safety
+        args: ['--ignore', '51457']  # Ignore specific known issues
+
+  # Custom hooks for Docker Optimizer specific checks
+  - repo: local
+    hooks:
+      - id: dockerfile-optimization-test
+        name: Test Dockerfile optimization
+        entry: python -m pytest tests/test_optimizer.py -q
+        language: system
+        files: '^src/docker_optimizer/optimizer\.py$'
+        pass_filenames: false
+
+      - id: security-scan-test
+        name: Test security scanning
+        entry: python -m pytest tests/test_security.py -q
+        language: system
+        files: '^src/docker_optimizer/.*security.*\.py$'
+        pass_filenames: false
+
+      - id: performance-benchmark
+        name: Performance benchmark check
+        entry: python -m pytest tests/test_performance.py::test_optimization_speed -q
+        language: system
+        files: '^src/docker_optimizer/performance\.py$'
+        pass_filenames: false
+
+# Global configuration
+default_language_version:
+  python: python3.9
+
+# CI configuration
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

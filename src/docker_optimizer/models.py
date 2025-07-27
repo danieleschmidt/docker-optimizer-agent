@@ -9,19 +9,19 @@ try:
 except ImportError:
     # Simple fallback base class if pydantic is not available
     PYDANTIC_AVAILABLE = False
-    
+
     class BaseModel:
         """Fallback BaseModel when pydantic is not available."""
         def __init__(self, **kwargs):
             for key, value in kwargs.items():
                 setattr(self, key, value)
-    
+
     def Field(default=None, description="", **kwargs):
         """Fallback Field function that handles all pydantic Field parameters."""
         if 'default_factory' in kwargs:
             return kwargs['default_factory']()
         return default
-    
+
     def validator(*args, **kwargs):
         """Fallback validator decorator."""
         def decorator(func):

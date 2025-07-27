@@ -11,7 +11,7 @@ import click
 from .advanced_security import AdvancedSecurityEngine
 from .external_security import ExternalSecurityScanner
 from .language_optimizer import LanguageOptimizer, analyze_project_language
-from .logging_observability import ObservabilityManager, LogLevel
+from .logging_observability import LogLevel, ObservabilityManager
 from .models import (
     DockerfileAnalysis,
     ImageAnalysis,
@@ -191,7 +191,7 @@ def main(
         log_level=LogLevel.DEBUG if verbose else LogLevel.INFO,
         service_name="docker-optimizer-cli"
     )
-    
+
     # Handle list presets flag early
     if list_presets:
         _list_available_presets()

@@ -9,7 +9,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from .config import Config
-from .logging_observability import ObservabilityManager, LogLevel
+from .logging_observability import ObservabilityManager
 from .models import (
     RegistryComparison,
     RegistryRecommendation,
@@ -38,7 +38,7 @@ class RegistryIntegrator:
             'GCR': 'gcr.io',
             'DOCKERHUB': 'registry-1.docker.io'
         }
-        
+
         self.obs_manager.logger.info("Registry integrator initialized", extra={
             "registry_endpoints": list(self._registry_endpoints.keys())
         })
@@ -171,7 +171,7 @@ class RegistryIntegrator:
             operation_type="registry_vulnerability_scan",
         ) as context:
             registry_type = registry_type.upper()
-            
+
             self.obs_manager.logger.info("Starting vulnerability scan", context=context, extra={
                 "registry_type": registry_type,
                 "image_name": image_name
@@ -189,13 +189,13 @@ class RegistryIntegrator:
                     "supported_types": list(self._registry_endpoints.keys())
                 })
                 raise ValueError(error_msg)
-            
+
             self.obs_manager.logger.info("Vulnerability scan completed", context=context, extra={
                 "vulnerabilities_found": len(result.vulnerabilities),
                 "critical_count": len([v for v in result.vulnerabilities if v.severity == "CRITICAL"]),
                 "high_count": len([v for v in result.vulnerabilities if v.severity == "HIGH"])
             })
-            
+
             return result
 
     def compare_across_registries(self, image_name: str, registries: List[str]) -> RegistryComparison:

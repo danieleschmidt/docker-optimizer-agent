@@ -21,7 +21,7 @@ class TrivyScanner:
         """Initialize Trivy scanner."""
         self.obs_manager = obs_manager or ObservabilityManager(service_name="trivy-scanner")
         self.trivy_available = self._check_trivy_availability()
-        
+
         self.obs_manager.logger.info("Trivy scanner initialized", extra={
             "trivy_available": self.trivy_available
         })

@@ -1,0 +1,154 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Docker Optimizer CLI",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/docker_optimizer/cli.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--dockerfile",
+        "${workspaceFolder}/example.dockerfile",
+        "--verbose"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "DEBUG": "true"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Docker Optimizer - Security Scan",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/docker_optimizer/cli.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--dockerfile",
+        "${workspaceFolder}/example.dockerfile",
+        "--security-scan",
+        "--format",
+        "json",
+        "--verbose"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "DEBUG": "true"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Docker Optimizer - Multistage",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/docker_optimizer/cli.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--dockerfile",
+        "${workspaceFolder}/example.dockerfile",
+        "--multistage",
+        "--performance",
+        "--verbose"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "DEBUG": "true"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Python: Current File (Debug)",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "DEBUG": "true",
+        "LOG_LEVEL": "DEBUG"
+      },
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Pytest Current File",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "${file}",
+        "-v",
+        "-s"
+      ],
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Python: Pytest All Tests",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "tests/",
+        "-v",
+        "--cov=docker_optimizer",
+        "--cov-report=html",
+        "--cov-report=term"
+      ],
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Docker Optimizer - Batch Processing",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/docker_optimizer/cli.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--batch",
+        "${workspaceFolder}/example.dockerfile",
+        "--batch",
+        "${workspaceFolder}/python-example.dockerfile",
+        "--performance",
+        "--performance-report",
+        "--verbose"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "DEBUG": "true"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Python: Remote Attach",
+      "type": "python",
+      "request": "attach",
+      "port": 5678,
+      "host": "localhost",
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/app"
+        }
+      ]
+    }
+  ]
+}

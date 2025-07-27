@@ -192,3 +192,120 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Docker Optimizer Agent specific ignores
+optimization_cache/
+scan_results/
+dockerfiles_optimized/
+performance_reports/
+security_reports/
+sbom_reports/
+metrics/
+logs/
+traces/
+
+# Trivy cache
+.trivyignore
+trivy-cache/
+
+# Security scanning
+.secrets.baseline
+bandit.yaml
+safety.json
+
+# Performance profiling
+.prof
+*.prof
+profiling/
+
+# Local development overrides
+docker-compose.dev.yml
+docker-compose.test.yml
+.env.dev
+.env.test
+.env.local
+.env.production
+.env.development
+
+# Container artifacts
+*.tar
+*.img
+*.oci
+
+# Build context exclusions for Docker
+.git/
+.github/
+docs/
+tests/
+*.md
+LICENSE
+
+# Secrets and credentials (extra protection)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Local testing directories
+test_dockerfiles/
+test_images/
+test_results/
+
+# Documentation builds
+docs/_build/
+docs/build/
+site/
+
+# Configuration overrides
+config.local.yaml
+config.local.yml
+config.local.json
+settings.local.json
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# OS generated files
+*~
+.nfs*
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows specific
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# IDE workspace files
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+.netrwhist
+Session.vim
+.vim/
+.history/
+
+# Cache directories
+.cache/
+.black_cache/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp

@@ -1,0 +1,143 @@
+version: '3.8'
+
+services:
+  # Main development service
+  docker-optimizer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PYTHONPATH=/app/src
+      - DOCKER_BUILDKIT=1
+      - BUILDKIT_PROGRESS=plain
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+    networks:
+      - optimizer-network
+    depends_on:
+      - trivy-server
+      - registry
+
+  # Trivy server for vulnerability scanning
+  trivy-server:
+    image: aquasec/trivy:latest
+    command: server --listen 0.0.0.0:4954
+    ports:
+      - "4954:4954"
+    networks:
+      - optimizer-network
+    volumes:
+      - trivy-cache:/root/.cache/trivy
+
+  # Local Docker registry for testing
+  registry:
+    image: registry:2
+    ports:
+      - "5000:5000"
+    networks:
+      - optimizer-network
+    volumes:
+      - registry-data:/var/lib/registry
+    environment:
+      - REGISTRY_STORAGE_DELETE_ENABLED=true
+
+  # Documentation server
+  docs:
+    image: nginx:alpine
+    ports:
+      - "8081:80"
+    volumes:
+      - ./docs:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - optimizer-network
+    depends_on:
+      - docker-optimizer
+
+  # Monitoring stack
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - optimizer-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - optimizer-network
+    depends_on:
+      - prometheus
+
+  # Testing services
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: testing
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PYTHONPATH=/app/src
+      - PYTEST_TIMEOUT=300
+    networks:
+      - optimizer-network
+    profiles:
+      - testing
+    depends_on:
+      - trivy-server
+      - registry
+
+  # Security scanning
+  security-scanner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: security
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app/src
+    networks:
+      - optimizer-network
+    profiles:
+      - security
+
+volumes:
+  trivy-cache:
+    driver: local
+  registry-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  optimizer-network:
+    driver: bridge

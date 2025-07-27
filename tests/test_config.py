@@ -203,15 +203,15 @@ cache_settings:
     def test_enhanced_config_validation(self):
         """Test comprehensive configuration validation."""
         config = Config()
-        
+
         # Test valid configuration
         errors = config.validate_config()
         assert len(errors) == 0, f"Valid config should have no errors, got: {errors}"
-        
+
         # Test invalid configuration
         config._config['cache_settings']['max_size'] = -1
         config._config['layer_estimation']['base_layer_mb'] = 'invalid'
-        
+
         errors = config.validate_config()
         assert len(errors) >= 2
         assert any('cache_settings.max_size' in error for error in errors)
@@ -225,7 +225,7 @@ cache_settings:
                 field_path="test.field",
                 suggestions=["Try this", "Or this"]
             )
-        
+
         error_str = str(exc_info.value)
         assert "Configuration error in 'test.field'" in error_str
         assert "Suggestions:" in error_str
@@ -235,12 +235,12 @@ cache_settings:
         """Test CLI defaults configuration."""
         config = Config()
         cli_defaults = config.get_cli_defaults()
-        
+
         assert isinstance(cli_defaults, dict)
         assert 'verbose' in cli_defaults
         assert 'output_format' in cli_defaults
         assert 'security_scan' in cli_defaults
-        
+
         # Test defaults
         assert cli_defaults['verbose'] is False
         assert cli_defaults['output_format'] == 'text'
@@ -250,15 +250,15 @@ cache_settings:
         """Test supported environment variables documentation."""
         config = Config()
         env_vars = config.get_supported_env_vars()
-        
+
         assert isinstance(env_vars, dict)
         assert len(env_vars) > 0
-        
+
         # Check key environment variables are documented
         assert 'DOCKER_OPTIMIZER_CACHE_MAX_SIZE' in env_vars
         assert 'DOCKER_OPTIMIZER_VERBOSE' in env_vars
         assert 'DOCKER_OPTIMIZER_OUTPUT_FORMAT' in env_vars
-        
+
         # Check descriptions are provided
         for var, desc in env_vars.items():
             assert isinstance(desc, str)
@@ -272,11 +272,11 @@ cache_settings:
     def test_comprehensive_env_overrides(self):
         """Test comprehensive environment variable overrides."""
         config = Config()
-        
+
         # Test cache setting override
         cache_settings = config.get_cache_settings()
         assert cache_settings['max_size'] == 2000
-        
+
         # Test CLI defaults overrides
         cli_defaults = config.get_cli_defaults()
         assert cli_defaults['verbose'] is True
@@ -287,7 +287,7 @@ cache_settings:
         """Test environment variable validation with helpful errors."""
         with pytest.raises(ConfigError) as exc_info:
             Config()
-        
+
         error = exc_info.value
         assert error.field_path == "cache_settings.max_size"
         assert len(error.suggestions) > 0
@@ -298,6 +298,6 @@ cache_settings:
         """Test environment variable validation with choice constraints."""
         with pytest.raises(ConfigError) as exc_info:
             Config()
-        
+
         error = exc_info.value
         assert "Must be one of: text, json, yaml" in str(error)

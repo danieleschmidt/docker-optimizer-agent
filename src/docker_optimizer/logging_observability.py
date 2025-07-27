@@ -83,7 +83,7 @@ class OperationContext:
             "type": metric_type.value,
             "timestamp": time.time()
         }
-    
+
     def add_metadata(self, key: str, value: Any) -> None:
         """Add metadata to the operation context.
         
@@ -92,7 +92,7 @@ class OperationContext:
             value: Metadata value
         """
         self.metadata[key] = value
-    
+
     def get_duration(self) -> float:
         """Get operation duration in seconds.
         
@@ -116,7 +116,7 @@ class OperationContext:
             context["dockerfile_path"] = self.dockerfile_path
         if self.parent_id:
             context["parent_id"] = self.parent_id
-        
+
         if self.metadata:
             context["metadata"] = self.metadata
         if self.metrics:
@@ -174,14 +174,14 @@ class JSONFormatter(logging.Formatter):
 
 class PerformanceMetrics:
     """Performance metrics collector for comprehensive observability."""
-    
+
     def __init__(self):
         """Initialize performance metrics collector."""
         self.metrics: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
         self.counters: Dict[str, int] = defaultdict(int)
         self.timers: Dict[str, float] = {}
         self.gauges: Dict[str, float] = {}
-    
+
     def increment_counter(self, name: str, value: int = 1, tags: Optional[Dict[str, str]] = None) -> None:
         """Increment a counter metric.
         
@@ -198,7 +198,7 @@ class PerformanceMetrics:
             "timestamp": time.time(),
             "tags": tags or {}
         })
-    
+
     def set_gauge(self, name: str, value: float, tags: Optional[Dict[str, str]] = None) -> None:
         """Set a gauge metric.
         
@@ -214,7 +214,7 @@ class PerformanceMetrics:
             "timestamp": time.time(),
             "tags": tags or {}
         })
-    
+
     def record_timing(self, name: str, duration: float, tags: Optional[Dict[str, str]] = None) -> None:
         """Record a timing metric.
         
@@ -229,7 +229,7 @@ class PerformanceMetrics:
             "timestamp": time.time(),
             "tags": tags or {}
         })
-    
+
     def get_summary(self) -> Dict[str, Any]:
         """Get performance metrics summary.
         
@@ -245,7 +245,7 @@ class PerformanceMetrics:
             },
             "timestamp": time.time()
         }
-    
+
     @contextmanager
     def timer(self, name: str, tags: Optional[Dict[str, str]] = None) -> Generator[None, None, None]:
         """Context manager for timing operations.
@@ -264,7 +264,7 @@ class PerformanceMetrics:
 
 class ErrorTracker:
     """Error tracking system for comprehensive error analysis."""
-    
+
     def __init__(self, max_errors: int = 1000):
         """Initialize error tracker.
         
@@ -275,7 +275,7 @@ class ErrorTracker:
         self.errors: List[Dict[str, Any]] = []
         self.error_counts: Dict[str, int] = defaultdict(int)
         self.error_rates: Dict[str, List[float]] = defaultdict(list)
-    
+
     def track_error(
         self,
         error: Exception,
@@ -295,7 +295,7 @@ class ErrorTracker:
         error_id = str(uuid.uuid4())
         error_type = type(error).__name__
         timestamp = time.time()
-        
+
         error_record = {
             "error_id": error_id,
             "error_type": error_type,
@@ -305,28 +305,28 @@ class ErrorTracker:
             "tags": tags or {},
             "context": context.to_dict() if context else None
         }
-        
+
         # Add to error list (maintain max size)
         self.errors.append(error_record)
         if len(self.errors) > self.max_errors:
             self.errors.pop(0)
-        
+
         # Update error counts
         self.error_counts[error_type] += 1
-        
+
         # Update error rates (errors per minute)
         current_minute = int(timestamp // 60)
         self.error_rates[error_type].append(current_minute)
-        
+
         # Clean old rate data (keep last 60 minutes)
         cutoff = current_minute - 60
         self.error_rates[error_type] = [
-            minute for minute in self.error_rates[error_type] 
+            minute for minute in self.error_rates[error_type]
             if minute > cutoff
         ]
-        
+
         return error_id
-    
+
     def get_error_summary(self) -> Dict[str, Any]:
         """Get error tracking summary.
         
@@ -335,13 +335,13 @@ class ErrorTracker:
         """
         current_time = time.time()
         current_minute = int(current_time // 60)
-        
+
         # Calculate error rates per minute for each error type
         error_rates = {}
         for error_type, minutes in self.error_rates.items():
             recent_minutes = [m for m in minutes if m > current_minute - 5]  # Last 5 minutes
             error_rates[error_type] = len(recent_minutes) / 5.0  # Errors per minute
-        
+
         return {
             "total_errors": len(self.errors),
             "error_counts_by_type": dict(self.error_counts),
@@ -349,7 +349,7 @@ class ErrorTracker:
             "recent_errors": self.errors[-10:],  # Last 10 errors
             "timestamp": current_time
         }
-    
+
     def get_error_by_id(self, error_id: str) -> Optional[Dict[str, Any]]:
         """Get error details by ID.
         
@@ -847,7 +847,7 @@ class ObservabilityManager:
 
         except Exception as e:
             self.logger.error("Failed to collect performance metrics", exception=e)
-    
+
     def configure_logging(self, config: Dict[str, Any]) -> None:
         """Configure logging with advanced options.
         
@@ -870,24 +870,24 @@ class ObservabilityManager:
                 self.logger.info(f"Log level updated to {new_level.value}")
             except ValueError:
                 self.logger.warning(f"Invalid log level: {config['log_level']}")
-        
+
         # Configure file rotation
         if 'max_file_size_mb' in config or 'backup_count' in config:
             max_size = config.get('max_file_size_mb', 50) * 1024 * 1024
             backup_count = config.get('backup_count', 5)
-            
+
             # Update existing file handlers
             for handler in self.logger._logger.handlers:
                 if isinstance(handler, logging.handlers.RotatingFileHandler):
                     handler.maxBytes = max_size
                     handler.backupCount = backup_count
-        
+
         # Log configuration update
         self.logger.info("Logging configuration updated", extra={
             "config": config,
             "applied_at": datetime.now().isoformat()
         })
-    
+
     def get_logging_config(self) -> Dict[str, Any]:
         """Get current logging configuration.
         

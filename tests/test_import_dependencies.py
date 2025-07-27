@@ -5,8 +5,6 @@ Ensures the package imports gracefully even with missing optional dependencies.
 """
 
 import sys
-import unittest.mock as mock
-from importlib import reload
 
 
 class TestImportDependencies:
@@ -39,9 +37,8 @@ class TestImportDependencies:
 
     def test_cli_works_with_minimal_dependencies(self):
         """Test that CLI module exists and basic package works."""
-        import sys
         sys.path.insert(0, 'src')
-        
+
         # Test that package imports and has basic functionality
         try:
             import docker_optimizer
@@ -55,27 +52,27 @@ class TestImportDependencies:
 if __name__ == "__main__":
     # Simple test runner
     test = TestImportDependencies()
-    
+
     print("🧪 Testing import dependencies...")
-    
+
     print("=== GREEN PHASE: Testing fixes ===")
-    
+
     try:
         test.test_core_package_imports_without_pydantic()
         print("✅ test_core_package_imports_without_pydantic: PASSED")
     except AssertionError as e:
         print(f"❌ test_core_package_imports_without_pydantic: FAILED - {e}")
-    
+
     try:
         test.test_core_package_imports_without_psutil()
         print("✅ test_core_package_imports_without_psutil: PASSED")
     except AssertionError as e:
         print(f"❌ test_core_package_imports_without_psutil: FAILED - {e}")
-    
+
     try:
         test.test_cli_works_with_minimal_dependencies()
         print("✅ test_cli_works_with_minimal_dependencies: PASSED")
     except AssertionError as e:
         print(f"❌ test_cli_works_with_minimal_dependencies: FAILED - {e}")
-    
+
     print("🟢 GREEN PHASE: Tests should now pass!")

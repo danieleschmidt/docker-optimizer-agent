@@ -232,13 +232,22 @@ docker-compose.test.yml
 *.img
 *.oci
 
-# Build context exclusions for Docker
+# Build context exclusions for Docker (for Docker builds only, not git)
 .git/
 .github/
-docs/
-tests/
+# docs/ - Allow documentation for community contributions
+# tests/ - Allow tests for development
 *.md
 LICENSE
+
+# Allow essential community documentation files
+!CODE_OF_CONDUCT.md
+!CONTRIBUTING.md
+!SECURITY.md
+!README.md
+!docs/DEVELOPMENT.md
+!docs/workflows/
+!.github/ISSUE_TEMPLATE/
 
 # Secrets and credentials (extra protection)
 *.pem

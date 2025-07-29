@@ -2,7 +2,18 @@
 
 ## 🚨 Important Notice
 
-Due to GitHub's security restrictions, **GitHub Actions workflows cannot be created programmatically**. The autonomous SDLC enhancement has created all necessary workflow files, but they need to be manually copied to enable the complete CI/CD pipeline.
+Due to GitHub's security restrictions, **GitHub Actions workflows cannot be created programmatically**. The autonomous SDLC enhancement has prepared all necessary workflow configurations, but the actual `.github/workflows/*.yml` files need to be manually created to enable the complete CI/CD pipeline.
+
+## 📁 Workflow Files to Create Manually
+
+The following workflow files have been designed and are ready to be created in `.github/workflows/`:
+
+1. **ci.yml** - Core CI/CD pipeline with multi-Python matrix testing
+2. **security.yml** - Comprehensive security scanning (CodeQL, Trivy)  
+3. **release.yml** - Automated PyPI and Docker Hub publishing
+4. **performance.yml** - Performance benchmarking and regression detection
+5. **docs.yml** - Documentation automation and validation
+6. **dependency-update.yml** - Automated dependency maintenance
 
 ## 📋 Manual Steps Required
 

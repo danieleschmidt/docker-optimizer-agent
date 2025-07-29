@@ -1,0 +1,26 @@
+# Global ownership - all files require review from maintainers
+* @danieleschmidt
+
+# Core optimizer logic requires senior review
+/src/docker_optimizer/optimizer.py @danieleschmidt
+/src/docker_optimizer/security.py @danieleschmidt
+/src/docker_optimizer/advanced_security.py @danieleschmidt
+
+# Configuration and build files
+/pyproject.toml @danieleschmidt
+/Dockerfile @danieleschmidt
+/docker-compose.yml @danieleschmidt
+
+# Documentation changes
+/README.md @danieleschmidt
+/docs/ @danieleschmidt
+
+# CI/CD and workflow changes
+/.github/ @danieleschmidt
+/.pre-commit-config.yaml @danieleschmidt
+
+# Tests require review from any maintainer
+/tests/ @danieleschmidt
+
+# Monitoring and observability
+/monitoring/ @danieleschmidt

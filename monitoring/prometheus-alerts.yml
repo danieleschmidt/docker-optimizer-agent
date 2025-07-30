@@ -1,0 +1,71 @@
+# Prometheus alerting rules for Docker Optimizer Agent
+groups:
+  - name: docker-optimizer.rules
+    rules:
+      # Performance monitoring
+      - alert: DockerOptimizerHighMemoryUsage
+        expr: docker_optimizer_memory_usage_bytes > 512 * 1024 * 1024
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Docker Optimizer high memory usage"
+          description: "Memory usage is {{ $value | humanizeBytes }} on instance {{ $labels.instance }}"
+
+      - alert: DockerOptimizerSlowOptimization
+        expr: docker_optimizer_optimization_duration_seconds > 30
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Docker Optimizer slow optimization detected"
+          description: "Optimization took {{ $value }}s on instance {{ $labels.instance }}"
+
+      # Error monitoring
+      - alert: DockerOptimizerHighErrorRate
+        expr: rate(docker_optimizer_errors_total[5m]) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Docker Optimizer high error rate"
+          description: "Error rate is {{ $value }} errors/sec on instance {{ $labels.instance }}"
+
+      - alert: DockerOptimizerSecurityScanFailures
+        expr: increase(docker_optimizer_security_scan_failures_total[10m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Multiple security scan failures"
+          description: "{{ $value }} security scan failures in 10m on instance {{ $labels.instance }}"
+
+      # System health
+      - alert: DockerOptimizerDown
+        expr: up{job="docker-optimizer"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Docker Optimizer instance down"
+          description: "Docker Optimizer instance {{ $labels.instance }} is down"
+
+      # Resource optimization tracking  
+      - alert: DockerOptimizerLowOptimizationRatio
+        expr: docker_optimizer_size_reduction_ratio < 0.2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low Docker optimization effectiveness"
+          description: "Size reduction ratio is only {{ $value }}% on instance {{ $labels.instance }}"
+
+      # Security grade monitoring
+      - alert: DockerOptimizerLowSecurityGrades
+        expr: rate(docker_optimizer_security_grade_f_total[15m]) > 0.5
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate of F-grade security scores"
+          description: "{{ $value }} F-grade security scores per second on instance {{ $labels.instance }}"

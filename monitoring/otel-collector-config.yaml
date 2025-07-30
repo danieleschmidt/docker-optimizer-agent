@@ -1,0 +1,63 @@
+# OpenTelemetry Collector configuration for Docker Optimizer Agent
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'docker-optimizer'
+          static_configs:
+            - targets: ['localhost:8000']
+
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+  
+  resource:
+    attributes:
+      - key: service.name
+        value: docker-optimizer-agent
+        action: upsert
+      - key: service.version
+        value: "0.1.0"
+        action: upsert
+
+  probabilistic_sampler:
+    sampling_percentage: 20
+
+exporters:
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+  
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+  
+  loki:
+    endpoint: http://loki:3100/loki/api/v1/push
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch, resource, probabilistic_sampler]
+      exporters: [jaeger]
+    
+    metrics: 
+      receivers: [otlp, prometheus]
+      processors: [batch, resource]
+      exporters: [prometheus]
+    
+    logs:
+      receivers: [otlp] 
+      processors: [batch, resource]
+      exporters: [loki]
+
+  extensions: []

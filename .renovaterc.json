@@ -1,0 +1,68 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    "security:openssf-scorecard"
+  ],
+  "timezone": "UTC",
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "assigneesFromCodeOwners": true,
+  "reviewersFromCodeOwners": true,
+  
+  "packageRules": [
+    {
+      "matchManagers": ["pip_requirements", "setup-cfg", "pep621"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "reviewers": ["@CODEOWNERS"]
+    },
+    {
+      "matchManagers": ["pip_requirements", "setup-cfg", "pep621"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "schedule": [
+        "before 6am on monday"
+      ]
+    },
+    {
+      "matchCategories": ["python"],
+      "matchUpdateTypes": ["pin"],
+      "automerge": true,
+      "schedule": [
+        "at any time"
+      ]
+    }
+  ],
+  
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security",
+      "dependencies"
+    ],
+    "assignees": [
+      "@CODEOWNERS"
+    ]
+  },
+  
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": [
+      "before 6am on the first day of the month"
+    ]
+  },
+  
+  "python": {
+    "ignorePaths": [
+      "**/test_*.py",
+      "**/conftest.py"
+    ]
+  }
+}

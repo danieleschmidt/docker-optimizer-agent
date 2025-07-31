@@ -1,0 +1,54 @@
+# Codecov Configuration
+# Advanced coverage reporting and quality gates
+
+coverage:
+  precision: 2
+  round: down
+  range: 85..100
+
+  status:
+    project:
+      default:
+        target: 85%
+        threshold: 2%
+        base: auto
+        flags:
+          - unit
+        paths:
+          - src/
+    patch:
+      default:
+        target: 90%
+        threshold: 5%
+        flags:
+          - unit
+
+flags:
+  unit:
+    paths:
+      - src/docker_optimizer/
+    carryforward: true
+  integration:
+    paths:
+      - tests/test_integration.py
+    carryforward: false
+
+ignore:
+  - "src/docker_optimizer/__init__.py"
+  - "tests/"
+  - "setup.py"
+  - "docs/"
+  - "benchmarks/"
+
+comment:
+  layout: "header, diff, flags, files, footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+  branches:
+    - main
+    - develop
+
+github_checks:
+  annotations: true

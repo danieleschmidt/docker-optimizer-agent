@@ -1,9 +1,615 @@
 version: 1.0
 metadata: 
   project: docker-optimizer
-  last_updated: 2025-07-27T07:22:21.099142+00:00
-  total_items: 0
-  active_items: 0
-  completed_items: 0
+  last_updated: 2025-08-01T12:02:25.539540+00:00
+  total_items: 26
+  active_items: 24
+  completed_items: 2
 items: 
+  - 
+    id: env-deps-001
+    title: Install missing development dependencies: pytest, ruff, mypy, black
+    type: environment
+    description: Missing development tools: pytest (Python test runner), ruff (Python linter), mypy (Type checker), black (Code formatter)
+    acceptance_criteria: 
+      - Set up Python virtual environment
+      - Install all development dependencies
+      - Verify tools are accessible
+    effort: 3
+    value: 8
+    time_criticality: 5
+    risk_reduction: 3
+    wsjf_score: 5.333333333333333
+    aging_multiplier: 1.0
+    status: DONE
+    risk_tier: MEDIUM
+    created_at: 2025-08-01T12:02:25.472280+00:00
+    updated_at: None
+    links: 
+      - setup_environment.py
+      - pyproject.toml
+    tags: 
+      - discovered
+      - environment
+      - dependencies
+  - 
+    id: makefile-001
+    title: Fix duplicate Makefile targets causing warnings
+    type: build-system
+    description: Makefile has duplicate target definitions causing warnings
+    acceptance_criteria: 
+      - Remove duplicate target definitions
+      - Verify make commands work without warnings
+      - Test all make targets
+    effort: 2
+    value: 4
+    time_criticality: 3
+    risk_reduction: 2
+    wsjf_score: 4.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.538849+00:00
+    updated_at: None
+    links: 
+      - Makefile
+    tags: 
+      - discovered
+      - build-system
+      - warnings
+  - 
+    id: docs-env-001
+    title: Create comprehensive environment setup documentation
+    type: documentation
+    description: Missing documentation for setting up development environment with virtual environments
+    acceptance_criteria: 
+      - Document virtual environment setup process
+      - Include dependency installation steps
+      - Add troubleshooting section
+      - Provide platform-specific instructions
+    effort: 3
+    value: 6
+    time_criticality: 2
+    risk_reduction: 4
+    wsjf_score: 4.0
+    aging_multiplier: 1.0
+    status: DONE
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.539049+00:00
+    updated_at: None
+    links: 
+      - docs/
+    tags: 
+      - discovered
+      - documentation
+      - environment
+  - 
+    id: manual-7659
+    title: Address TODO: Simple script to promote discovered TODO items to ...
+    type: tech-debt
+    description: Found in promote_todos.py:3
+Simple script to promote discovered TODO items to READY status for execution.
+    acceptance_criteria: 
+      - Resolve TODO in promote_todos.py:3
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.436449+00:00
+    updated_at: None
+    links: 
+      - promote_todos.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-3072
+    title: Address TODO: if ("TODO" not in item.title or...
+    type: tech-debt
+    description: Found in targeted_execution.py:22
+if ("TODO" not in item.title or
+    acceptance_criteria: 
+      - Resolve TODO in targeted_execution.py:22
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.436950+00:00
+    updated_at: None
+    links: 
+      - targeted_execution.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-2129
+    title: Address TODO: todo_patterns = ["TODO", "FIXME", "HACK", "BUG", "...
+    type: tech-debt
+    description: Found in autonomous_execution.py:47
+todo_patterns = ["TODO", "FIXME", "HACK", "BUG", "XXX"]
+    acceptance_criteria: 
+      - Resolve TODO in autonomous_execution.py:47
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.437244+00:00
+    updated_at: None
+    links: 
+      - autonomous_execution.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-7852
+    title: Address TODO: ("Manual TODO discovery", self.discover_manual_tas...
+    type: tech-debt
+    description: Found in autonomous_execution.py:212
+("Manual TODO discovery", self.discover_manual_tasks),
+    acceptance_criteria: 
+      - Resolve TODO in autonomous_execution.py:212
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.437367+00:00
+    updated_at: None
+    links: 
+      - autonomous_execution.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-3735
+    title: Address TODO: self.todo_patterns = ["TODO", "FIXME", "HACK", "BU...
+    type: tech-debt
+    description: Found in enhanced_discovery.py:75
+self.todo_patterns = ["TODO", "FIXME", "HACK", "BUG", "XXX", "DEPRECATED"]
+    acceptance_criteria: 
+      - Resolve TODO in enhanced_discovery.py:75
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.438000+00:00
+    updated_at: None
+    links: 
+      - enhanced_discovery.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-553
+    title: Address TODO: """Discover TODO/FIXME comments with context analy...
+    type: tech-debt
+    description: Found in enhanced_discovery.py:108
+"""Discover TODO/FIXME comments with context analysis."""
+    acceptance_criteria: 
+      - Resolve TODO in enhanced_discovery.py:108
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.438072+00:00
+    updated_at: None
+    links: 
+      - enhanced_discovery.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-8340
+    title: Address TODO: print(f"Error discovering TODO comments: {e}")...
+    type: tech-debt
+    description: Found in enhanced_discovery.py:176
+print(f"Error discovering TODO comments: {e}")
+    acceptance_criteria: 
+      - Resolve TODO in enhanced_discovery.py:176
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.438144+00:00
+    updated_at: None
+    links: 
+      - enhanced_discovery.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-7927
+    title: Address TODO: ("TODO/FIXME comments", self.discover_todo_comment...
+    type: tech-debt
+    description: Found in enhanced_discovery.py:460
+("TODO/FIXME comments", self.discover_todo_comments),
+    acceptance_criteria: 
+      - Resolve TODO in enhanced_discovery.py:460
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.438306+00:00
+    updated_at: None
+    links: 
+      - enhanced_discovery.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-4544
+    title: Address TODO: """Discover new tasks from TODOs, FIXMEs, and fail...
+    type: tech-debt
+    description: Found in src/autonomous_backlog.py:229
+"""Discover new tasks from TODOs, FIXMEs, and failing tests"""
+    acceptance_criteria: 
+      - Resolve TODO in src/autonomous_backlog.py:229
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.439354+00:00
+    updated_at: None
+    links: 
+      - src/autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-2489
+    title: Address TODO: ["rg", "-n", "--type", "py", "TODO|FIXME|BUG|HACK"...
+    type: tech-debt
+    description: Found in src/autonomous_backlog.py:237
+["rg", "-n", "--type", "py", "TODO|FIXME|BUG|HACK", str(self.repo_path)],
+    acceptance_criteria: 
+      - Resolve TODO in src/autonomous_backlog.py:237
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.439453+00:00
+    updated_at: None
+    links: 
+      - src/autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-7184
+    title: Address TODO: ["find", str(self.repo_path), "-name", "*.py", "-e...
+    type: tech-debt
+    description: Found in src/autonomous_backlog.py:243
+["find", str(self.repo_path), "-name", "*.py", "-exec", "grep", "-n", "-E", "TODO|FIXME|BUG|HACK", "{}", "+"],
+    acceptance_criteria: 
+      - Resolve TODO in src/autonomous_backlog.py:243
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.439507+00:00
+    updated_at: None
+    links: 
+      - src/autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-2343
+    title: Address TODO: title=f"TODO: {content.strip()[:50]}...",...
+    type: tech-debt
+    description: Found in src/autonomous_backlog.py:258
+title=f"TODO: {content.strip()[:50]}...",
+    acceptance_criteria: 
+      - Resolve TODO in src/autonomous_backlog.py:258
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.439581+00:00
+    updated_at: None
+    links: 
+      - src/autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-4812
+    title: Address TODO: acceptance_criteria=[f"Resolve TODO in {file_path}...
+    type: tech-debt
+    description: Found in src/autonomous_backlog.py:261
+acceptance_criteria=[f"Resolve TODO in {file_path}:{line_num}"],
+    acceptance_criteria: 
+      - Resolve TODO in src/autonomous_backlog.py:261
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.439633+00:00
+    updated_at: None
+    links: 
+      - src/autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-9697
+    title: Address TODO: """Test automatic task discovery from TODO comment...
+    type: tech-debt
+    description: Found in tests/test_autonomous_backlog.py:127
+"""Test automatic task discovery from TODO comments"""
+    acceptance_criteria: 
+      - Resolve TODO in tests/test_autonomous_backlog.py:127
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.440493+00:00
+    updated_at: None
+    links: 
+      - tests/test_autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-4690
+    title: Address TODO: mock_run.return_value.stdout = "src/test.py:10:# T...
+    type: tech-debt
+    description: Found in tests/test_autonomous_backlog.py:129
+mock_run.return_value.stdout = "src/test.py:10:# TODO: Fix this bug\nsrc/main.py:25:# FIXME: Optimize performance"
+    acceptance_criteria: 
+      - Resolve TODO in tests/test_autonomous_backlog.py:129
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.440552+00:00
+    updated_at: None
+    links: 
+      - tests/test_autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-9652
+    title: Address TODO: assert "TODO: Fix this bug" in discovered[0].title...
+    type: tech-debt
+    description: Found in tests/test_autonomous_backlog.py:137
+assert "TODO: Fix this bug" in discovered[0].title
+    acceptance_criteria: 
+      - Resolve TODO in tests/test_autonomous_backlog.py:137
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.440604+00:00
+    updated_at: None
+    links: 
+      - tests/test_autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-2313
+    title: Address FIXME: assert "FIXME: Optimize performance" in discovered...
+    type: tech-debt
+    description: Found in tests/test_autonomous_backlog.py:138
+assert "FIXME: Optimize performance" in discovered[1].title
+    acceptance_criteria: 
+      - Resolve FIXME in tests/test_autonomous_backlog.py:138
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.440651+00:00
+    updated_at: None
+    links: 
+      - tests/test_autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-495
+    title: Address TODO: test_file.write_text("# TODO: Implement this funct...
+    type: tech-debt
+    description: Found in tests/test_autonomous_backlog.py:366
+test_file.write_text("# TODO: Implement this function\ndef placeholder(): pass")
+    acceptance_criteria: 
+      - Resolve TODO in tests/test_autonomous_backlog.py:366
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.440782+00:00
+    updated_at: None
+    links: 
+      - tests/test_autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-6714
+    title: Address TODO: assert any("TODO: Implement this function" in task...
+    type: tech-debt
+    description: Found in tests/test_autonomous_backlog.py:376
+assert any("TODO: Implement this function" in task.title for task in discovered)
+    acceptance_criteria: 
+      - Resolve TODO in tests/test_autonomous_backlog.py:376
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.440874+00:00
+    updated_at: None
+    links: 
+      - tests/test_autonomous_backlog.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-8274
+    title: Address BUG: log_level=LogLevel.DEBUG if verbose else LogLevel....
+    type: tech-debt
+    description: Found in src/docker_optimizer/cli.py:191
+log_level=LogLevel.DEBUG if verbose else LogLevel.INFO,
+    acceptance_criteria: 
+      - Resolve BUG in src/docker_optimizer/cli.py:191
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.447860+00:00
+    updated_at: None
+    links: 
+      - src/docker_optimizer/cli.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-4548
+    title: Address BUG: DEBUG = "DEBUG"...
+    type: tech-debt
+    description: Found in src/docker_optimizer/logging_observability.py:29
+DEBUG = "DEBUG"
+    acceptance_criteria: 
+      - Resolve BUG in src/docker_optimizer/logging_observability.py:29
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.450030+00:00
+    updated_at: None
+    links: 
+      - src/docker_optimizer/logging_observability.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-3843
+    title: Address BUG: self._log("DEBUG", message, context, extra=extra)...
+    type: tech-debt
+    description: Found in src/docker_optimizer/logging_observability.py:451
+self._log("DEBUG", message, context, extra=extra)
+    acceptance_criteria: 
+      - Resolve BUG in src/docker_optimizer/logging_observability.py:451
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.450244+00:00
+    updated_at: None
+    links: 
+      - src/docker_optimizer/logging_observability.py
+    tags: 
+      - discovered
+      - todo-comment
+  - 
+    id: manual-384
+    title: Address BUG: - log_level: Logging level (DEBUG, INFO, WARNING, ...
+    type: tech-debt
+    description: Found in src/docker_optimizer/logging_observability.py:856
+- log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    acceptance_criteria: 
+      - Resolve BUG in src/docker_optimizer/logging_observability.py:856
+    effort: 2
+    value: 3
+    time_criticality: 2
+    risk_reduction: 2
+    wsjf_score: 3.5
+    aging_multiplier: 1.0
+    status: BLOCKED
+    risk_tier: LOW
+    created_at: 2025-08-01T12:02:25.450448+00:00
+    updated_at: None
+    links: 
+      - src/docker_optimizer/logging_observability.py
+    tags: 
+      - discovered
+      - todo-comment
 discovered_tasks: 

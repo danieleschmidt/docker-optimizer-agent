@@ -1,0 +1,88 @@
+# Terragon Autonomous SDLC Configuration
+# Advanced repository optimization and continuous value discovery
+
+version: "1.0"
+repository:
+  name: "docker-optimizer-agent"
+  maturity: "advanced"
+  target_maturity: "cutting-edge"
+  
+scoring:
+  weights:
+    advanced:
+      wsjf: 0.5
+      ice: 0.1
+      technicalDebt: 0.3
+      security: 0.1
+  
+  thresholds:
+    minScore: 15
+    maxRisk: 0.7
+    securityBoost: 2.0
+    complianceBoost: 1.8
+
+discovery:
+  sources:
+    - gitHistory
+    - staticAnalysis
+    - todoComments
+    - testFailures
+    - performanceMetrics
+    - securityVulnerabilities
+  
+  patterns:
+    todo: ["TODO", "FIXME", "HACK", "BUG", "XXX"]
+    debt: ["deprecated", "temporary", "quick fix"]
+    performance: ["slow", "optimize", "bottleneck"]
+  
+  tools:
+    staticAnalysis:
+      - ruff
+      - mypy
+      - bandit
+    security:
+      - trivy
+      - safety
+      - semgrep
+    performance:
+      - pytest-benchmark
+      - memory-profiler
+
+execution:
+  maxConcurrentTasks: 1
+  testRequirements:
+    minCoverage: 85
+    performanceRegression: 5
+  rollbackTriggers:
+    - testFailure
+    - buildFailure
+    - securityViolation
+  
+automation:
+  intervals:
+    discovery: "hourly"
+    execution: "on_merge"
+    metrics: "daily"
+    review: "weekly"
+  
+  scope:
+    allowedPaths:
+      - "/root/repo/src"
+      - "/root/repo/tests"
+      - "/root/repo/docs"
+      - "/root/repo/benchmarks"
+    restrictedPaths:
+      - "/root/repo/.github/workflows"
+      - "/root/repo/.git"
+    
+metrics:
+  tracking:
+    valueDelivered: true
+    cycleTime: true
+    technicalDebtReduction: true
+    securityImprovements: true
+    performanceGains: true
+  
+  reporting:
+    format: ["json", "markdown"]
+    destination: "docs/status"

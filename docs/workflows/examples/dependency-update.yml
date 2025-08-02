@@ -1,0 +1,467 @@
+# Automated Dependency Updates
+# File: .github/workflows/dependency-update.yml
+# Description: Automated dependency scanning, updates, and security monitoring
+
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      update_type:
+        description: 'Type of update'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - security
+      dry_run:
+        description: 'Dry run mode'
+        required: false
+        type: boolean
+        default: true
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+  
+permissions:
+  contents: write
+  pull-requests: write
+  security-events: write
+  issues: write
+
+jobs:
+  dependency-scan:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+    outputs:
+      has-vulnerabilities: ${{ steps.scan.outputs.has-vulnerabilities }}
+      vulnerability-count: ${{ steps.scan.outputs.vulnerability-count }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install safety bandit pip-audit
+          
+      - name: Python dependency vulnerability scan
+        id: scan
+        run: |
+          # Safety check for known vulnerabilities
+          safety check --json --output safety-report.json || true
+          
+          # Bandit security linting
+          bandit -r src/ -f json -o bandit-report.json || true
+          
+          # pip-audit for comprehensive scanning
+          pip-audit --format=json --output=pip-audit-report.json || true
+          
+          # Check if vulnerabilities were found
+          if [ -f safety-report.json ] && [ "$(jq length safety-report.json)" -gt 0 ]; then
+            echo "has-vulnerabilities=true" >> $GITHUB_OUTPUT
+            echo "vulnerability-count=$(jq length safety-report.json)" >> $GITHUB_OUTPUT
+          else
+            echo "has-vulnerabilities=false" >> $GITHUB_OUTPUT
+            echo "vulnerability-count=0" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Upload security scan results
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan-results
+          path: |
+            safety-report.json
+            bandit-report.json
+            pip-audit-report.json
+          retention-days: 30
+          
+      - name: Create security issue
+        if: steps.scan.outputs.has-vulnerabilities == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const vulnerabilityCount = '${{ steps.scan.outputs.vulnerability-count }}';
+            const title = `🚨 Security Vulnerabilities Detected (${vulnerabilityCount} issues)`;
+            const body = `
+            ## Security Scan Results
+            
+            **Vulnerabilities Found:** ${vulnerabilityCount}
+            **Scan Date:** ${new Date().toISOString()}
+            **Workflow:** ${{ github.workflow }}
+            
+            ### Action Required
+            - [ ] Review vulnerability reports in workflow artifacts
+            - [ ] Update affected dependencies
+            - [ ] Test security fixes
+            - [ ] Deploy patched version
+            
+            ### Reports
+            Check the workflow artifacts for detailed reports:
+            - safety-report.json
+            - bandit-report.json  
+            - pip-audit-report.json
+            
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            `;
+            
+            // Check if issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['security', 'dependencies'],
+              state: 'open'
+            });
+            
+            const existingIssue = issues.data.find(issue => 
+              issue.title.includes('Security Vulnerabilities Detected')
+            );
+            
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['security', 'dependencies', 'automated']
+              });
+            }
+
+  python-updates:
+    name: Python Dependency Updates
+    runs-on: ubuntu-latest
+    needs: dependency-scan
+    if: github.event.inputs.dry_run != 'true' || github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install pip-tools
+        run: |
+          pip install --upgrade pip
+          pip install pip-tools pip-review
+          
+      - name: Update Python dependencies
+        id: update-python
+        run: |
+          # Backup current requirements
+          cp requirements.txt requirements.txt.backup
+          cp requirements-dev.txt requirements-dev.txt.backup
+          
+          # Update dependencies based on input
+          case "${{ github.event.inputs.update_type || 'patch' }}" in
+            "patch")
+              pip-review --auto --pre
+              ;;
+            "minor")
+              pip-review --auto --minor
+              ;;
+            "major")
+              pip-review --auto
+              ;;
+            "security")
+              # Only update packages with known vulnerabilities
+              safety check --json | jq -r '.[].package' | while read package; do
+                pip install --upgrade "$package"
+              done
+              ;;
+          esac
+          
+          # Update requirements files
+          pip freeze > requirements.txt
+          
+          # Check if changes were made
+          if ! diff -q requirements.txt requirements.txt.backup; then
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in Python dependencies"
+          else
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+            echo "No changes in Python dependencies"
+          fi
+          
+      - name: Run tests with updated dependencies
+        if: steps.update-python.outputs.has-changes == 'true'
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          make test
+          
+      - name: Create Pull Request
+        if: steps.update-python.outputs.has-changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            deps: update Python dependencies (${{ github.event.inputs.update_type || 'patch' }})
+            
+            - Automated dependency update
+            - Update type: ${{ github.event.inputs.update_type || 'patch' }}
+            - Tests passing: ✓
+            
+            Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+          title: '🔄 Python Dependencies Update (${{ github.event.inputs.update_type || 'patch' }})'
+          body: |
+            ## Python Dependencies Update
+            
+            **Update Type:** ${{ github.event.inputs.update_type || 'patch' }}
+            **Automated:** Yes
+            **Tests:** Passing ✓
+            
+            ### Changes
+            - Updated Python packages according to ${{ github.event.inputs.update_type || 'patch' }} strategy
+            - All tests pass with updated dependencies
+            - Security vulnerabilities: ${{ needs.dependency-scan.outputs.vulnerability-count }} found
+            
+            ### Verification
+            - [ ] Review updated package versions
+            - [ ] Verify test results
+            - [ ] Check for breaking changes
+            - [ ] Update CHANGELOG.md if needed
+            
+            ### Auto-merge Criteria
+            - [x] Tests passing
+            - [x] No major version changes (for patch/minor updates)
+            - [x] Security scan completed
+            
+            ---
+            *This PR was automatically created by the dependency update workflow*
+          branch: dependencies/python-${{ github.run_number }}
+          labels: |
+            dependencies
+            python
+            automated
+          reviewers: |
+            @team-leads
+          draft: false
+
+  docker-updates:
+    name: Docker Base Image Updates
+    runs-on: ubuntu-latest
+    needs: dependency-scan
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Check for base image updates
+        id: check-images
+        run: |
+          # Extract base images from Dockerfile
+          base_images=$(grep -E '^FROM ' Dockerfile | awk '{print $2}' | sort -u)
+          
+          updated_images=""
+          for image in $base_images; do
+            echo "Checking $image for updates..."
+            
+            # Get current image digest
+            current_digest=$(docker buildx imagetools inspect "$image" --format '{{.Manifest.Digest}}')
+            
+            # Check if there's a newer version available
+            # This is a simplified check - in practice, you might want more sophisticated logic
+            if docker pull "$image" 2>/dev/null; then
+              new_digest=$(docker inspect "$image" --format='{{index .RepoDigests 0}}' | cut -d'@' -f2)
+              if [ "$current_digest" != "$new_digest" ]; then
+                updated_images="$updated_images $image"
+                echo "Update available for $image"
+              fi
+            fi
+          done
+          
+          if [ -n "$updated_images" ]; then
+            echo "has-updates=true" >> $GITHUB_OUTPUT
+            echo "updated-images=$updated_images" >> $GITHUB_OUTPUT
+          else
+            echo "has-updates=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Build with updated images
+        if: steps.check-images.outputs.has-updates == 'true'
+        run: |
+          docker build --pull -t docker-optimizer:updated .
+          
+      - name: Test updated image
+        if: steps.check-images.outputs.has-updates == 'true'
+        run: |
+          # Run basic tests with updated image
+          docker run --rm docker-optimizer:updated python -c "import docker_optimizer; print('Import successful')"
+          
+          # Run security scan on updated image
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy image docker-optimizer:updated
+            
+      - name: Create Pull Request for Docker updates
+        if: steps.check-images.outputs.has-updates == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            docker: update base images
+            
+            Updated images: ${{ steps.check-images.outputs.updated-images }}
+            
+            Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+          title: '🐳 Docker Base Image Updates'
+          body: |
+            ## Docker Base Image Updates
+            
+            **Updated Images:** ${{ steps.check-images.outputs.updated-images }}
+            **Tests:** Passing ✓
+            **Security Scan:** Completed ✓
+            
+            ### Changes
+            - Updated Docker base images to latest versions
+            - Security scan completed successfully
+            - All tests pass with updated images
+            
+            ### Verification Steps
+            - [ ] Review image changes
+            - [ ] Verify security scan results
+            - [ ] Test in staging environment
+            - [ ] Update documentation if needed
+            
+            ---
+            *This PR was automatically created by the dependency update workflow*
+          branch: dependencies/docker-${{ github.run_number }}
+          labels: |
+            dependencies
+            docker
+            automated
+
+  security-advisory-check:
+    name: Security Advisory Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: GitHub Security Advisory Check
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Get security advisories for the repository
+            const advisories = await github.rest.securityAdvisories.listRepositoryAdvisories({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'published',
+              per_page: 100
+            });
+            
+            // Check for recent advisories (last 7 days)
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            
+            const recentAdvisories = advisories.data.filter(advisory => 
+              new Date(advisory.published_at) > weekAgo
+            );
+            
+            if (recentAdvisories.length > 0) {
+              console.log(`Found ${recentAdvisories.length} recent security advisories`);
+              
+              // Create issue for security review
+              const title = `🔒 Security Advisory Review Required`;
+              const body = `
+              ## Recent Security Advisories
+              
+              **Count:** ${recentAdvisories.length}
+              **Review Period:** Last 7 days
+              
+              ### Advisories:
+              ${recentAdvisories.map(advisory => `
+              - **${advisory.summary}** (${advisory.severity})
+                - CVE: ${advisory.cve_id || 'N/A'}
+                - Published: ${advisory.published_at}
+                - Affects: ${advisory.vulnerabilities.map(v => v.package.name).join(', ')}
+              `).join('\n')}
+              
+              ### Action Items:
+              - [ ] Review each advisory for impact
+              - [ ] Update affected dependencies
+              - [ ] Test security fixes
+              - [ ] Deploy patches if needed
+              `;
+              
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['security', 'review-required']
+              });
+            } else {
+              console.log('No recent security advisories found');
+            }
+
+  notification:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, python-updates, docker-updates]
+    if: always()
+    
+    steps:
+      - name: Send Slack notification
+        if: needs.dependency-scan.outputs.has-vulnerabilities == 'true'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              text: "🚨 Security vulnerabilities detected in Docker Optimizer Agent",
+              attachments: [
+                {
+                  color: "danger",
+                  fields: [
+                    {
+                      title: "Vulnerabilities Found",
+                      value: "${{ needs.dependency-scan.outputs.vulnerability-count }}",
+                      short: true
+                    },
+                    {
+                      title: "Repository",
+                      value: "${{ github.repository }}",
+                      short: true
+                    },
+                    {
+                      title: "Workflow",
+                      value: "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>",
+                      short: false
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          
+      - name: Send success notification
+        if: needs.dependency-scan.outputs.has-vulnerabilities == 'false'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: "✅ Dependency security scan completed - no vulnerabilities found"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -1,0 +1,29 @@
+# Test configuration for Docker Optimizer Agent
+environment: test
+
+logging:
+  level: WARNING
+  format: json
+  enable_console: false
+  enable_file: false
+
+performance:
+  enable_caching: false
+  max_worker_threads: 1
+  enable_parallel_optimization: false
+
+security:
+  enable_security_scan: false
+  mock_security_scan: true
+  fail_on_critical: false
+  fail_on_high: false
+
+external_tools:
+  trivy:
+    enabled: false
+    timeout: 10s
+
+features:
+  enable_experimental_features: true
+  enable_multi_stage_optimization: true
+  enable_language_detection: true

@@ -4,7 +4,7 @@
 # =============================================================================
 # Base stage - Common dependencies and security hardening
 # =============================================================================
-FROM python:3.11-slim AS base
+FROM python:3.13-slim AS base
 
 # Security: Create non-root user
 RUN groupadd -r optimizer && useradd -r -g optimizer optimizer

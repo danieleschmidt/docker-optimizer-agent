@@ -1,0 +1,65 @@
+# Development Environment Configuration
+# This file contains development-specific settings that override defaults
+
+environment: development
+
+# Logging configuration for development
+logging:
+  level: DEBUG
+  format: colored  # Use colored output in development
+  enable_console: true
+  enable_file: false
+  correlation_id: true
+
+# Performance configuration for development
+performance:
+  enable_caching: true
+  cache_size_mb: 128  # Smaller cache for development
+  cache_ttl_seconds: 300  # Shorter TTL for development
+  max_worker_threads: 2  # Fewer threads for development
+  enable_parallel_optimization: true
+
+# Security configuration for development
+security:
+  enable_security_scan: true
+  fail_on_critical: false  # Don't fail builds on critical in dev
+  fail_on_high: false
+  mock_security_scan: false  # Set to true to speed up development
+  enable_secret_scanning: true
+
+# Development features
+development:
+  enable_debug_endpoints: true
+  enable_profiling: true
+  profiling_output_dir: /tmp/docker-optimizer-profiling
+  hot_reload: true
+  verbose_explanations: true
+  
+# External tool configuration for development
+external_tools:
+  trivy:
+    enabled: true
+    timeout: 60s  # Shorter timeout for development
+    offline_mode: false
+    
+# Monitoring configuration for development
+monitoring:
+  enable_prometheus_metrics: true
+  prometheus_port: 9091  # Different port to avoid conflicts
+  enable_tracing: true
+  tracing_sample_rate: 1.0  # Full sampling in development
+  
+# File system configuration for development
+filesystem:
+  working_dir: /tmp/docker-optimizer-dev
+  output_dir: /tmp/docker-optimizer-dev/output
+  temp_dir: /tmp/docker-optimizer-dev/temp
+  cleanup_temp_files: false  # Keep temp files for debugging
+
+# Feature flags for development
+features:
+  enable_experimental_features: true
+  enable_multi_stage_optimization: true
+  enable_language_detection: true
+  enable_realtime_suggestions: true
+  enable_batch_processing: true

@@ -1,0 +1,138 @@
+{
+  "collection_info": {
+    "timestamp": "2025-08-02T12:00:00Z",
+    "collector_version": "1.0.0",
+    "python_version": "3.11.0",
+    "repository": "danieleschmidt/docker-optimizer-agent",
+    "branch": "main"
+  },
+  "project_health": {
+    "overall_score": 92,
+    "maturity_level": "advanced",
+    "sdlc_compliance": 85,
+    "last_assessment": "2025-08-02T12:00:00Z"
+  },
+  "git": {
+    "total_commits": 127,
+    "total_contributors": 3,
+    "commits_last_month": 23,
+    "current_branch": "main",
+    "repository_age_days": 45,
+    "average_commits_per_week": 5.2
+  },
+  "code_quality": {
+    "code_coverage": 91.5,
+    "lines_of_code": 4850,
+    "test_files": 23,
+    "linting_issues": 0,
+    "complexity_score": "low",
+    "maintainability_index": 87,
+    "technical_debt_ratio": 0.02
+  },
+  "security": {
+    "security_issues": {
+      "high": 0,
+      "medium": 0,
+      "low": 1
+    },
+    "dependency_vulnerabilities": 0,
+    "secrets_scan_clean": true,
+    "last_security_scan": "2025-08-02T11:45:00Z",
+    "security_score": 95
+  },
+  "performance": {
+    "dev_image_size_mb": 1250.5,
+    "latest_image_size_mb": 450.2,
+    "cli_image_size_mb": 280.8,
+    "package_size_kb": 125.3,
+    "optimization_speed_avg_ms": 2100,
+    "memory_usage_peak_mb": 234
+  },
+  "github": {
+    "github_stars": 42,
+    "github_forks": 8,
+    "github_watchers": 15,
+    "github_issues": 3,
+    "github_size_kb": 8542,
+    "github_language": "Python",
+    "github_created_at": "2025-06-15T10:30:00Z",
+    "github_updated_at": "2025-08-02T11:30:00Z",
+    "pull_requests_merged": 34,
+    "release_frequency_days": 14
+  },
+  "pypi": {
+    "pypi_version": "1.2.0",
+    "pypi_author": "Daniel Schmidt",
+    "pypi_license": "MIT",
+    "pypi_downloads_last_month": 1247,
+    "pypi_downloads_last_week": 312,
+    "pypi_downloads_last_day": 45,
+    "package_popularity_rank": "growing"
+  },
+  "testing": {
+    "total_tests": 156,
+    "test_success_rate": 100.0,
+    "test_execution_time_seconds": 18.2,
+    "integration_tests": 12,
+    "unit_tests": 144,
+    "benchmark_tests": 8,
+    "test_coverage_trend": "improving"
+  },
+  "documentation": {
+    "documentation_coverage": 88,
+    "readmes_count": 15,
+    "api_docs_pages": 8,
+    "examples_count": 12,
+    "runbooks_count": 4,
+    "documentation_freshness_score": 92
+  },
+  "deployment": {
+    "environments": ["development", "staging", "production"],
+    "deployment_frequency_days": 7,
+    "deployment_success_rate": 98.5,
+    "rollback_frequency": 0.02,
+    "infrastructure_as_code": true,
+    "monitoring_coverage": 95
+  },
+  "community": {
+    "contributors_active": 3,
+    "community_health_score": 85,
+    "issue_response_time_hours": 8,
+    "pr_review_time_hours": 12,
+    "community_guidelines": true,
+    "code_of_conduct": true
+  },
+  "automation": {
+    "ci_cd_pipelines": 5,
+    "automated_tests": true,
+    "automated_security_scanning": true,
+    "automated_dependency_updates": true,
+    "automated_deployments": true,
+    "automation_coverage": 92
+  },
+  "compliance": {
+    "license_compliance": true,
+    "security_compliance": true,
+    "data_privacy_compliance": true,
+    "accessibility_compliance": "partial",
+    "regulatory_compliance_score": 88
+  },
+  "trends": {
+    "code_quality_trend": "stable",
+    "security_posture_trend": "improving",
+    "performance_trend": "stable",
+    "adoption_trend": "growing",
+    "maintenance_trend": "active"
+  },
+  "alerts": {
+    "active_alerts": 0,
+    "resolved_alerts_last_week": 2,
+    "high_priority_issues": 0,
+    "technical_debt_items": 3,
+    "recommendations": [
+      "Consider adding more integration tests",
+      "Update documentation for new features",
+      "Review and update dependency versions"
+    ]
+  }
+}

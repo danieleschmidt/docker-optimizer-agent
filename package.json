@@ -1,0 +1,55 @@
+{
+  "name": "docker-optimizer-agent",
+  "version": "1.2.0",
+  "description": "Intelligent Dockerfile optimization with security scanning, performance analysis, and best practices enforcement",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danieleschmidt/docker-optimizer-agent.git"
+  },
+  "scripts": {
+    "test": "make test",
+    "lint": "make lint",
+    "build": "make build",
+    "dev": "make dev",
+    "clean": "make clean",
+    "security-check": "make security",
+    "format": "make format",
+    "typecheck": "make typecheck",
+    "coverage": "make coverage",
+    "docker:build": "make docker-build",
+    "docker:test": "make docker-test",
+    "monitor": "make monitor",
+    "release": "make release",
+    "setup": "make setup",
+    "docs": "make docs"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.0.0",
+    "@commitlint/config-conventional": "^18.0.0",
+    "husky": "^8.0.0",
+    "markdownlint-cli": "^0.37.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "docker",
+    "dockerfile",
+    "optimization",
+    "security",
+    "containerization",
+    "devops",
+    "ci-cd",
+    "vulnerability-scanning",
+    "performance"
+  ],
+  "author": "Daniel Schmidt <daniel@terragonlabs.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danieleschmidt/docker-optimizer-agent/issues"
+  },
+  "homepage": "https://github.com/danieleschmidt/docker-optimizer-agent#readme"
+}

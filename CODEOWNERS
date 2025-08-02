@@ -1,0 +1,45 @@
+# Code Owners for Docker Optimizer Agent
+# This file defines individuals or teams responsible for code review and maintenance
+
+# Global ownership - These users are requested for review on all changes
+* @danieleschmidt
+
+# Core application code
+/src/docker_optimizer/ @danieleschmidt @security-team
+/src/docker_optimizer/security.py @security-team
+/src/docker_optimizer/external_security.py @security-team
+/src/docker_optimizer/advanced_security.py @security-team
+
+# Documentation
+/docs/ @danieleschmidt @docs-team
+/README.md @danieleschmidt @docs-team
+/CONTRIBUTING.md @danieleschmidt @docs-team
+/SECURITY.md @security-team @danieleschmidt
+
+# Configuration and infrastructure
+/Dockerfile @danieleschmidt @devops-team
+/docker-compose.yml @devops-team
+/monitoring/ @devops-team @observability-team
+/scripts/ @devops-team @danieleschmidt
+
+# CI/CD and workflows
+/.github/ @devops-team @danieleschmidt
+/docs/workflows/ @devops-team
+
+# Testing
+/tests/ @danieleschmidt @qa-team
+/benchmarks/ @performance-team @danieleschmidt
+
+# Build and packaging
+/pyproject.toml @danieleschmidt @devops-team
+/Makefile @devops-team
+/scripts/build.sh @devops-team
+
+# Security-sensitive files
+/SECURITY.md @security-team
+/docs/deployment/SECURITY_POLICY.md @security-team
+/.github/project-metrics.json @security-team @danieleschmidt
+
+# Legal and compliance
+/LICENSE @legal-team @danieleschmidt
+/CHANGELOG.md @danieleschmidt

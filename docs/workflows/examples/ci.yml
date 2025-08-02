@@ -1,0 +1,230 @@
+# Example GitHub Actions CI workflow for Docker Optimizer Agent
+# This file should be placed at .github/workflows/ci.yml
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev,security]"
+        
+    - name: Run linting
+      run: |
+        ruff check src/ tests/
+        black --check src/ tests/
+        
+    - name: Run type checking
+      run: mypy --ignore-missing-imports src/docker_optimizer/
+      
+    - name: Run unit tests
+      run: |
+        pytest tests/ -m "not integration" \
+          --cov=docker_optimizer \
+          --cov-report=xml \
+          --cov-fail-under=85
+          
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        
+    - name: Run integration tests
+      run: |
+        pytest tests/ -m "integration" --tb=short
+      env:
+        DOCKER_BUILDKIT: 1
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev,security]"
+        
+    - name: Run Bandit security scan
+      run: bandit -r src/ -f json -o security-report.json
+      continue-on-error: true
+      
+    - name: Run Safety dependency check
+      run: safety check --json --output safety-report.json
+      continue-on-error: true
+      
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          security-report.json
+          safety-report.json
+
+  build:
+    name: Build and Test Images
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build development image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        target: development
+        tags: docker-optimizer:dev
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Build production image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        target: production
+        tags: docker-optimizer:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Test production image
+      run: |
+        docker run --rm docker-optimizer:latest --help
+        
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'docker-optimizer:latest'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [test, security, build]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Download security reports
+      uses: actions/download-artifact@v3
+      with:
+        name: security-reports
+        
+    - name: Check security compliance
+      run: |
+        # Check if critical security issues exist
+        CRITICAL_ISSUES=$(jq '.results[] | select(.issue_severity == "HIGH" or .issue_severity == "CRITICAL") | length' security-report.json)
+        if [ "$CRITICAL_ISSUES" -gt 0 ]; then
+          echo "❌ Critical security issues found"
+          exit 1
+        fi
+        echo "✅ Security compliance check passed"
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [test, security, build]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install semantic-release
+      run: |
+        npm install -g semantic-release@21 \
+          @semantic-release/changelog \
+          @semantic-release/git \
+          @semantic-release/github \
+          @semantic-release/exec
+          
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Build Python package
+      run: |
+        python -m pip install --upgrade pip build
+        python -m build
+        
+    - name: Run semantic release
+      run: semantic-release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+        
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        target: production
+        push: true
+        tags: |
+          docker-optimizer:latest
+          docker-optimizer:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

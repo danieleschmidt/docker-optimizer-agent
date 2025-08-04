@@ -178,16 +178,30 @@ class OptimizationCache:
 class ParallelAnalyzer:
     """Parallel processing for multiple Dockerfile analysis."""
 
-    def __init__(self, max_workers: int = 4):
+    def __init__(self, max_workers: int = None):
         """Initialize parallel analyzer."""
+        # Auto-detect optimal worker count
+        if max_workers is None:
+            max_workers = min(8, (psutil.cpu_count() or 4) + 4)
+        
         self.max_workers = max_workers
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
-        self.optimizer = DockerfileOptimizer()
+        
+        # Resource pooling - create optimizer instances per worker
+        self._optimizer_pool = [DockerfileOptimizer() for _ in range(max_workers)]
+        self._pool_index = 0
+
+    def _get_optimizer(self) -> DockerfileOptimizer:
+        """Get optimizer from pool (thread-safe)."""
+        optimizer = self._optimizer_pool[self._pool_index % len(self._optimizer_pool)]
+        self._pool_index += 1
+        return optimizer
 
     def _analyze_single(self, dockerfile_content: str) -> OptimizationResult:
-        """Analyze single Dockerfile."""
+        """Analyze single Dockerfile using pooled optimizer."""
         try:
-            return self.optimizer.optimize_dockerfile(dockerfile_content)
+            optimizer = self._get_optimizer()
+            return optimizer.optimize_dockerfile(dockerfile_content)
         except Exception as e:
             # Return empty result for failed analysis
             return OptimizationResult(
@@ -227,6 +241,32 @@ class ParallelAnalyzer:
                 ))
 
         return valid_results
+
+    def adjust_workers_based_on_load(self, queue_size: int) -> None:
+        """Dynamically adjust worker count based on load."""
+        cpu_usage = psutil.cpu_percent(interval=0.1)
+        memory_usage = psutil.virtual_memory().percent
+        
+        # Scale up if high load and resources available
+        if queue_size > self.max_workers * 2 and cpu_usage < 80 and memory_usage < 80:
+            new_max = min(self.max_workers + 2, 16)
+            if new_max > self.max_workers:
+                logger.info(f"Scaling workers from {self.max_workers} to {new_max}")
+                self.max_workers = new_max
+                
+        # Scale down if low load
+        elif queue_size < self.max_workers // 2 and self.max_workers > 2:
+            new_max = max(self.max_workers - 1, 2)
+            logger.info(f"Scaling workers from {self.max_workers} to {new_max}")
+            self.max_workers = new_max
+
+    def __enter__(self):
+        """Context manager entry."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - cleanup resources."""
+        self.executor.shutdown(wait=True)
 
     def close(self) -> None:
         """Close thread pool executor."""

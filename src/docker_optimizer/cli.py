@@ -26,6 +26,7 @@ from .optimization_presets import PresetManager, PresetType
 from .optimizer import DockerfileOptimizer
 from .performance import PerformanceOptimizer
 from .registry_integration import RegistryIntegrator
+from .security import SecurityAnalyzer
 
 
 @click.command()
@@ -186,9 +187,9 @@ def main(
     - Best practices (cleanup commands, efficient package installation)
     - Performance optimizations (caching, parallel processing)
     """
-    # Initialize observability manager
+    # Initialize observability manager (disable logging for JSON output)
     obs_manager = ObservabilityManager(
-        log_level=LogLevel.DEBUG if verbose else LogLevel.INFO,
+        log_level=LogLevel.ERROR if format == "json" else (LogLevel.DEBUG if verbose else LogLevel.INFO),
         service_name="docker-optimizer-cli"
     )
 
@@ -274,7 +275,29 @@ def main(
                 )
                 sys.exit(2)
 
-            dockerfile_content = dockerfile_path.read_text(encoding="utf-8")
+            try:
+                dockerfile_content = dockerfile_path.read_text(encoding="utf-8")
+                
+                # Validate Dockerfile content
+                if not dockerfile_content.strip():
+                    click.echo(f"Error: Dockerfile is empty: {dockerfile_path}", err=True)
+                    sys.exit(1)
+                    
+                if not dockerfile_content.upper().startswith("FROM") and format != "json":
+                    click.echo(f"Warning: Dockerfile should start with FROM instruction: {dockerfile_path}", err=True)
+                
+                # Sanitize content for security
+                dockerfile_content = SecurityAnalyzer.sanitize_dockerfile_content(dockerfile_content)
+                    
+            except PermissionError:
+                click.echo(f"Error: Permission denied reading {dockerfile_path}", err=True)
+                sys.exit(1)
+            except UnicodeDecodeError:
+                click.echo(f"Error: Invalid UTF-8 encoding in {dockerfile_path}", err=True)
+                sys.exit(1)
+            except Exception as e:
+                click.echo(f"Error reading Dockerfile: {e}", err=True)
+                sys.exit(1)
 
             if analyze_image:
                 # Analyze existing Docker image layers
@@ -497,11 +520,11 @@ def _output_analysis(analysis: DockerfileAnalysis, format: str, verbose: bool) -
     if format == "json":
         import json
 
-        click.echo(json.dumps(analysis.dict(), indent=2))
+        click.echo(json.dumps(analysis.model_dump(), indent=2))
     elif format == "yaml":
         import yaml
 
-        click.echo(yaml.dump(analysis.dict(), default_flow_style=False))
+        click.echo(yaml.dump(analysis.model_dump(), default_flow_style=False))
     else:
         # Text format
         click.echo("🔍 Dockerfile Analysis Results")
@@ -534,11 +557,11 @@ def _output_result(
     if format == "json":
         import json
 
-        output_content = json.dumps(result.dict(), indent=2)
+        output_content = json.dumps(result.model_dump(), indent=2)
     elif format == "yaml":
         import yaml
 
-        output_content = yaml.dump(result.dict(), default_flow_style=False)
+        output_content = yaml.dump(result.model_dump(), default_flow_style=False)
     else:
         # Text format - show summary and optimized Dockerfile
         summary_lines = [
@@ -589,11 +612,11 @@ def _output_multistage_result(
     if format == "json":
         import json
 
-        output_content = json.dumps(result.dict(), indent=2)
+        output_content = json.dumps(result.model_dump(), indent=2)
     elif format == "yaml":
         import yaml
 
-        output_content = yaml.dump(result.dict(), default_flow_style=False)
+        output_content = yaml.dump(result.model_dump(), default_flow_style=False)
     else:
         # Text format
         summary_lines = [
@@ -643,8 +666,8 @@ def _output_security_scan_result(
         import json
 
         output_data = {
-            "vulnerability_report": vulnerability_report.dict(),
-            "security_score": security_score.dict(),
+            "vulnerability_report": vulnerability_report.model_dump(),
+            "security_score": security_score.model_dump(),
             "suggestions": suggestions,
         }
         output_content = json.dumps(output_data, indent=2)
@@ -652,8 +675,8 @@ def _output_security_scan_result(
         import yaml
 
         output_data = {
-            "vulnerability_report": vulnerability_report.dict(),
-            "security_score": security_score.dict(),
+            "vulnerability_report": vulnerability_report.model_dump(),
+            "security_score": security_score.model_dump(),
             "suggestions": suggestions,
         }
         output_content = yaml.dump(output_data, default_flow_style=False)
@@ -1007,7 +1030,7 @@ def _output_advanced_security_result(
             "policies_applied": result.policies_applied,
             "rules_evaluated": result.rules_evaluated,
             "execution_time_ms": result.execution_time_ms,
-            "security_score": result.security_score.dict() if result.security_score else None,
+            "security_score": result.security_score.model_dump() if result.security_score else None,
             "total_violations": result.total_violations,
             "has_critical_violations": result.has_critical_violations,
             "violation_summary": result.violation_summary,
@@ -1050,7 +1073,7 @@ def _output_advanced_security_result(
                     "has_critical_violations": result.has_critical_violations,
                     "violation_summary": result.violation_summary,
                 },
-                "security_score": result.security_score.dict() if result.security_score else None,
+                "security_score": result.security_score.model_dump() if result.security_score else None,
             }
         }
 
@@ -1148,7 +1171,7 @@ def _output_language_detect_result(
         import json
 
         # Combine optimization result with language analysis
-        combined_result = opt_result.dict()
+        combined_result = opt_result.model_dump()
         combined_result["language_analysis"] = language_analysis
         language_suggestion_dicts = [
             {
@@ -1169,7 +1192,7 @@ def _output_language_detect_result(
     elif format == "yaml":
         import yaml
 
-        combined_result = opt_result.dict()
+        combined_result = opt_result.model_dump()
         combined_result["language_analysis"] = language_analysis
         language_suggestion_dicts = [
             {
@@ -1328,11 +1351,11 @@ def _output_registry_result(
         import json
 
         # Combine optimization result with registry data
-        combined_result = opt_result.dict()
+        combined_result = opt_result.model_dump()
 
         if registry_data:
             if hasattr(registry_data, 'dict'):
-                combined_result["registry_vulnerabilities"] = registry_data.dict()
+                combined_result["registry_vulnerabilities"] = registry_data.model_dump()
             else:
                 combined_result["registry_vulnerabilities"] = {
                     "registry_type": getattr(registry_data, 'registry_type', 'unknown'),
@@ -1358,7 +1381,7 @@ def _output_registry_result(
     elif format == "yaml":
         import yaml
 
-        combined_result = opt_result.dict()
+        combined_result = opt_result.model_dump()
 
         if registry_data:
             combined_result["registry_vulnerabilities"] = {
@@ -1477,7 +1500,7 @@ def _output_combined_preset_language_result(
         import json
 
         # Combine optimization result with preset and language data
-        combined_result = opt_result.dict()
+        combined_result = opt_result.model_dump()
         combined_result["language_analysis"] = language_analysis
 
         # Add language suggestions
@@ -1522,7 +1545,7 @@ def _output_combined_preset_language_result(
         import yaml
 
         # Similar structure for YAML
-        combined_result = opt_result.dict()
+        combined_result = opt_result.model_dump()
         combined_result["language_analysis"] = language_analysis
 
         language_suggestion_dicts = [
@@ -1632,7 +1655,7 @@ def _output_preset_result(
         import json
 
         # Combine optimization result with preset data
-        combined_result = opt_result.dict()
+        combined_result = opt_result.model_dump()
 
         preset_data_third: Dict[str, Any] = {
             "type": getattr(selected_preset, 'preset_type', 'CUSTOM'),
@@ -1659,7 +1682,7 @@ def _output_preset_result(
     elif format == "yaml":
         import yaml
 
-        combined_result = opt_result.dict()
+        combined_result = opt_result.model_dump()
 
         preset_data_fourth: Dict[str, Any] = {
             "type": getattr(selected_preset, 'preset_type', 'CUSTOM'),

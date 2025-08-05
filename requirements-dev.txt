@@ -1,36 +1,26 @@
-# Development Dependencies
-# Generated from pyproject.toml for environments requiring requirements.txt format
+# Development Dependencies for Quantum Task Planner
 
-# Core Testing
-pytest>=7.0.0
-pytest-cov>=4.0.0
-pytest-mock>=3.10.0
-pytest-asyncio>=0.21.0
+# Include production dependencies
+-r requirements.txt
 
-# Code Quality
-black>=23.0.0
-ruff>=0.1.0
-mypy>=1.0.0
-pre-commit>=3.0.0
+# Testing framework
+pytest>=7.4.0,<8.0.0
+pytest-cov>=4.1.0,<5.0.0
+pytest-mock>=3.12.0,<4.0.0
+pytest-asyncio>=0.21.0,<1.0.0
 
-# Security
-bandit>=1.7.0
-safety>=2.0.0
+# Code quality and formatting
+black>=23.12.0,<24.0.0
+ruff>=0.1.8,<1.0.0
+mypy>=1.8.0,<2.0.0
 
-# Type Stubs
+# Type stubs
 types-PyYAML>=6.0.0
-types-requests>=2.28.0
-types-click>=7.1.0
+types-requests>=2.31.0
 
-# Documentation
-sphinx>=5.0.0
-sphinx-rtd-theme>=1.2.0
-myst-parser>=0.18.0
+# Security scanning
+bandit>=1.7.5,<2.0.0
+safety>=2.3.0,<3.0.0
 
-# Performance Testing
-pytest-benchmark>=4.0.0
-memory-profiler>=0.60.0
-
-# Development Tools
-tox>=4.0.0
-coverage[toml]>=7.0.0
+# Development tools
+pre-commit>=3.6.0,<4.0.0

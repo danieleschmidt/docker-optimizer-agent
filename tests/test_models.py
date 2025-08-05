@@ -1,112 +1,117 @@
-"""Test cases for optimization result models."""
+"""Tests for quantum task planner models."""
 
-from docker_optimizer.models import LayerOptimization, OptimizationResult, SecurityFix
+import pytest
+from datetime import datetime, timedelta
+
+from src.quantum_task_planner.models.task import Task, TaskStatus, TaskPriority
+from src.quantum_task_planner.models.resource import Resource, ResourceType, ResourceStatus
+from src.quantum_task_planner.models.schedule import Schedule, ScheduleStatus, OptimizationObjective
 
 
-class TestOptimizationResult:
-    """Test cases for OptimizationResult model."""
-
-    def test_create_optimization_result(self):
-        """Test creating a basic optimization result."""
-        result = OptimizationResult(
-            original_size="500MB",
-            optimized_size="200MB",
-            security_fixes=[],
-            explanation="Basic optimization applied",
-            optimized_dockerfile="FROM alpine:3.18\nRUN echo hello",
+class TestTask:
+    """Test Task model."""
+    
+    def test_task_creation(self):
+        """Test basic task creation."""
+        task = Task(
+            id="test_task",
+            name="Test Task",
+            duration=timedelta(hours=2),
+            priority=TaskPriority.HIGH
         )
-
-        assert result.original_size == "500MB"
-        assert result.optimized_size == "200MB"
-        assert result.explanation == "Basic optimization applied"
-        assert len(result.security_fixes) == 0
-
-    def test_optimization_result_with_security_fixes(self):
-        """Test optimization result with security improvements."""
-        security_fix = SecurityFix(
-            vulnerability="CVE-2023-1234",
-            severity="HIGH",
-            description="Outdated base image",
-            fix="Updated to alpine:3.18",
-        )
-
-        result = OptimizationResult(
-            original_size="500MB",
-            optimized_size="200MB",
-            security_fixes=[security_fix],
-            explanation="Security and size optimization",
-            optimized_dockerfile="FROM alpine:3.18\nRUN echo hello",
-        )
-
-        assert len(result.security_fixes) == 1
-        assert result.security_fixes[0].vulnerability == "CVE-2023-1234"
-        assert result.security_fixes[0].severity == "HIGH"
-
-    def test_optimization_result_with_layer_optimizations(self):
-        """Test optimization result with layer improvements."""
-        layer_opt = LayerOptimization(
-            original_instruction="RUN apt-get update && apt-get install -y curl",
-            optimized_instruction="RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*",
-            reasoning="Added cleanup and no-install-recommends for smaller layer",
-        )
-
-        result = OptimizationResult(
-            original_size="500MB",
-            optimized_size="200MB",
-            security_fixes=[],
-            explanation="Layer optimization applied",
-            optimized_dockerfile="FROM alpine:3.18\nRUN echo hello",
-            layer_optimizations=[layer_opt],
-        )
-
-        assert len(result.layer_optimizations) == 1
-        assert (
-            "no-install-recommends"
-            in result.layer_optimizations[0].optimized_instruction
-        )
-
-
-class TestSecurityFix:
-    """Test cases for SecurityFix model."""
-
-    def test_create_security_fix(self):
-        """Test creating a security fix."""
-        fix = SecurityFix(
-            vulnerability="CVE-2023-1234",
-            severity="CRITICAL",
-            description="Root user detected",
-            fix="Added USER directive with non-root user",
-        )
-
-        assert fix.vulnerability == "CVE-2023-1234"
-        assert fix.severity == "CRITICAL"
-        assert "non-root" in fix.fix
-
-    def test_security_fix_severity_validation(self):
-        """Test that security fix validates severity levels."""
-        # Valid severities should work
-        valid_severities = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
-        for severity in valid_severities:
-            fix = SecurityFix(
-                vulnerability="CVE-2023-1234",
-                severity=severity,
-                description="Test vulnerability",
-                fix="Test fix",
+        
+        assert task.id == "test_task"
+        assert task.name == "Test Task" 
+        assert task.duration == timedelta(hours=2)
+        assert task.priority == TaskPriority.HIGH
+        assert task.status == TaskStatus.PENDING
+        assert len(task.dependencies) == 0
+    
+    def test_task_validation_errors(self):
+        """Test task validation."""
+        # Invalid duration
+        with pytest.raises(ValueError, match="Duration must be positive"):
+            Task(
+                id="invalid",
+                name="Invalid",
+                duration=timedelta(seconds=-1)
             )
-            assert fix.severity == severity
-
-
-class TestLayerOptimization:
-    """Test cases for LayerOptimization model."""
-
-    def test_create_layer_optimization(self):
-        """Test creating a layer optimization."""
-        optimization = LayerOptimization(
-            original_instruction="RUN apt-get update",
-            optimized_instruction="RUN apt-get update && rm -rf /var/lib/apt/lists/*",
-            reasoning="Added cleanup to reduce layer size",
+    
+    def test_is_ready(self):
+        """Test task readiness check."""
+        task = Task(
+            id="test",
+            name="Test", 
+            duration=timedelta(hours=1),
+            dependencies={"dep1", "dep2"}
         )
+        
+        # Not ready - missing dependencies
+        assert not task.is_ready(set())
+        assert not task.is_ready({"dep1"})
+        
+        # Ready - all dependencies completed
+        assert task.is_ready({"dep1", "dep2"})
 
-        assert "apt-get update" in optimization.original_instruction
-        assert "rm -rf /var/lib/apt/lists/*" in optimization.optimized_instruction
-        assert "reduce layer size" in optimization.reasoning
+
+class TestResource:
+    """Test Resource model."""
+    
+    def test_resource_creation(self):
+        """Test basic resource creation."""
+        resource = Resource(
+            id="test_resource",
+            name="Test Resource",
+            type=ResourceType.CPU,
+            total_capacity=4.0,
+            available_capacity=3.0
+        )
+        
+        assert resource.id == "test_resource"
+        assert resource.type == ResourceType.CPU
+        assert resource.total_capacity == 4.0
+        assert resource.available_capacity == 3.0
+        assert resource.status == ResourceStatus.AVAILABLE
+    
+    def test_allocate(self):
+        """Test resource allocation."""
+        resource = Resource(
+            id="test",
+            name="Test",
+            type=ResourceType.CPU,
+            total_capacity=4.0,
+            available_capacity=4.0
+        )
+        
+        start_time = datetime.utcnow()
+        duration = timedelta(hours=1)
+        
+        # Successful allocation
+        success = resource.allocate("task1", 2.0, start_time, duration)
+        assert success
+        assert resource.available_capacity == 2.0
+        assert len(resource.allocations) == 1
+
+
+class TestSchedule:
+    """Test Schedule model."""
+    
+    def test_schedule_creation(self):
+        """Test schedule creation."""
+        start_time = datetime.utcnow()
+        schedule = Schedule(
+            id="test_schedule",
+            name="Test Schedule",
+            start_time=start_time,
+            objectives=[OptimizationObjective.MINIMIZE_MAKESPAN]
+        )
+        
+        assert schedule.id == "test_schedule"
+        assert schedule.name == "Test Schedule"
+        assert schedule.start_time == start_time
+        assert schedule.status == ScheduleStatus.DRAFT
+        assert OptimizationObjective.MINIMIZE_MAKESPAN in schedule.objectives
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

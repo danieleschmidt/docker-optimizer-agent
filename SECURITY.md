@@ -1,29 +1,47 @@
-# Security Policy
+# Security Policy - Quantum Task Planner
 
-## Reporting Vulnerabilities
+## 🔒 Security Architecture
 
-**Do not report security vulnerabilities through public GitHub issues.**
+### Core Security Principles
 
-### Private Reporting
+1. **Defense in Depth**: Multiple layers of security controls
+2. **Principle of Least Privilege**: Minimal required permissions
+3. **Input Validation**: All inputs are validated and sanitized
+4. **Secure by Default**: Secure configurations out of the box
+5. **Fail Securely**: System fails to a secure state
 
-* Use GitHub's [private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/guidance-for-private-vulnerability-reporting)
-* Email maintainers directly for sensitive issues
-* Include detailed steps to reproduce
+### Security Features
 
-### Response Timeline
+- **Input Validation**: Comprehensive validation of all user inputs
+- **Error Handling**: Secure error handling without information disclosure
+- **Logging**: Security events are logged for monitoring
+- **Configuration Security**: Secure default configurations
+- **Dependency Management**: Regular security updates
 
-* Initial response: 48 hours
-* Status update: 7 days  
-* Resolution target: 30 days
+## 🛡️ Security Controls
 
-## Supported Versions
+### Input Validation
 
-Security updates are provided for the latest stable release.
+All task and resource data is validated using Pydantic models with strict type checking and value constraints.
 
-## Security Best Practices
+### Error Handling
 
-* Keep dependencies updated
-* Review Dockerfile security practices
-* Follow container security guidelines
+Comprehensive exception handling prevents information leakage and ensures graceful degradation.
 
-See [GitHub Security](https://docs.github.com/en/code-security) for more information.
+### Dependency Security
+
+- Pinned dependency versions in requirements.txt
+- Regular vulnerability scanning
+- Automated security updates
+
+## 🚨 Security Scanning
+
+Run security checks:
+
+```bash
+python3 security_scan.py
+```
+
+## 📞 Reporting Vulnerabilities
+
+Email: security@terragonlabs.com

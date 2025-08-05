@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  quantum-planner:
+    build:
+      context: .
+      dockerfile: Dockerfile.quantum
+      target: production
+      args:
+        BUILD_DATE: ${BUILD_DATE:-2024-01-01T00:00:00Z}
+        VERSION: ${VERSION:-0.1.0}
+        VCS_REF: ${VCS_REF:-main}
+    image: quantum-task-planner:${VERSION:-latest}
+    container_name: quantum-planner
+    restart: unless-stopped
+    environment:
+      - QUANTUM_PLANNER_LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - QUANTUM_PLANNER_DATA_DIR=/app/data
+      - QUANTUM_PLANNER_LOG_DIR=/app/logs
+      - QUANTUM_PLANNER_CONFIG_FILE=/app/config/planner.yml
+    volumes:
+      - quantum_data:/app/data
+      - quantum_logs:/app/logs
+      - ./config:/app/config:ro
+    ports:
+      - "8000:8000"
+    networks:
+      - quantum_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "from src.quantum_task_planner.core.planner import QuantumTaskPlanner; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+
+  quantum-worker:
+    extends: quantum-planner
+    container_name: quantum-worker
+    command: ["python", "-m", "src.quantum_task_planner.cli", "worker", "--parallel"]
+    ports: []
+    depends_on:
+      - quantum-planner
+    deploy:
+      replicas: 2
+
+  redis:
+    image: redis:7-alpine
+    container_name: quantum-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-quantum123}
+    volumes:
+      - quantum_redis:/data
+    networks:
+      - quantum_network
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=50m
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: quantum-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - quantum_prometheus:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - quantum_network
+    security_opt:
+      - no-new-privileges:true
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: quantum-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-quantum123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+    volumes:
+      - quantum_grafana:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - quantum_network
+    depends_on:
+      - prometheus
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  quantum_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  quantum_data:
+    driver: local
+  quantum_logs:
+    driver: local
+  quantum_redis:
+    driver: local
+  quantum_prometheus:
+    driver: local
+  quantum_grafana:
+    driver: local

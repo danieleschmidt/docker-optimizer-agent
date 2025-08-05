@@ -1,0 +1,26 @@
+# Quantum Task Planner Dependencies
+
+# Core dependencies
+click>=8.1.0,<9.0.0
+pydantic>=2.5.0,<3.0.0
+numpy>=1.24.0,<2.0.0
+pyyaml>=6.0.1,<7.0.0
+rich>=13.7.0,<14.0.0
+
+# Performance and concurrency
+psutil>=5.9.0,<6.0.0
+
+# HTTP and networking (if API features added)
+requests>=2.31.0,<3.0.0
+
+# Date and time handling
+python-dateutil>=2.8.2,<3.0.0
+
+# Logging and monitoring
+structlog>=23.2.0,<24.0.0
+
+# Optional: Scientific computing (for advanced quantum algorithms)
+scipy>=1.11.0,<2.0.0
+
+# Configuration management
+python-dotenv>=1.0.0,<2.0.0

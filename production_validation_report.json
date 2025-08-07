@@ -1,0 +1,61 @@
+{
+  "validation_timestamp": 1754602952.251789,
+  "success_rate_percent": 85.71428571428571,
+  "readiness_level": "\ud83d\udfe1 MOSTLY READY",
+  "deployment_recommendation": "\u26a0\ufe0f  APPROVED WITH MINOR FIXES NEEDED",
+  "test_results": {
+    "core_functionality": {
+      "status": "PASS",
+      "sentiment_detected": "positive",
+      "confidence": 0.75,
+      "processing_time_ms": 0.6284713745117188
+    },
+    "performance": {
+      "status": "PASS",
+      "avg_processing_time_ms": 0.01,
+      "throughput_per_sec": 100752.0,
+      "total_messages": 100
+    },
+    "caching": {
+      "status": "PASS",
+      "hit_rate_percent": 50.0,
+      "cache_improvement_percent": 75.8,
+      "results_identical": true
+    },
+    "error_handling": {
+      "status": "PASS",
+      "scenarios_tested": 3,
+      "results": {
+        "empty_string": "PROPERLY_REJECTED",
+        "very_long_string": "PROPERLY_REJECTED",
+        "non_string": "PROPERLY_REJECTED"
+      }
+    },
+    "global_features": {
+      "status": "PASS",
+      "multilingual_enabled": true,
+      "translations_available": 3,
+      "regional_compliance": true
+    },
+    "health_monitoring": {
+      "status": "PASS",
+      "health_status": "HEALTHY",
+      "success_rate": 100.0,
+      "performance_grade": "A"
+    },
+    "integration": {
+      "status": "FAIL",
+      "cli_importable": false,
+      "configuration_valid": true,
+      "config_details": {
+        "positive_keywords_loaded": true,
+        "negative_keywords_loaded": true,
+        "warning_keywords_loaded": true,
+        "response_templates_loaded": true,
+        "logger_configured": true,
+        "metrics_system_active": true,
+        "validation_params_set": true
+      }
+    }
+  }
+}

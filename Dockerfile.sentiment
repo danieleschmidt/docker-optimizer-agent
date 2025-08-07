@@ -1,0 +1,99 @@
+# Multi-stage Dockerfile for Docker Optimizer Sentiment Analyzer
+# Optimized for production deployment with security and performance
+
+# Build stage
+FROM python:3.12-slim AS builder
+
+# Security: Create non-root user
+RUN groupadd -r sentiment && useradd -r -g sentiment sentiment
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential=12.9ubuntu3 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set work directory
+WORKDIR /app
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt requirements-dev.txt ./
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Copy source code
+COPY src/ ./src/
+COPY tests/ ./tests/
+COPY pyproject.toml ./
+
+# Install the package
+RUN pip install --no-cache-dir --user -e .
+
+# Production stage  
+FROM python:3.12-slim AS runtime
+
+# Security: Create non-root user
+RUN groupadd -r sentiment && useradd -r -g sentiment sentiment
+
+# Install runtime dependencies only
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl=7.88.1-10+deb12u6 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set work directory
+WORKDIR /app
+
+# Copy Python packages from builder
+COPY --from=builder /root/.local /home/sentiment/.local
+
+# Copy application code
+COPY --chown=sentiment:sentiment src/ ./src/
+COPY --chown=sentiment:sentiment pyproject.toml ./
+
+# Create directories for logs and cache
+RUN mkdir -p /app/logs /app/cache && \
+    chown -R sentiment:sentiment /app/logs /app/cache
+
+# Security: Switch to non-root user
+USER sentiment
+
+# Set Python path
+ENV PATH=/home/sentiment/.local/bin:$PATH
+ENV PYTHONPATH=/app/src
+
+# Performance: Configure Python optimizations
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONHASHSEED=random
+
+# Sentiment Analyzer Configuration
+ENV SENTIMENT_CACHE_SIZE=1000
+ENV SENTIMENT_CACHE_TTL=3600
+ENV SENTIMENT_MAX_WORKERS=4
+ENV SENTIMENT_ENABLE_GLOBAL=true
+ENV SENTIMENT_TARGET_REGION=GLOBAL
+ENV SENTIMENT_ENABLE_METRICS=true
+ENV SENTIMENT_LOG_LEVEL=INFO
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "from docker_optimizer.sentiment_analyzer import DockerfileSentimentAnalyzer; \
+                   analyzer = DockerfileSentimentAnalyzer(); \
+                   health = analyzer.get_health_status(); \
+                   exit(0 if health['status'] == 'HEALTHY' else 1)" || exit 1
+
+# Expose port for HTTP API (if implemented)
+EXPOSE 8080
+
+# Labels for metadata
+LABEL maintainer="Daniel Schmidt <daniel@terragonlabs.com>"
+LABEL version="1.0.0"
+LABEL description="Docker Optimizer with Sentiment Analysis - Production Ready"
+LABEL org.opencontainers.image.title="Docker Optimizer Sentiment Analyzer"
+LABEL org.opencontainers.image.description="Intelligent Dockerfile optimization with sentiment-aware feedback"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.vendor="Terragon Labs"
+LABEL org.opencontainers.image.licenses="MIT"
+
+# Default command
+CMD ["python", "-m", "docker_optimizer.cli", "--sentiment-feedback", "--sentiment-report"]

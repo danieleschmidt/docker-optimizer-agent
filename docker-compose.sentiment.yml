@@ -1,0 +1,145 @@
+version: '3.8'
+
+services:
+  docker-optimizer-sentiment:
+    build:
+      context: .
+      dockerfile: Dockerfile.sentiment
+    environment:
+      # Core Configuration
+      - SENTIMENT_CACHE_SIZE=2000
+      - SENTIMENT_CACHE_TTL=3600
+      - SENTIMENT_MAX_WORKERS=6
+      
+      # Global Settings
+      - SENTIMENT_ENABLE_GLOBAL=true
+      - SENTIMENT_TARGET_REGION=GLOBAL
+      - SENTIMENT_DEFAULT_LANGUAGE=en
+      
+      # Monitoring & Metrics
+      - SENTIMENT_ENABLE_METRICS=true
+      - SENTIMENT_LOG_LEVEL=INFO
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      
+      # Performance Tuning
+      - SENTIMENT_ENABLE_CACHING=true
+      - SENTIMENT_PERFORMANCE_MODE=production
+      
+    ports:
+      - "8080:8080"
+    
+    healthcheck:
+      test: ["CMD", "python", "-c", "from docker_optimizer.sentiment_analyzer import DockerfileSentimentAnalyzer; analyzer = DockerfileSentimentAnalyzer(); health = analyzer.get_health_status(); exit(0 if health['status'] == 'HEALTHY' else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    
+    depends_on:
+      - prometheus
+      - otel-collector
+    
+    networks:
+      - sentiment-network
+    
+    volumes:
+      - sentiment-cache:/app/cache
+      - ./logs:/app/logs
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - sentiment-network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - sentiment-network
+    depends_on:
+      - prometheus
+
+  # OpenTelemetry Collector for distributed tracing
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./monitoring/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+      - "8888:8888"   # Prometheus metrics
+    networks:
+      - sentiment-network
+
+  # Redis for advanced caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - sentiment-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Load Balancer (optional for multi-instance deployment)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - docker-optimizer-sentiment
+    networks:
+      - sentiment-network
+
+networks:
+  sentiment-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  redis-data:
+  sentiment-cache:

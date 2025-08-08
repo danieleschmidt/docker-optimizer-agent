@@ -27,7 +27,6 @@ from .optimizer import DockerfileOptimizer
 from .performance import PerformanceOptimizer
 from .registry_integration import RegistryIntegrator
 from .security import SecurityAnalyzer
-from .sentiment_analyzer import DockerfileSentimentAnalyzer
 
 
 @click.command()
@@ -129,16 +128,6 @@ from .sentiment_analyzer import DockerfileSentimentAnalyzer
     help="Compare images across multiple registries",
 )
 @click.option(
-    "--sentiment-feedback",
-    is_flag=True,
-    help="Enable sentiment-aware feedback for optimization recommendations",
-)
-@click.option(
-    "--sentiment-report",
-    is_flag=True,
-    help="Generate comprehensive sentiment analysis report of feedback",
-)
-@click.option(
     "--registry-images",
     multiple=True,
     help="Multiple images to compare (use multiple times)",
@@ -184,8 +173,6 @@ def main(
     registry_scan: Optional[str],
     registry_image: Optional[str],
     registry_compare: bool,
-    sentiment_feedback: bool,
-    sentiment_report: bool,
     registry_images: Tuple[str, ...],
     registry_recommendations: bool,
     preset: Optional[str],
@@ -246,11 +233,6 @@ def main(
             if registry_scan and not registry_image:
                 click.echo("Error: --registry-image is required when using --registry-scan", err=True)
                 sys.exit(1)
-
-        # Initialize sentiment analyzer if requested
-        sentiment_analyzer = None
-        if sentiment_feedback or sentiment_report:
-            sentiment_analyzer = DockerfileSentimentAnalyzer()
 
             if registry_compare and len(registry_images) < 2:
                 click.echo("Error: At least 2 --registry-images are required for comparison", err=True)
@@ -493,7 +475,7 @@ def main(
             elif performance and perf_optimizer:
                 # Performance-optimized processing
                 perf_result = perf_optimizer.optimize_with_performance(dockerfile_content)
-                _output_result(perf_result, output, format, verbose, sentiment_analyzer)
+                _output_result(perf_result, output, format, verbose)
 
                 if performance_report:
                     _output_performance_report(
@@ -502,7 +484,7 @@ def main(
             else:
                 # Full optimization
                 opt_result = optimizer.optimize_dockerfile(dockerfile_content)
-                _output_result(opt_result, output, format, verbose, sentiment_analyzer)
+                _output_result(opt_result, output, format, verbose)
         else:
             # Batch processing
             if performance and perf_optimizer:
@@ -522,41 +504,6 @@ def main(
                 _process_batch_regular(
                     dockerfiles_to_process, optimizer, output, format, verbose
                 )
-
-        # Generate sentiment analysis report if requested
-        if sentiment_report and sentiment_analyzer:
-            # Collect all feedback messages from optimization results
-            feedback_messages = []
-            
-            # For demonstration, we'll analyze some common feedback patterns
-            sample_feedback = [
-                "Your Dockerfile contains security vulnerabilities that need to be fixed.",
-                "Layer optimization can reduce image size by combining RUN commands.",
-                "Great job using a specific base image version for security!",
-                "Consider using multi-stage builds to reduce final image size.",
-                "The current configuration may cause performance issues."
-            ]
-            
-            sentiment_report_data = sentiment_analyzer.generate_sentiment_report(sample_feedback)
-            
-            click.echo("\n📊 Sentiment Analysis Report")
-            click.echo("=" * 40)
-            click.echo(f"Total Feedback Analyzed: {sentiment_report_data['total_feedback_analyzed']}")
-            click.echo(f"Average Confidence: {sentiment_report_data['average_confidence']}")
-            
-            click.echo("\n📈 Sentiment Distribution:")
-            for sentiment, count in sentiment_report_data['sentiment_distribution'].items():
-                click.echo(f"  {sentiment}: {count}")
-            
-            if sentiment_report_data['top_emotional_keywords']:
-                click.echo(f"\n🔑 Top Emotional Keywords:")
-                for keyword, frequency in sentiment_report_data['top_emotional_keywords'][:5]:
-                    click.echo(f"  '{keyword}': {frequency} occurrences")
-            
-            if sentiment_report_data['recommendations']:
-                click.echo(f"\n💡 Recommendations:")
-                for rec in sentiment_report_data['recommendations']:
-                    click.echo(f"  • {rec}")
 
     except Exception as e:
         obs_manager.logger.error("CLI operation failed", exception=e)
@@ -604,13 +551,9 @@ def _output_analysis(analysis: DockerfileAnalysis, format: str, verbose: bool) -
 
 
 def _output_result(
-    result: OptimizationResult, 
-    output_path: Optional[str], 
-    format: str, 
-    verbose: bool,
-    sentiment_analyzer: Optional[DockerfileSentimentAnalyzer] = None
+    result: OptimizationResult, output_path: Optional[str], format: str, verbose: bool
 ) -> None:
-    """Output optimization results with optional sentiment analysis."""
+    """Output optimization results."""
     if format == "json":
         import json
 
@@ -621,20 +564,12 @@ def _output_result(
         output_content = yaml.dump(result.model_dump(), default_flow_style=False)
     else:
         # Text format - show summary and optimized Dockerfile
-        # Apply sentiment analysis if enabled
-        explanation_text = result.explanation
-        if sentiment_analyzer:
-            optimized_feedback = sentiment_analyzer.optimize_feedback(
-                explanation_text, "dockerfile_optimization"
-            )
-            explanation_text = optimized_feedback.optimized_message
-
         summary_lines = [
             "🚀 Docker Optimization Results",
             "=" * 40,
             f"Original Size: {result.original_size}",
             f"Optimized Size: {result.optimized_size}",
-            f"Explanation: {explanation_text}",
+            f"Explanation: {result.explanation}",
         ]
 
         if result.has_security_improvements:
@@ -643,13 +578,7 @@ def _output_result(
             )
             if verbose:
                 for fix in result.security_fixes:
-                    fix_description = fix.description
-                    if sentiment_analyzer:
-                        optimized_fix = sentiment_analyzer.optimize_feedback(
-                            fix_description, "security_fix"
-                        )
-                        fix_description = optimized_fix.optimized_message
-                    summary_lines.append(f"  • {fix_description} ({fix.severity})")
+                    summary_lines.append(f"  • {fix.description} ({fix.severity})")
 
         if result.has_layer_optimizations:
             summary_lines.append(
@@ -657,13 +586,7 @@ def _output_result(
             )
             if verbose:
                 for opt in result.layer_optimizations:
-                    optimization_reasoning = opt.reasoning
-                    if sentiment_analyzer:
-                        optimized_reasoning = sentiment_analyzer.optimize_feedback(
-                            optimization_reasoning, "layer_optimization"
-                        )
-                        optimization_reasoning = optimized_reasoning.optimized_message
-                    summary_lines.append(f"  • {optimization_reasoning}")
+                    summary_lines.append(f"  • {opt.reasoning}")
 
         summary_lines.extend(
             ["\n📄 Optimized Dockerfile:", "-" * 30, result.optimized_dockerfile]
@@ -852,7 +775,7 @@ async def _process_batch_with_performance(
                 base_path.parent / f"{base_path.stem}_{i+1}{base_path.suffix}"
             )
 
-        _output_result(result, batch_output_path, format, verbose, sentiment_analyzer)
+        _output_result(result, batch_output_path, format, verbose)
 
     # Show performance report if requested
     if show_performance_report:
@@ -891,7 +814,7 @@ def _process_batch_regular(
                 base_path.parent / f"{base_path.stem}_{i+1}{base_path.suffix}"
             )
 
-        _output_result(result, batch_output_path, format, verbose, sentiment_analyzer)
+        _output_result(result, batch_output_path, format, verbose)
 
 
 def _output_performance_report(performance_report: Dict[str, Any], format: str) -> None:

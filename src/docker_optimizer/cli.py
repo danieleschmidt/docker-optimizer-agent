@@ -2,6 +2,7 @@
 
 import asyncio
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -152,6 +153,28 @@ from .security import SecurityAnalyzer
     is_flag=True,
     help="List all available optimization presets",
 )
+@click.option(
+    "--high-throughput",
+    is_flag=True,
+    help="Enable high-throughput mode with intelligent scaling",
+)
+@click.option(
+    "--scaling-config",
+    type=click.Choice(["high_performance", "memory_optimized", "balanced"]),
+    default="balanced",
+    help="Scaling configuration profile (default: balanced)",
+)
+@click.option(
+    "--research-benchmark",
+    is_flag=True,
+    help="Run research benchmark with statistical analysis",
+)
+@click.option(
+    "--research-dataset",
+    type=str,
+    default="standard",
+    help="Research dataset to use for benchmarking (default: standard)",
+)
 def main(
     dockerfile: str,
     output: Optional[str],
@@ -178,6 +201,10 @@ def main(
     preset: Optional[str],
     custom_preset: Optional[str],
     list_presets: bool,
+    high_throughput: bool,
+    scaling_config: str,
+    research_benchmark: bool,
+    research_dataset: str,
 ) -> None:
     """Docker Optimizer Agent - Optimize Dockerfiles for security and size.
 
@@ -196,6 +223,11 @@ def main(
     # Handle list presets flag early
     if list_presets:
         _list_available_presets()
+        return
+
+    # Handle research benchmark mode
+    if research_benchmark:
+        asyncio.run(_run_research_benchmark_mode(research_dataset, format, verbose))
         return
 
     try:
@@ -264,6 +296,13 @@ def main(
             dockerfiles_to_process = list(batch)
         else:
             dockerfiles_to_process = [dockerfile]
+
+        # Handle high-throughput processing mode
+        if high_throughput and len(dockerfiles_to_process) > 1:
+            asyncio.run(_process_high_throughput_batch(
+                dockerfiles_to_process, scaling_config, output, format, verbose
+            ))
+            return
 
         # Process single or multiple Dockerfiles
         if len(dockerfiles_to_process) == 1:
@@ -1751,6 +1790,198 @@ def _output_preset_result(
         click.echo(f"Results written to {output_path}")
     else:
         click.echo(output_content)
+
+
+async def _run_research_benchmark_mode(dataset_name: str, format: str, verbose: bool) -> None:
+    """Run research benchmark mode with statistical analysis."""
+    click.echo("🔬 Starting Research Benchmark Mode")
+    click.echo("=" * 50)
+    
+    from .optimizer import DockerfileOptimizer
+    
+    try:
+        optimizer = DockerfileOptimizer()
+        
+        # Run benchmark study
+        study = await optimizer.run_research_benchmark(dataset_name)
+        
+        # Generate publication-ready report
+        report_path = optimizer.generate_research_publication(study)
+        
+        # Display results
+        if format == "json":
+            import json
+            study_data = {
+                "study_name": study.study_name,
+                "algorithms": study.algorithms,
+                "docker_files": study.docker_files,
+                "results_count": len(study.results),
+                "statistical_summary": study.statistical_summary,
+                "report_path": str(report_path)
+            }
+            click.echo(json.dumps(study_data, indent=2, default=str))
+        else:
+            click.echo(f"📊 Study: {study.study_name}")
+            click.echo(f"📋 Algorithms tested: {len(study.algorithms)}")
+            click.echo(f"📁 Dockerfiles processed: {len(study.docker_files)}")
+            click.echo(f"📈 Total benchmark runs: {len(study.results)}")
+            click.echo(f"📄 Research report: {report_path}")
+            
+            if verbose and study.statistical_summary:
+                click.echo("\n📊 Statistical Summary:")
+                for algorithm, stats in study.statistical_summary.items():
+                    if algorithm != "comparative_analysis" and isinstance(stats, dict):
+                        click.echo(f"  {algorithm}:")
+                        click.echo(f"    Success rate: {stats.get('success_rate', 0):.2%}")
+                        if 'execution_time_ms' in stats:
+                            click.echo(f"    Avg execution: {stats['execution_time_ms']['mean']:.1f}ms")
+        
+        click.echo(f"\n✅ Research benchmark completed successfully")
+        click.echo(f"📄 Full report available at: {report_path}")
+        
+    except Exception as e:
+        click.echo(f"❌ Research benchmark failed: {e}", err=True)
+        if verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+
+async def _process_high_throughput_batch(dockerfiles: List[str], 
+                                       scaling_config: str,
+                                       output_path: Optional[str],
+                                       format: str,
+                                       verbose: bool) -> None:
+    """Process dockerfiles using high-throughput engine."""
+    click.echo(f"🚀 High-Throughput Mode: Processing {len(dockerfiles)} dockerfiles")
+    click.echo("=" * 60)
+    
+    from .scaling_engine import (
+        HighThroughputOptimizer, 
+        create_high_performance_config,
+        create_memory_optimized_config,
+        ScalingConfiguration
+    )
+    
+    # Select scaling configuration
+    if scaling_config == "high_performance":
+        config = create_high_performance_config()
+    elif scaling_config == "memory_optimized":
+        config = create_memory_optimized_config()
+    else:  # balanced
+        config = ScalingConfiguration()
+    
+    if verbose:
+        click.echo(f"📊 Scaling Config: {scaling_config}")
+        click.echo(f"👥 Workers: {config.min_workers}-{config.max_workers}")
+        click.echo(f"🧠 Memory threshold: {config.memory_threshold_mb}MB")
+        click.echo(f"⚡ Adaptive batching: {config.adaptive_batch_sizing}")
+    
+    try:
+        # Read all dockerfile contents
+        dockerfile_contents = []
+        valid_paths = []
+        
+        for dockerfile_path in dockerfiles:
+            path = Path(dockerfile_path)
+            if path.exists():
+                try:
+                    content = path.read_text(encoding="utf-8")
+                    dockerfile_contents.append(content)
+                    valid_paths.append(dockerfile_path)
+                except Exception as e:
+                    click.echo(f"⚠️  Warning: Could not read {dockerfile_path}: {e}", err=True)
+            else:
+                click.echo(f"⚠️  Warning: Dockerfile not found at {dockerfile_path}", err=True)
+        
+        if not dockerfile_contents:
+            click.echo("❌ No valid dockerfiles found for processing", err=True)
+            sys.exit(1)
+        
+        # Initialize high-throughput optimizer
+        ht_optimizer = HighThroughputOptimizer(config)
+        
+        # Process batch
+        start_time = time.time()
+        results = await ht_optimizer.optimize_dockerfiles_batch(dockerfile_contents)
+        end_time = time.time()
+        
+        # Calculate performance metrics
+        execution_time = (end_time - start_time)
+        throughput = len(results) / execution_time * 60  # files per minute
+        success_count = sum(1 for r in results if r.get('success', True))
+        success_rate = success_count / len(results)
+        
+        # Get system status
+        system_status = await ht_optimizer.get_system_status()
+        
+        # Display results
+        if format == "json":
+            import json
+            output_data = {
+                "high_throughput_results": {
+                    "processed_files": len(results),
+                    "success_count": success_count,
+                    "success_rate": success_rate,
+                    "execution_time_seconds": execution_time,
+                    "throughput_files_per_minute": throughput,
+                    "scaling_config": scaling_config,
+                    "system_status": system_status,
+                    "results": results
+                }
+            }
+            click.echo(json.dumps(output_data, indent=2, default=str))
+        else:
+            # Text output
+            click.echo(f"\n🎯 High-Throughput Processing Results:")
+            click.echo("-" * 40)
+            click.echo(f"📁 Files processed: {len(results)}")
+            click.echo(f"✅ Successful: {success_count} ({success_rate:.1%})")
+            click.echo(f"⏱️  Execution time: {execution_time:.2f}s")
+            click.echo(f"🚀 Throughput: {throughput:.1f} files/minute")
+            
+            if verbose:
+                click.echo(f"\n📊 System Performance:")
+                load_balancer = system_status.get('load_balancer', {})
+                click.echo(f"  Active workers: {load_balancer.get('active_workers', 0)}")
+                click.echo(f"  Avg execution time: {load_balancer.get('average_execution_time_ms', 0):.1f}ms")
+                click.echo(f"  Memory usage: {load_balancer.get('average_memory_usage_mb', 0):.1f}MB")
+                
+                cache_stats = system_status.get('cache', {})
+                if cache_stats:
+                    click.echo(f"  Cache hit rate: {cache_stats.get('hit_rate', 0):.1%}")
+            
+            # Save results if output path specified
+            if output_path:
+                output_file = Path(output_path)
+                summary_file = output_file.parent / f"{output_file.stem}_high_throughput_summary.json"
+                
+                with open(summary_file, 'w') as f:
+                    json.dump({
+                        "summary": {
+                            "processed_files": len(results),
+                            "success_count": success_count,
+                            "success_rate": success_rate,
+                            "execution_time_seconds": execution_time,
+                            "throughput_files_per_minute": throughput
+                        },
+                        "system_status": system_status,
+                        "results": results
+                    }, f, indent=2, default=str)
+                
+                click.echo(f"\n💾 Results saved to: {summary_file}")
+        
+        # Shutdown optimizer
+        await ht_optimizer.shutdown()
+        
+        click.echo(f"\n✅ High-throughput processing completed successfully")
+        
+    except Exception as e:
+        click.echo(f"❌ High-throughput processing failed: {e}", err=True)
+        if verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -75,23 +75,32 @@ class TestQuantumAnnealingScheduler:
         # Mock some internal methods to avoid complex calculations
         with patch.object(scheduler, '_generate_initial_state') as mock_initial:
             with patch.object(scheduler, '_apply_solution_to_schedule') as mock_apply:
-                # Setup mock state
-                mock_state = Mock()
-                mock_state.energy = 100.0
-                mock_initial.return_value = mock_state
-                scheduler.best_state = mock_state
-                
-                # Run optimization
-                metrics = scheduler.optimize_schedule(sample_schedule)
-                
-                # Verify results
-                assert metrics is not None
-                assert hasattr(metrics, 'makespan')
-                assert hasattr(metrics, 'total_cost')
-                assert sample_schedule.status == ScheduleStatus.OPTIMIZED
-                
-                mock_initial.assert_called_once()
-                mock_apply.assert_called_once()
+                with patch.object(scheduler, '_generate_neighbor_state') as mock_neighbor:
+                    # Setup mock state
+                    mock_state = Mock()
+                    mock_state.energy = 100.0
+                    mock_state.assignments = {"task1": "res1", "task2": "res2", "task3": "res1"}
+                    mock_initial.return_value = mock_state
+                    
+                    # Setup neighbor state mock
+                    mock_neighbor_state = Mock()
+                    mock_neighbor_state.energy = 90.0
+                    mock_neighbor_state.assignments = {"task1": "res1", "task2": "res1", "task3": "res2"}
+                    mock_neighbor.return_value = mock_neighbor_state
+                    
+                    scheduler.best_state = mock_state
+                    
+                    # Run optimization
+                    metrics = scheduler.optimize_schedule(sample_schedule)
+                    
+                    # Verify results
+                    assert metrics is not None
+                    assert hasattr(metrics, 'makespan')
+                    assert hasattr(metrics, 'total_cost')
+                    assert sample_schedule.status == ScheduleStatus.OPTIMIZED
+                    
+                    mock_initial.assert_called_once()
+                    mock_apply.assert_called_once()
     
     def test_generate_initial_state(self, scheduler, sample_schedule):
         """Test initial state generation."""

@@ -1,0 +1,93 @@
+# Production-Ready Multi-Stage Docker Image for Docker Optimizer Agent
+# Optimized for performance, security, and global deployment
+
+# Build stage
+FROM python:3.12-slim as builder
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first for better layer caching
+COPY requirements.txt pyproject.toml ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Copy source code
+COPY src/ ./src/
+COPY tests/ ./tests/
+COPY README.md LICENSE ./
+
+# Build the package
+RUN pip install --no-cache-dir --user .
+
+# Production stage
+FROM python:3.12-slim as production
+
+# Create non-root user
+RUN groupadd -r dockeropt && useradd -r -g dockeropt -u 1001 dockeropt
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Copy Python packages from builder
+COPY --from=builder /root/.local /home/dockeropt/.local
+
+# Set working directory
+WORKDIR /app
+
+# Copy configuration files
+COPY deploy/config/ ./config/
+COPY examples/ ./examples/
+
+# Create required directories with proper permissions
+RUN mkdir -p /app/cache /app/logs /app/data \
+    && chown -R dockeropt:dockeropt /app \
+    && chmod -R 755 /app
+
+# Set environment variables
+ENV PATH=/home/dockeropt/.local/bin:$PATH \
+    PYTHONPATH=/app/src:$PYTHONPATH \
+    PYTHON_UNBUFFERED=1 \
+    DOCKER_OPTIMIZER_CONFIG_PATH=/app/config \
+    DOCKER_OPTIMIZER_CACHE_PATH=/app/cache \
+    DOCKER_OPTIMIZER_LOG_PATH=/app/logs
+
+# Expose ports
+EXPOSE 8080 9090
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Switch to non-root user
+USER dockeropt
+
+# Default command
+CMD ["python", "-m", "docker_optimizer.cli", "--help"]
+
+# Labels for metadata
+LABEL maintainer="Terragon Labs <noreply@terragonlabs.com>" \
+      version="1.0.0" \
+      description="Production Docker Optimizer Agent with global features" \
+      org.opencontainers.image.title="Docker Optimizer Agent" \
+      org.opencontainers.image.description="Advanced Dockerfile optimization with security, performance, and compliance features" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.vendor="Terragon Labs" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.source="https://github.com/terragonlabs/docker-optimizer-agent" \
+      org.opencontainers.image.documentation="https://docs.terragonlabs.com/docker-optimizer" \
+      security.features="advanced-scanning,compliance-validation,hardened-runtime" \
+      global.features="i18n,multi-region,compliance-frameworks" \
+      performance.features="high-throughput,intelligent-scaling,caching"

@@ -1,6 +1,7 @@
 """Command-line interface for Docker Optimizer Agent."""
 
 import asyncio
+import json
 import sys
 import time
 from datetime import datetime
@@ -10,6 +11,11 @@ from typing import Any, Dict, List, Optional, Tuple
 import click
 
 from .advanced_security import AdvancedSecurityEngine
+from .ai_optimization_engine import (
+    AIOptimizationEngine,
+    AIOptimizationRequest,
+    OptimizationStrategy
+)
 from .external_security import ExternalSecurityScanner
 from .language_optimizer import LanguageOptimizer, analyze_project_language
 from .logging_observability import LogLevel, ObservabilityManager
@@ -175,6 +181,23 @@ from .security import SecurityAnalyzer
     default="standard",
     help="Research dataset to use for benchmarking (default: standard)",
 )
+@click.option(
+    "--ai-optimization",
+    is_flag=True,
+    help="Enable AI-powered optimization with LLM integration",
+)
+@click.option(
+    "--ai-strategy",
+    type=click.Choice(["aggressive", "balanced", "conservative", "research"]),
+    default="balanced",
+    help="AI optimization strategy (default: balanced)",
+)
+@click.option(
+    "--ai-target-env",
+    type=str,
+    default="production",
+    help="Target environment for AI optimization (default: production)",
+)
 def main(
     dockerfile: str,
     output: Optional[str],
@@ -205,6 +228,9 @@ def main(
     scaling_config: str,
     research_benchmark: bool,
     research_dataset: str,
+    ai_optimization: bool,
+    ai_strategy: str,
+    ai_target_env: str,
 ) -> None:
     """Docker Optimizer Agent - Optimize Dockerfiles for security and size.
 
@@ -290,6 +316,17 @@ def main(
                 except Exception as e:
                     click.echo(f"Error loading custom preset: {e}", err=True)
                     sys.exit(1)
+        
+        # Initialize AI optimization engine if requested
+        ai_engine = None
+        if ai_optimization:
+            ai_engine = AIOptimizationEngine(
+                enable_llm_integration=True,
+                enable_research_mode=(ai_strategy == "research"),
+                cache_enabled=True
+            )
+            if verbose:
+                click.echo(f"🤖 AI Optimization enabled with {ai_strategy} strategy")
 
         # Handle batch processing
         if batch:
@@ -388,6 +425,34 @@ def main(
                     )
 
                 _output_advanced_security_result(result, output, format, verbose)
+
+            elif ai_engine:
+                # AI-powered optimization
+                try:
+                    ai_request = AIOptimizationRequest(
+                        dockerfile_content=dockerfile_content,
+                        strategy=OptimizationStrategy(ai_strategy),
+                        target_environment=ai_target_env,
+                        security_requirements=[] if not advanced_security else ["non-root", "version-pinning"],
+                        performance_requirements=[] if not performance else ["minimal-size", "layer-optimization"],
+                        compliance_frameworks=[compliance_check] if compliance_check else []
+                    )
+                    
+                    if verbose:
+                        click.echo("🔍 Running AI-powered optimization analysis...")
+                    
+                    ai_result = asyncio.run(ai_engine.optimize_dockerfile_with_ai(ai_request))
+                    _output_ai_optimization_result(ai_result, output, format, verbose)
+                    
+                except Exception as e:
+                    click.echo(f"❌ AI optimization failed: {e}", err=True)
+                    if verbose:
+                        import traceback
+                        traceback.print_exc()
+                    # Fallback to regular optimization
+                    click.echo("🔄 Falling back to standard optimization...", err=True)
+                    opt_result = optimizer.optimize_dockerfile(dockerfile_content)
+                    _output_result(opt_result, output, format, verbose)
 
             elif security_scan:
                 # External security vulnerability scan
@@ -1982,6 +2047,108 @@ async def _process_high_throughput_batch(dockerfiles: List[str],
             import traceback
             traceback.print_exc()
         sys.exit(1)
+
+
+def _output_ai_optimization_result(
+    ai_result,
+    output_path: Optional[str],
+    format: str,
+    verbose: bool
+) -> None:
+    """Output AI optimization results in the specified format."""
+    
+    if format == "json":
+        result_data = {
+            "optimized_dockerfile": ai_result.optimized_dockerfile,
+            "explanations": ai_result.explanations,
+            "security_improvements": ai_result.security_improvements,
+            "performance_enhancements": ai_result.performance_enhancements,
+            "metrics": {
+                "processing_time": ai_result.metrics.processing_time,
+                "confidence_score": ai_result.metrics.confidence_score,
+                "improvement_score": ai_result.metrics.improvement_score,
+                "security_enhancement": ai_result.metrics.security_enhancement,
+                "size_reduction_estimate": ai_result.metrics.size_reduction_estimate,
+                "performance_gain_estimate": ai_result.metrics.performance_gain_estimate
+            },
+            "alternative_approaches": ai_result.alternative_approaches
+        }
+        
+        if output_path:
+            with open(output_path, 'w') as f:
+                json.dump(result_data, f, indent=2)
+        else:
+            click.echo(json.dumps(result_data, indent=2))
+    
+    elif format == "yaml":
+        import yaml
+        result_data = {
+            "optimized_dockerfile": ai_result.optimized_dockerfile,
+            "explanations": ai_result.explanations,
+            "security_improvements": ai_result.security_improvements,
+            "performance_enhancements": ai_result.performance_enhancements,
+            "metrics": {
+                "processing_time": ai_result.metrics.processing_time,
+                "confidence_score": ai_result.metrics.confidence_score,
+                "improvement_score": ai_result.metrics.improvement_score,
+                "security_enhancement": ai_result.metrics.security_enhancement,
+                "size_reduction_estimate": ai_result.metrics.size_reduction_estimate,
+                "performance_gain_estimate": ai_result.metrics.performance_gain_estimate
+            },
+            "alternative_approaches": ai_result.alternative_approaches
+        }
+        
+        if output_path:
+            with open(output_path, 'w') as f:
+                yaml.dump(result_data, f, default_flow_style=False)
+        else:
+            click.echo(yaml.dump(result_data, default_flow_style=False))
+    
+    else:  # text format
+        if verbose:
+            click.echo("🤖 AI-Powered Dockerfile Optimization Results")
+            click.echo("=" * 50)
+            click.echo(f"⚡ Processing time: {ai_result.metrics.processing_time:.2f}s")
+            click.echo(f"🎯 Confidence score: {ai_result.metrics.confidence_score:.1%}")
+            click.echo(f"📈 Improvement score: {ai_result.metrics.improvement_score:.1%}")
+            click.echo(f"🔒 Security enhancement: {ai_result.metrics.security_enhancement:.1%}")
+            click.echo(f"📦 Est. size reduction: {ai_result.metrics.size_reduction_estimate:.1%}")
+            click.echo(f"🚀 Est. performance gain: {ai_result.metrics.performance_gain_estimate:.1%}")
+            click.echo()
+        
+        if ai_result.explanations:
+            click.echo("📋 Key Optimizations Applied:")
+            for i, explanation in enumerate(ai_result.explanations, 1):
+                click.echo(f"  {i}. {explanation}")
+            click.echo()
+        
+        if ai_result.security_improvements:
+            click.echo("🔒 Security Improvements:")
+            for improvement in ai_result.security_improvements:
+                click.echo(f"  ✅ {improvement}")
+            click.echo()
+        
+        if ai_result.performance_enhancements:
+            click.echo("⚡ Performance Enhancements:")
+            for enhancement in ai_result.performance_enhancements:
+                click.echo(f"  🚀 {enhancement}")
+            click.echo()
+        
+        if verbose and ai_result.alternative_approaches:
+            click.echo("💡 Alternative Optimization Approaches:")
+            for approach in ai_result.alternative_approaches:
+                click.echo(f"  • {approach}")
+            click.echo()
+        
+        click.echo("🐳 Optimized Dockerfile:")
+        click.echo("-" * 40)
+        
+        if output_path:
+            with open(output_path, 'w') as f:
+                f.write(ai_result.optimized_dockerfile)
+            click.echo(f"✅ Optimized Dockerfile saved to: {output_path}")
+        else:
+            click.echo(ai_result.optimized_dockerfile)
 
 
 if __name__ == "__main__":

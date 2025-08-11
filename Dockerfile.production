@@ -2,7 +2,7 @@
 # Optimized for performance, security, and global deployment
 
 # Build stage
-FROM python:3.12-slim as builder
+FROM python:3.13-slim as builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
@@ -29,7 +29,7 @@ COPY README.md LICENSE ./
 RUN pip install --no-cache-dir --user .
 
 # Production stage
-FROM python:3.12-slim as production
+FROM python:3.13-slim as production
 
 # Create non-root user
 RUN groupadd -r dockeropt && useradd -r -g dockeropt -u 1001 dockeropt

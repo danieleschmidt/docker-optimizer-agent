@@ -17,7 +17,7 @@ requests>=2.31.0,<3.0.0
 python-dateutil>=2.8.2,<3.0.0
 
 # Logging and monitoring
-structlog>=23.2.0,<24.0.0
+structlog>=23.2.0,<26.0.0
 
 # Optional: Scientific computing (for advanced quantum algorithms)
 scipy>=1.11.0,<2.0.0

@@ -8,7 +8,7 @@ pyyaml>=6.0.1,<7.0.0
 rich>=13.7.0,<15.0.0
 
 # Performance and concurrency
-psutil>=5.9.0,<6.0.0
+psutil>=5.9.0,<8.0.0
 
 # HTTP and networking (if API features added)
 requests>=2.31.0,<3.0.0

@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-08-14T00:19:43.705940",
+  "deployment_status": "READY",
+  "readiness_score": 83.33333333333334,
+  "checks_passed": 5,
+  "total_checks": 6,
+  "detailed_results": {
+    "Docker Build": {
+      "success": false,
+      "message": "Docker build failed: ERROR: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?\n"
+    },
+    "Production Config": {
+      "success": true,
+      "message": "All production configuration files present"
+    },
+    "Environment Variables": {
+      "success": true,
+      "message": "Environment variables documented: 3"
+    },
+    "Security Hardening": {
+      "success": true,
+      "message": "Security checks: 3/4 passed"
+    },
+    "Monitoring Setup": {
+      "success": true,
+      "message": "Monitoring files: 3/3 present"
+    },
+    "Documentation": {
+      "success": true,
+      "message": "Documentation: 4/4 files present"
+    }
+  },
+  "recommendations": [
+    "Review failing checks above",
+    "Test deployment in staging environment",
+    "Verify monitoring dashboards are accessible",
+    "Confirm backup and recovery procedures",
+    "Document rollback plan"
+  ]
+}

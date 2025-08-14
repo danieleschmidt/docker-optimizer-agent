@@ -19,10 +19,12 @@ import math
 import numpy as np
 import random
 import logging
+import cmath
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Set, Any, Union
 from dataclasses import dataclass, field
 from collections import defaultdict
+from enum import Enum
 import json
 
 from ..models.task import Task, TaskStatus, TaskPriority
@@ -32,6 +34,56 @@ from ..core.exceptions import OptimizationError, ResourceAllocationError, Valida
 
 
 logger = logging.getLogger(__name__)
+
+
+class ChemicalFamily(Enum):
+    """Chemical families for molecular categorization."""
+    ALKANE = "alkane"
+    AROMATIC = "aromatic" 
+    ESTER = "ester"
+    ALDEHYDE = "aldehyde"
+    TERPENE = "terpene"
+    ALCOHOL = "alcohol"
+    KETONE = "ketone"
+
+
+@dataclass
+class MolecularDescriptor:
+    """Molecular descriptor for olfactory pattern encoding."""
+    molecular_weight: float
+    vapor_pressure: float
+    hydrophobicity: float
+    chemical_family: ChemicalFamily
+    functional_groups: List[str] = field(default_factory=list)
+    boiling_point: float = 0.0
+    
+    def get_feature_vector(self) -> np.ndarray:
+        """Convert molecular descriptor to feature vector."""
+        return np.array([
+            self.molecular_weight / 300.0,  # Normalized
+            self.vapor_pressure / 100.0,
+            self.hydrophobicity,
+            len(self.functional_groups) / 5.0,
+            self.boiling_point / 500.0
+        ])
+
+
+@dataclass
+class ScentSignature:
+    """Scent signature for task pattern encoding."""
+    intensity: float
+    molecular_descriptors: List[MolecularDescriptor] = field(default_factory=list)
+    volatility: float = 0.5
+    persistence: float = 0.5
+    complexity: float = 0.5
+    
+    def calculate_signature_strength(self) -> float:
+        """Calculate overall signature strength."""
+        if not self.molecular_descriptors:
+            return self.intensity
+        
+        descriptor_strength = sum(d.molecular_weight / 200.0 for d in self.molecular_descriptors)
+        return min(1.0, self.intensity * descriptor_strength * self.complexity)
 
 
 @dataclass

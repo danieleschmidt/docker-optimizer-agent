@@ -8,6 +8,14 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Union
 
+from .error_handling import (
+    trivy_circuit_breaker, 
+    with_resilience, 
+    RetryConfig,
+    DockerOptimizerException,
+    ErrorCategory,
+    ErrorSeverity
+)
 from .logging_observability import ObservabilityManager
 from .models import CVEDetails, SecurityScore, VulnerabilityReport
 
@@ -26,6 +34,7 @@ class TrivyScanner:
             "trivy_available": self.trivy_available
         })
 
+    @with_resilience(trivy_circuit_breaker, RetryConfig(max_attempts=2, base_delay=2.0))
     def scan_dockerfile(self, dockerfile_content: str) -> VulnerabilityReport:
         """Scan a Dockerfile for vulnerabilities.
 
@@ -93,6 +102,7 @@ class TrivyScanner:
 
             return VulnerabilityReport(total_vulnerabilities=0)
 
+    @with_resilience(trivy_circuit_breaker, RetryConfig(max_attempts=2, base_delay=3.0))
     def scan_image(self, image_name: str) -> VulnerabilityReport:
         """Scan a Docker image for vulnerabilities.
 

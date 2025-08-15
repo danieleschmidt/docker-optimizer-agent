@@ -6,12 +6,14 @@ to ensure robust operation across diverse environments and edge cases.
 
 import logging
 import traceback
+import time
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union, Callable
 from functools import wraps
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -605,3 +607,180 @@ def ensure_dockerfile_valid(content: str, path: Optional[Path] = None) -> str:
         raise DockerfileValidationError(error_msg, path)
     
     return content
+
+
+class CircuitBreakerState(Enum):
+    """Circuit breaker states."""
+    CLOSED = "closed"      # Normal operation
+    OPEN = "open"          # Failing fast
+    HALF_OPEN = "half_open"  # Testing if service recovered
+
+
+@dataclass
+class CircuitBreakerConfig:
+    """Configuration for circuit breaker."""
+    failure_threshold: int = 5
+    success_threshold: int = 3
+    timeout_seconds: int = 60
+    max_timeout_seconds: int = 300
+
+
+class CircuitBreaker:
+    """Circuit breaker implementation for external service calls."""
+    
+    def __init__(self, name: str, config: Optional[CircuitBreakerConfig] = None):
+        self.name = name
+        self.config = config or CircuitBreakerConfig()
+        self.state = CircuitBreakerState.CLOSED
+        self.failure_count = 0
+        self.success_count = 0
+        self.last_failure_time = 0
+        self.timeout = self.config.timeout_seconds
+        self._lock = threading.Lock()
+        
+    def __call__(self, func: Callable) -> Callable:
+        """Decorator for circuit breaker protection."""
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return self._call_with_circuit_breaker(func, *args, **kwargs)
+        return wrapper
+    
+    def _call_with_circuit_breaker(self, func: Callable, *args, **kwargs):
+        """Execute function with circuit breaker protection."""
+        with self._lock:
+            if self._should_skip_call():
+                raise DockerOptimizerException(
+                    f"Circuit breaker '{self.name}' is OPEN. Service unavailable.",
+                    category=ErrorCategory.EXTERNAL_DEPENDENCY,
+                    severity=ErrorSeverity.HIGH,
+                    recoverable=True
+                )
+        
+        try:
+            result = func(*args, **kwargs)
+            self._on_success()
+            return result
+        except Exception as e:
+            self._on_failure()
+            raise
+    
+    def _should_skip_call(self) -> bool:
+        """Check if we should skip the call due to circuit breaker state."""
+        if self.state == CircuitBreakerState.CLOSED:
+            return False
+        
+        if self.state == CircuitBreakerState.OPEN:
+            if time.time() - self.last_failure_time >= self.timeout:
+                self.state = CircuitBreakerState.HALF_OPEN
+                self.success_count = 0
+                return False
+            return True
+        
+        # HALF_OPEN state - allow limited requests
+        return False
+    
+    def _on_success(self):
+        """Handle successful call."""
+        with self._lock:
+            if self.state == CircuitBreakerState.HALF_OPEN:
+                self.success_count += 1
+                if self.success_count >= self.config.success_threshold:
+                    self.state = CircuitBreakerState.CLOSED
+                    self.failure_count = 0
+                    self.timeout = self.config.timeout_seconds
+            else:
+                self.failure_count = max(0, self.failure_count - 1)
+    
+    def _on_failure(self):
+        """Handle failed call."""
+        with self._lock:
+            self.failure_count += 1
+            self.last_failure_time = time.time()
+            
+            if self.failure_count >= self.config.failure_threshold:
+                self.state = CircuitBreakerState.OPEN
+                # Exponential backoff with max limit
+                self.timeout = min(
+                    self.timeout * 2,
+                    self.config.max_timeout_seconds
+                )
+            
+            if self.state == CircuitBreakerState.HALF_OPEN:
+                self.state = CircuitBreakerState.OPEN
+
+
+class RetryConfig:
+    """Configuration for retry mechanism."""
+    
+    def __init__(self, 
+                 max_attempts: int = 3,
+                 base_delay: float = 1.0,
+                 max_delay: float = 60.0,
+                 exponential_base: float = 2.0,
+                 jitter: bool = True):
+        self.max_attempts = max_attempts
+        self.base_delay = base_delay
+        self.max_delay = max_delay
+        self.exponential_base = exponential_base
+        self.jitter = jitter
+
+
+def retry_with_exponential_backoff(config: Optional[RetryConfig] = None):
+    """Retry decorator with exponential backoff and jitter."""
+    config = config or RetryConfig()
+    
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            
+            for attempt in range(config.max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except DockerOptimizerException as e:
+                    if not e.recoverable or attempt == config.max_attempts - 1:
+                        raise
+                    last_exception = e
+                except Exception as e:
+                    if attempt == config.max_attempts - 1:
+                        raise
+                    last_exception = e
+                
+                # Calculate delay with exponential backoff
+                delay = min(
+                    config.base_delay * (config.exponential_base ** attempt),
+                    config.max_delay
+                )
+                
+                # Add jitter to prevent thundering herd
+                if config.jitter:
+                    import random
+                    delay *= (0.5 + random.random() * 0.5)
+                
+                logger.warning(
+                    f"Attempt {attempt + 1}/{config.max_attempts} failed: {last_exception}. "
+                    f"Retrying in {delay:.2f} seconds..."
+                )
+                time.sleep(delay)
+            
+            # If we get here, all attempts failed
+            raise last_exception
+        
+        return wrapper
+    return decorator
+
+
+# Global circuit breakers for common external services
+trivy_circuit_breaker = CircuitBreaker("trivy_scanner")
+registry_circuit_breaker = CircuitBreaker("registry_api")
+external_api_circuit_breaker = CircuitBreaker("external_api")
+
+
+def with_resilience(circuit_breaker: CircuitBreaker, retry_config: Optional[RetryConfig] = None):
+    """Combined decorator for circuit breaker and retry logic."""
+    def decorator(func: Callable) -> Callable:
+        # Apply retry first, then circuit breaker
+        retried_func = retry_with_exponential_backoff(retry_config)(func)
+        protected_func = circuit_breaker(retried_func)
+        return protected_func
+    return decorator

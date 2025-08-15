@@ -444,3 +444,272 @@ class PerformanceOptimizer:
     def close(self) -> None:
         """Clean up resources."""
         self.parallel_analyzer.close()
+
+
+@dataclass
+class AutoScalingConfig:
+    """Configuration for auto-scaling behavior."""
+    min_workers: int = 2
+    max_workers: int = 16
+    scale_up_threshold: float = 0.8  # CPU utilization threshold
+    scale_down_threshold: float = 0.3
+    scale_up_cooldown: int = 60  # seconds
+    scale_down_cooldown: int = 300
+    queue_length_threshold: int = 10
+
+
+class AutoScalingManager:
+    """Advanced auto-scaling manager for workload optimization."""
+    
+    def __init__(self, config: AutoScalingConfig = None):
+        self.config = config or AutoScalingConfig()
+        self.current_workers = self.config.min_workers
+        self.last_scale_time = 0
+        self.worker_pool = None
+        self._metrics = {
+            "cpu_usage": [],
+            "memory_usage": [],
+            "queue_length": 0,
+            "active_tasks": 0,
+            "completed_tasks": 0
+        }
+        self._create_worker_pool()
+    
+    def _create_worker_pool(self):
+        """Create or recreate worker pool with current worker count."""
+        if self.worker_pool:
+            self.worker_pool.shutdown(wait=True)
+        
+        self.worker_pool = ThreadPoolExecutor(
+            max_workers=self.current_workers,
+            thread_name_prefix="docker-optimizer"
+        )
+        
+        logger.info(f"Worker pool created with {self.current_workers} workers")
+    
+    def _collect_metrics(self):
+        """Collect current system metrics."""
+        # CPU usage
+        cpu_percent = psutil.cpu_percent(interval=1)
+        self._metrics["cpu_usage"].append(cpu_percent)
+        
+        # Memory usage
+        memory = psutil.virtual_memory()
+        self._metrics["memory_usage"].append(memory.percent)
+        
+        # Keep only last 10 measurements for moving average
+        if len(self._metrics["cpu_usage"]) > 10:
+            self._metrics["cpu_usage"] = self._metrics["cpu_usage"][-10:]
+        if len(self._metrics["memory_usage"]) > 10:
+            self._metrics["memory_usage"] = self._metrics["memory_usage"][-10:]
+    
+    def _get_avg_cpu_usage(self) -> float:
+        """Get average CPU usage over recent measurements."""
+        if not self._metrics["cpu_usage"]:
+            return 0.0
+        return sum(self._metrics["cpu_usage"]) / len(self._metrics["cpu_usage"]) / 100.0
+    
+    def _should_scale_up(self) -> bool:
+        """Determine if we should scale up workers."""
+        current_time = time.time()
+        
+        # Check cooldown period
+        if current_time - self.last_scale_time < self.config.scale_up_cooldown:
+            return False
+        
+        # Check if at maximum workers
+        if self.current_workers >= self.config.max_workers:
+            return False
+        
+        # Check scaling conditions
+        avg_cpu = self._get_avg_cpu_usage()
+        high_queue = self._metrics["queue_length"] > self.config.queue_length_threshold
+        high_cpu = avg_cpu > self.config.scale_up_threshold
+        
+        return high_cpu or high_queue
+    
+    def _should_scale_down(self) -> bool:
+        """Determine if we should scale down workers."""
+        current_time = time.time()
+        
+        # Check cooldown period (longer for scale down)
+        if current_time - self.last_scale_time < self.config.scale_down_cooldown:
+            return False
+        
+        # Check if at minimum workers
+        if self.current_workers <= self.config.min_workers:
+            return False
+        
+        # Check scaling conditions
+        avg_cpu = self._get_avg_cpu_usage()
+        low_queue = self._metrics["queue_length"] < 2
+        low_cpu = avg_cpu < self.config.scale_down_threshold
+        no_active_tasks = self._metrics["active_tasks"] == 0
+        
+        return low_cpu and low_queue and no_active_tasks
+    
+    def _scale_up(self):
+        """Scale up worker pool."""
+        new_workers = min(self.current_workers * 2, self.config.max_workers)
+        if new_workers > self.current_workers:
+            self.current_workers = new_workers
+            self._create_worker_pool()
+            self.last_scale_time = time.time()
+            logger.info(f"Scaled UP to {self.current_workers} workers")
+    
+    def _scale_down(self):
+        """Scale down worker pool."""
+        new_workers = max(self.current_workers // 2, self.config.min_workers)
+        if new_workers < self.current_workers:
+            self.current_workers = new_workers
+            self._create_worker_pool()
+            self.last_scale_time = time.time()
+            logger.info(f"Scaled DOWN to {self.current_workers} workers")
+    
+    def auto_scale(self):
+        """Perform auto-scaling decision and action."""
+        self._collect_metrics()
+        
+        if self._should_scale_up():
+            self._scale_up()
+        elif self._should_scale_down():
+            self._scale_down()
+    
+    def submit_task(self, fn, *args, **kwargs):
+        """Submit a task to the worker pool."""
+        self._metrics["queue_length"] += 1
+        self._metrics["active_tasks"] += 1
+        
+        def wrapped_fn(*args, **kwargs):
+            try:
+                result = fn(*args, **kwargs)
+                self._metrics["completed_tasks"] += 1
+                return result
+            finally:
+                self._metrics["active_tasks"] -= 1
+                self._metrics["queue_length"] = max(0, self._metrics["queue_length"] - 1)
+        
+        # Trigger auto-scaling check
+        self.auto_scale()
+        
+        return self.worker_pool.submit(wrapped_fn, *args, **kwargs)
+    
+    def get_scaling_metrics(self) -> Dict[str, Any]:
+        """Get auto-scaling metrics."""
+        return {
+            "current_workers": self.current_workers,
+            "min_workers": self.config.min_workers,
+            "max_workers": self.config.max_workers,
+            "avg_cpu_usage": self._get_avg_cpu_usage(),
+            "queue_length": self._metrics["queue_length"],
+            "active_tasks": self._metrics["active_tasks"],
+            "completed_tasks": self._metrics["completed_tasks"],
+            "last_scale_time": self.last_scale_time
+        }
+    
+    def shutdown(self):
+        """Shutdown the auto-scaling manager."""
+        if self.worker_pool:
+            self.worker_pool.shutdown(wait=True)
+
+
+class AdaptiveLoadBalancer:
+    """Adaptive load balancer for optimal resource utilization."""
+    
+    def __init__(self):
+        self.node_metrics = {}
+        self.routing_weights = {}
+        self._update_interval = 30  # seconds
+        self._last_update = 0
+    
+    def register_node(self, node_id: str, initial_weight: float = 1.0):
+        """Register a processing node."""
+        self.node_metrics[node_id] = {
+            "response_time": [],
+            "success_rate": 1.0,
+            "load": 0.0,
+            "last_seen": time.time()
+        }
+        self.routing_weights[node_id] = initial_weight
+    
+    def update_node_metrics(self, node_id: str, response_time: float, success: bool):
+        """Update metrics for a node."""
+        if node_id not in self.node_metrics:
+            return
+        
+        metrics = self.node_metrics[node_id]
+        
+        # Update response time (keep last 50 measurements)
+        metrics["response_time"].append(response_time)
+        if len(metrics["response_time"]) > 50:
+            metrics["response_time"] = metrics["response_time"][-50:]
+        
+        # Update success rate with exponential decay
+        current_success = 1.0 if success else 0.0
+        metrics["success_rate"] = 0.9 * metrics["success_rate"] + 0.1 * current_success
+        
+        metrics["last_seen"] = time.time()
+        
+        # Update routing weights if needed
+        self._update_routing_weights()
+    
+    def _update_routing_weights(self):
+        """Update routing weights based on node performance."""
+        current_time = time.time()
+        
+        if current_time - self._last_update < self._update_interval:
+            return
+        
+        self._last_update = current_time
+        
+        for node_id, metrics in self.node_metrics.items():
+            if not metrics["response_time"]:
+                continue
+            
+            # Calculate weight based on inverse response time and success rate
+            avg_response_time = sum(metrics["response_time"]) / len(metrics["response_time"])
+            
+            # Favor nodes with lower response time and higher success rate
+            weight = (1.0 / max(avg_response_time, 0.1)) * metrics["success_rate"]
+            
+            # Reduce weight for stale nodes
+            staleness = current_time - metrics["last_seen"]
+            if staleness > 300:  # 5 minutes
+                weight *= 0.1
+            
+            self.routing_weights[node_id] = max(weight, 0.01)  # Minimum weight
+        
+        # Normalize weights
+        total_weight = sum(self.routing_weights.values())
+        if total_weight > 0:
+            for node_id in self.routing_weights:
+                self.routing_weights[node_id] /= total_weight
+    
+    def select_node(self) -> Optional[str]:
+        """Select optimal node based on current weights."""
+        if not self.routing_weights:
+            return None
+        
+        # Weighted random selection
+        import random
+        
+        nodes = list(self.routing_weights.keys())
+        weights = list(self.routing_weights.values())
+        
+        return random.choices(nodes, weights=weights)[0]
+    
+    def get_load_balancer_metrics(self) -> Dict[str, Any]:
+        """Get load balancer metrics."""
+        return {
+            "registered_nodes": len(self.node_metrics),
+            "routing_weights": self.routing_weights.copy(),
+            "node_metrics": {
+                node_id: {
+                    "avg_response_time": sum(metrics["response_time"]) / len(metrics["response_time"]) 
+                                       if metrics["response_time"] else 0,
+                    "success_rate": metrics["success_rate"],
+                    "last_seen": metrics["last_seen"]
+                }
+                for node_id, metrics in self.node_metrics.items()
+            }
+        }

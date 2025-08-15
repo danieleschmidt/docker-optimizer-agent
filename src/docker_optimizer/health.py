@@ -8,6 +8,12 @@ import psutil
 import platform
 
 from .config import Config
+from .error_handling import (
+    trivy_circuit_breaker,
+    registry_circuit_breaker, 
+    external_api_circuit_breaker,
+    CircuitBreakerState
+)
 
 
 class HealthCheck:
@@ -29,7 +35,8 @@ class HealthCheck:
                 "system": self._check_system_health(),
                 "dependencies": self._check_dependencies(),
                 "resources": self._check_resources(),
-                "external_services": self._check_external_services()
+                "external_services": self._check_external_services(),
+                "circuit_breakers": self._check_circuit_breakers()
             }
         }
     
@@ -219,6 +226,39 @@ class HealthCheck:
         return {
             "status": "ok" if all_critical_ok else "degraded",
             "services": services
+        }
+    
+    def _check_circuit_breakers(self) -> Dict[str, Any]:
+        """Check status of circuit breakers."""
+        breakers = {
+            "trivy_scanner": {
+                "state": trivy_circuit_breaker.state.value,
+                "failure_count": trivy_circuit_breaker.failure_count,
+                "success_count": trivy_circuit_breaker.success_count,
+                "timeout_seconds": trivy_circuit_breaker.timeout,
+                "healthy": trivy_circuit_breaker.state == CircuitBreakerState.CLOSED
+            },
+            "registry_api": {
+                "state": registry_circuit_breaker.state.value,
+                "failure_count": registry_circuit_breaker.failure_count,
+                "success_count": registry_circuit_breaker.success_count,
+                "timeout_seconds": registry_circuit_breaker.timeout,
+                "healthy": registry_circuit_breaker.state == CircuitBreakerState.CLOSED
+            },
+            "external_api": {
+                "state": external_api_circuit_breaker.state.value,
+                "failure_count": external_api_circuit_breaker.failure_count,
+                "success_count": external_api_circuit_breaker.success_count,
+                "timeout_seconds": external_api_circuit_breaker.timeout,
+                "healthy": external_api_circuit_breaker.state == CircuitBreakerState.CLOSED
+            }
+        }
+        
+        all_healthy = all(breaker["healthy"] for breaker in breakers.values())
+        
+        return {
+            "status": "ok" if all_healthy else "degraded",
+            "breakers": breakers
         }
 
 

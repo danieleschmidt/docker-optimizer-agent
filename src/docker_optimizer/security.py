@@ -19,7 +19,7 @@ class SecurityAnalyzer:
             r'rm\s+-rf\s+/',     # Dangerous rm commands
             r'chmod\s+777',      # Overly permissive permissions
         ]
-        
+
         self.known_vulnerabilities = {
             "latest_tag": {
                 "severity": "MEDIUM",
@@ -126,7 +126,7 @@ class SecurityAnalyzer:
     def _check_dangerous_patterns(self, dockerfile_content: str) -> List[SecurityFix]:
         """Check for dangerous command patterns."""
         fixes = []
-        
+
         for pattern in self.dangerous_patterns:
             if re.search(pattern, dockerfile_content, re.IGNORECASE):
                 fixes.append(
@@ -137,7 +137,7 @@ class SecurityAnalyzer:
                         fix="Review and replace with safer alternatives",
                     )
                 )
-        
+
         return fixes
 
     @staticmethod
@@ -145,12 +145,12 @@ class SecurityAnalyzer:
         """Sanitize Dockerfile content for safe processing."""
         # Remove any potentially malicious content
         sanitized = content
-        
+
         # Remove comments that might contain injection attempts
         sanitized = re.sub(r'#.*$', '', sanitized, flags=re.MULTILINE)
-        
+
         # Limit line length to prevent buffer overflows
         lines = sanitized.split('\n')
         sanitized_lines = [line[:1000] for line in lines if len(line.strip()) > 0]
-        
+
         return '\n'.join(sanitized_lines[:500])  # Limit total lines

@@ -9,12 +9,9 @@ from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Union
 
 from .error_handling import (
-    trivy_circuit_breaker, 
-    with_resilience, 
     RetryConfig,
-    DockerOptimizerException,
-    ErrorCategory,
-    ErrorSeverity
+    trivy_circuit_breaker,
+    with_resilience,
 )
 from .logging_observability import ObservabilityManager
 from .models import CVEDetails, SecurityScore, VulnerabilityReport

@@ -1,19 +1,16 @@
 """AI-Powered Optimization Engine with LLM Integration and Advanced Analytics."""
 
-import asyncio
-import json
 import logging
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 
-import requests
 from pydantic import BaseModel
 
-from .models import OptimizationResult, OptimizationSuggestion
-from .resilience_engine import ResilienceEngine, ResilienceConfig, resilient_operation
 from .ai_health_monitor import AIHealthMonitor
+from .models import OptimizationSuggestion
+from .resilience_engine import ResilienceConfig, ResilienceEngine
 
 
 class OptimizationStrategy(str, Enum):
@@ -58,7 +55,7 @@ class AIOptimizationResponse(BaseModel):
 
 class AIOptimizationEngine:
     """Advanced AI-powered Dockerfile optimization engine."""
-    
+
     def __init__(
         self,
         enable_llm_integration: bool = True,
@@ -69,7 +66,7 @@ class AIOptimizationEngine:
         self.enable_research_mode = enable_research_mode
         self.cache_enabled = cache_enabled
         self.logger = logging.getLogger(__name__)
-        
+
         # Initialize resilience and health monitoring
         self.resilience_config = ResilienceConfig(
             failure_threshold=3,
@@ -79,10 +76,10 @@ class AIOptimizationEngine:
         )
         self.resilience_engine = ResilienceEngine(self.resilience_config)
         self.health_monitor = AIHealthMonitor()
-        
+
         # Register fallbacks for critical operations
         self._register_fallbacks()
-        
+
         # AI optimization patterns database
         self.optimization_patterns = {
             "security": [
@@ -116,23 +113,23 @@ class AIOptimizationEngine:
                 }
             ]
         }
-    
+
     def _register_fallbacks(self) -> None:
         """Register fallback methods for critical operations."""
-        
+
         # Fallback for AI optimization
         async def ai_optimization_fallback(request: AIOptimizationRequest) -> AIOptimizationResponse:
             """Simple fallback optimization without AI."""
             start_time = time.time()
-            
+
             # Basic pattern-based optimization
             optimized = await self._apply_pattern_optimization(
                 request.dockerfile_content, OptimizationStrategy.CONSERVATIVE
             )
-            
+
             # Basic context optimization
             optimized = await self._apply_context_optimization(optimized, request)
-            
+
             metrics = AIOptimizationMetrics(
                 processing_time=time.time() - start_time,
                 confidence_score=0.7,  # Lower confidence for fallback
@@ -141,7 +138,7 @@ class AIOptimizationEngine:
                 size_reduction_estimate=0.25,
                 performance_gain_estimate=0.15
             )
-            
+
             return AIOptimizationResponse(
                 optimized_dockerfile=optimized,
                 explanations=["Applied basic optimization patterns (fallback mode)"],
@@ -151,56 +148,56 @@ class AIOptimizationEngine:
                 confidence_score=metrics.confidence_score,
                 alternative_approaches=["Full AI optimization available when service recovers"]
             )
-        
+
         self.resilience_engine.register_fallback(
             "ai_optimization", ai_optimization_fallback
         )
-    
+
     async def optimize_dockerfile_with_ai(
-        self, 
+        self,
         request: AIOptimizationRequest
     ) -> AIOptimizationResponse:
         """Perform AI-powered Dockerfile optimization with resilience."""
-        
+
         # Record start time for health monitoring
         start_time = time.time()
-        
+
         # Execute with resilience mechanisms
         result = await self.resilience_engine.execute_with_resilience(
             "ai_optimization",
             self._perform_optimization,
             request
         )
-        
+
         # Record metrics for health monitoring
         if result.success:
             self.health_monitor.record_success(result.total_time * 1000)  # Convert to ms
         else:
             self.health_monitor.record_error()
-        
+
         if result.success:
             return result.result
         else:
             # This should not happen due to fallbacks, but just in case
             raise result.error or Exception("AI optimization failed")
-    
+
     async def _perform_optimization(
-        self, 
+        self,
         request: AIOptimizationRequest
     ) -> AIOptimizationResponse:
         """Core optimization logic (wrapped by resilience layer)."""
         start_time = time.time()
-        
+
         # Phase 1: Pattern-based optimization
         pattern_optimized = await self._apply_pattern_optimization(
             request.dockerfile_content, request.strategy
         )
-        
+
         # Phase 2: Context-aware optimization
         context_optimized = await self._apply_context_optimization(
             pattern_optimized, request
         )
-        
+
         # Phase 3: LLM-powered enhancement (if enabled)
         if self.enable_llm_integration:
             llm_optimized = await self._apply_llm_optimization(
@@ -208,12 +205,12 @@ class AIOptimizationEngine:
             )
         else:
             llm_optimized = context_optimized
-        
+
         # Phase 4: Generate explanations and metrics
         explanations = self._generate_explanations(
             request.dockerfile_content, llm_optimized
         )
-        
+
         metrics = AIOptimizationMetrics(
             processing_time=time.time() - start_time,
             confidence_score=0.92,
@@ -222,7 +219,7 @@ class AIOptimizationEngine:
             size_reduction_estimate=0.45,
             performance_gain_estimate=0.32
         )
-        
+
         return AIOptimizationResponse(
             optimized_dockerfile=llm_optimized,
             explanations=explanations,
@@ -236,27 +233,27 @@ class AIOptimizationEngine:
             confidence_score=metrics.confidence_score,
             alternative_approaches=self._generate_alternatives(llm_optimized)
         )
-    
+
     async def _apply_pattern_optimization(
-        self, 
-        dockerfile_content: str, 
+        self,
+        dockerfile_content: str,
         strategy: OptimizationStrategy
     ) -> str:
         """Apply pattern-based optimization rules."""
         import re
-        
+
         optimized = dockerfile_content
-        
+
         # Apply patterns based on strategy
         pattern_categories = ["security", "performance", "size"]
-        
+
         if strategy == OptimizationStrategy.AGGRESSIVE:
             confidence_threshold = 0.7
         elif strategy == OptimizationStrategy.BALANCED:
             confidence_threshold = 0.8
         else:  # CONSERVATIVE
             confidence_threshold = 0.9
-        
+
         for category in pattern_categories:
             if category in self.optimization_patterns:
                 for pattern_rule in self.optimization_patterns[category]:
@@ -267,17 +264,17 @@ class AIOptimizationEngine:
                             optimized,
                             flags=re.MULTILINE | re.IGNORECASE
                         )
-        
+
         return optimized
-    
+
     async def _apply_context_optimization(
-        self, 
-        dockerfile_content: str, 
+        self,
+        dockerfile_content: str,
         request: AIOptimizationRequest
     ) -> str:
         """Apply context-aware optimizations based on requirements."""
         optimized = dockerfile_content
-        
+
         # Security requirements
         if "non-root" in request.security_requirements:
             if "USER " not in optimized or "USER root" in optimized:
@@ -286,7 +283,7 @@ class AIOptimizationEngine:
                 optimized += "\n# Security: Create non-root user\n"
                 optimized += "RUN groupadd -r appuser && useradd -r -g appuser appuser\n"
                 optimized += "USER appuser\n"
-        
+
         # Performance requirements
         if "minimal-size" in request.performance_requirements:
             if "alpine" not in optimized.lower():
@@ -295,35 +292,35 @@ class AIOptimizationEngine:
                 ).replace(
                     "FROM debian", "FROM alpine"
                 )
-        
+
         # Compliance frameworks
         if "HIPAA" in request.compliance_frameworks:
             optimized += "\n# HIPAA Compliance: Health check\n"
             optimized += "HEALTHCHECK --interval=30s --timeout=3s --retries=3 \\\n"
             optimized += "    CMD curl -f http://localhost:8000/health || exit 1\n"
-        
+
         return optimized
-    
+
     async def _apply_llm_optimization(
-        self, 
-        dockerfile_content: str, 
+        self,
+        dockerfile_content: str,
         request: AIOptimizationRequest
     ) -> str:
         """Apply LLM-powered optimization (simulated for now)."""
         # This would integrate with actual LLM APIs in production
         # For now, we simulate intelligent optimization
-        
+
         optimized = dockerfile_content
-        
+
         # Simulate intelligent multi-stage build detection
         if "npm install" in optimized and "FROM node" in optimized:
             optimized = self._generate_nodejs_multistage(optimized)
-        
+
         if "pip install" in optimized and "FROM python" in optimized:
             optimized = self._generate_python_multistage(optimized)
-        
+
         return optimized
-    
+
     def _generate_nodejs_multistage(self, dockerfile_content: str) -> str:
         """Generate optimized multi-stage Node.js Dockerfile."""
         return """# Multi-stage build for Node.js optimization
@@ -362,7 +359,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\
 
 CMD ["node", "dist/index.js"]
 """
-    
+
     def _generate_python_multistage(self, dockerfile_content: str) -> str:
         """Generate optimized multi-stage Python Dockerfile."""
         return """# Multi-stage build for Python optimization
@@ -406,93 +403,93 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\
 
 CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
 """
-    
+
     def _generate_explanations(
-        self, 
-        original: str, 
+        self,
+        original: str,
         optimized: str
     ) -> List[str]:
         """Generate explanations for optimizations applied."""
         explanations = []
-        
+
         # Check for non-root user addition
-        if (("USER " in optimized and ("USER " not in original or "USER root" in original)) or 
+        if (("USER " in optimized and ("USER " not in original or "USER root" in original)) or
             "appuser" in optimized):
             explanations.append(
                 "Added non-root user for enhanced security"
             )
-        
+
         # Check for health check addition
         if "HEALTHCHECK" in optimized and "HEALTHCHECK" not in original:
             explanations.append(
                 "Added health check for monitoring and reliability"
             )
-        
+
         # Check for Alpine base image switch
         if "alpine" in optimized.lower() and "alpine" not in original.lower():
             explanations.append(
                 "Switched to Alpine Linux base image for reduced size"
             )
-        
+
         # Check for multi-stage build
         if "FROM" in optimized and optimized.count("FROM") > 1:
             explanations.append(
                 "Implemented multi-stage build for optimal size and security"
             )
-        
+
         # Check for layer optimization
-        if (optimized.count("RUN") < original.count("RUN") and 
+        if (optimized.count("RUN") < original.count("RUN") and
             "&&" in optimized and "&& " not in original):
             explanations.append(
                 "Combined RUN commands to reduce Docker layers"
             )
-        
+
         # Check for version pinning
         if ":latest" in original and ":latest" not in optimized:
             explanations.append(
                 "Replaced 'latest' tags with specific versions for security"
             )
-        
+
         return explanations
-    
+
     def _extract_security_improvements(
-        self, 
-        original: str, 
+        self,
+        original: str,
         optimized: str
     ) -> List[str]:
         """Extract security improvements made."""
         improvements = []
-        
+
         if ":latest" in original and ":latest" not in optimized:
             improvements.append("Replaced 'latest' tags with specific versions")
-        
+
         if "USER root" in original or ("USER " not in original and "USER " in optimized):
             improvements.append("Added non-root user execution")
-        
+
         if "HEALTHCHECK" in optimized:
             improvements.append("Added health check for security monitoring")
-        
+
         return improvements
-    
+
     def _extract_performance_improvements(
-        self, 
-        original: str, 
+        self,
+        original: str,
         optimized: str
     ) -> List[str]:
         """Extract performance improvements made."""
         improvements = []
-        
+
         if optimized.count("RUN") < original.count("RUN"):
             improvements.append("Reduced Docker layers by combining RUN commands")
-        
+
         if "alpine" in optimized.lower():
             improvements.append("Used Alpine Linux for smaller image size")
-        
+
         if "FROM" in optimized and optimized.count("FROM") > 1:
             improvements.append("Implemented multi-stage build for build optimization")
-        
+
         return improvements
-    
+
     def _generate_alternatives(self, optimized_dockerfile: str) -> List[str]:
         """Generate alternative optimization approaches."""
         return [
@@ -502,10 +499,10 @@ CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
             "Consider using Docker Compose for multi-service optimization",
             "Explore container layer caching strategies"
         ]
-    
+
     async def benchmark_optimization_impact(
-        self, 
-        original_dockerfile: str, 
+        self,
+        original_dockerfile: str,
         optimized_dockerfile: str
     ) -> Dict[str, float]:
         """Benchmark the impact of optimization changes."""
@@ -517,14 +514,14 @@ CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
             "layer_count_reduction": 0.30,  # 30% fewer layers
             "vulnerability_reduction": 0.75  # 75% fewer vulnerabilities
         }
-    
+
     def get_optimization_recommendations(
-        self, 
+        self,
         dockerfile_analysis: Dict[str, Any]
     ) -> List[OptimizationSuggestion]:
         """Generate AI-powered optimization recommendations."""
         suggestions = []
-        
+
         # Security recommendations
         if dockerfile_analysis.get("has_root_user", True):
             suggestions.append(OptimizationSuggestion(
@@ -535,7 +532,7 @@ CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
                 explanation="Running as root increases security risk",
                 fix_example="RUN groupadd -r appuser && useradd -r -g appuser appuser\nUSER appuser"
             ))
-        
+
         # Performance recommendations
         if dockerfile_analysis.get("layer_count", 0) > 10:
             suggestions.append(OptimizationSuggestion(
@@ -546,7 +543,7 @@ CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
                 explanation="Fewer layers result in smaller images and faster builds",
                 fix_example="RUN command1 && command2 && command3"
             ))
-        
+
         # Size recommendations
         if dockerfile_analysis.get("base_image", "").startswith("ubuntu"):
             suggestions.append(OptimizationSuggestion(
@@ -557,15 +554,15 @@ CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
                 explanation="Alpine images are significantly smaller than Ubuntu",
                 fix_example="FROM alpine:3.18"
             ))
-        
+
         return suggestions
-    
+
     async def get_health_status(self) -> Dict[str, Any]:
         """Get comprehensive health status of the AI optimization engine."""
         health_check = await self.health_monitor.check_system_health()
         resilience_status = self.resilience_engine.get_system_resilience_status()
         performance_summary = self.health_monitor.get_performance_summary()
-        
+
         return {
             "overall_status": health_check.status.value,
             "health_message": health_check.message,
@@ -580,17 +577,17 @@ CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
             "optimization_patterns_loaded": sum(len(patterns) for patterns in self.optimization_patterns.values()),
             "timestamp": health_check.timestamp
         }
-    
+
     async def get_operation_statistics(self) -> Dict[str, Any]:
         """Get detailed operation statistics."""
         ai_stats = self.resilience_engine.get_operation_stats("ai_optimization")
         health_trends = self.health_monitor.get_health_trends()
-        
+
         return {
             "ai_optimization_stats": ai_stats,
             "health_trends": health_trends,
             "circuit_breaker_status": {
-                name: cb.state.value 
+                name: cb.state.value
                 for name, cb in self.resilience_engine.circuit_breakers.items()
             }
         }

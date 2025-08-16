@@ -18,8 +18,8 @@ except ImportError:
     _features['planner'] = False
 
 try:
-    from .algorithms.quantum_annealing import QuantumAnnealingScheduler
     from .algorithms.qaoa_allocator import QAOAResourceAllocator
+    from .algorithms.quantum_annealing import QuantumAnnealingScheduler
     from .algorithms.vqe_dependencies import VQEDependencyResolver
     __all__.extend(["QuantumAnnealingScheduler", "QAOAResourceAllocator", "VQEDependencyResolver"])
     _features['algorithms'] = True
@@ -27,9 +27,9 @@ except ImportError:
     _features['algorithms'] = False
 
 try:
-    from .models.task import Task, TaskStatus, TaskPriority
     from .models.resource import Resource, ResourceType
     from .models.schedule import Schedule, ScheduleOptimization
+    from .models.task import Task, TaskPriority, TaskStatus
     __all__.extend(["Task", "TaskStatus", "TaskPriority", "Resource", "ResourceType", "Schedule", "ScheduleOptimization"])
     _features['models'] = True
 except ImportError:

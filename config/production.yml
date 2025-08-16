@@ -1,0 +1,53 @@
+# Docker Optimizer Production Configuration
+
+# Application Settings
+app:
+  name: "Docker Optimizer Agent"
+  version: "1.0.0"
+  environment: "production"
+  debug: false
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "json"
+  file: "/var/log/docker-optimizer/app.log"
+  max_size: "100MB"
+  backup_count: 10
+  
+# Performance Settings
+performance:
+  max_workers: 8
+  cache_size: 500
+  memory_limit: "2GB"
+  request_timeout: 30
+  
+# Security Settings
+security:
+  ssl_enabled: true
+  secrets_provider: "k8s-secrets"
+  auth_required: true
+  rate_limiting: true
+  
+# Monitoring & Health
+monitoring:
+  enabled: true
+  metrics_endpoint: "/metrics"
+  health_endpoint: "/health"
+  prometheus_port: 9090
+  
+# Auto-scaling Configuration
+autoscaling:
+  enabled: true
+  min_instances: 2
+  max_instances: 20
+  target_cpu_percent: 70
+  scale_up_cooldown: 300
+  scale_down_cooldown: 600
+  
+# Database/Storage
+storage:
+  data_directory: "/data"
+  cache_directory: "/cache"
+  backup_enabled: true
+  retention_days: 30

@@ -6,16 +6,20 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .error_handling import (
-    DockerOptimizerException,
     DockerfileValidationError,
+    DockerOptimizerException,
     ErrorCategory,
-    ErrorContext,
     ErrorSeverity,
-    ValidationResult,
-    ensure_dockerfile_valid,
     error_context,
     robust_operation,
     validate_dockerfile_content,
+)
+from .global_features import (
+    ComplianceFramework,
+    GlobalizationConfig,
+    GlobalOptimizationEngine,
+    Region,
+    SupportedLanguage,
 )
 from .language_optimizer import LanguageOptimizer, analyze_project_language
 from .models import (
@@ -26,23 +30,13 @@ from .models import (
 )
 from .parser import DockerfileParser
 from .research_engine import (
-    BenchmarkResult,
     ComparativeStudy,
     OptimizationAlgorithmBenchmark,
-    ResearchDataset,
     ResearchPublicationGenerator,
     create_standard_research_dataset,
 )
 from .security import SecurityAnalyzer
 from .size_estimator import SizeEstimator
-from .global_features import (
-    GlobalOptimizationEngine,
-    GlobalizationConfig,
-    Region,
-    SupportedLanguage,
-    ComplianceFramework,
-    get_global_optimization_engine,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +73,7 @@ class DockerfileOptimizer:
                 raise DockerfileValidationError(
                     f"Critical dockerfile validation errors: {'; '.join(validation_result.errors)}"
                 )
-            
+
             try:
                 parsed = self.parser.parse(dockerfile_content)
 
@@ -111,7 +105,7 @@ class DockerfileOptimizer:
                             elif warning_lower in existing_lower or existing_lower in warning_lower:
                                 is_duplicate = True
                                 break
-                        
+
                         if not is_duplicate:
                             security_issues.append(f"Validation: {warning}")
 
@@ -132,10 +126,10 @@ class DockerfileOptimizer:
                     optimization_opportunities=optimization_opportunities,
                     estimated_size=estimated_size,
                 )
-                
+
                 logger.info(f"Dockerfile analysis completed: {total_layers} layers, {len(security_issues)} security issues, {len(optimization_opportunities)} optimizations")
                 return analysis
-                
+
             except Exception as e:
                 logger.error(f"Dockerfile analysis failed: {e}")
                 raise DockerOptimizerException(
@@ -627,7 +621,7 @@ class DockerfileOptimizer:
         # If not, we'd need to modify the model or create a new enhanced result type
 
         return result
-    
+
     def get_research_capabilities(self) -> Dict[str, Any]:
         """Get information about research and benchmarking capabilities."""
         return {
@@ -640,7 +634,7 @@ class DockerfileOptimizer:
             "performance_metrics": [
                 "execution_time_ms",
                 "size_reduction_ratio",
-                "layer_count_reduction", 
+                "layer_count_reduction",
                 "security_improvements",
                 "success_rate"
             ],
@@ -654,8 +648,8 @@ class DockerfileOptimizer:
                 "Performance regression detection"
             ]
         }
-    
-    async def run_research_benchmark(self, 
+
+    async def run_research_benchmark(self,
                                    dataset_name: str = "standard",
                                    algorithms: Optional[List[str]] = None) -> ComparativeStudy:
         """Run a research benchmark study.
@@ -668,14 +662,14 @@ class DockerfileOptimizer:
             ComparativeStudy: Complete benchmark results with statistical analysis
         """
         logger.info(f"Starting research benchmark with dataset '{dataset_name}'")
-        
+
         # Create benchmark infrastructure
         benchmark_framework = OptimizationAlgorithmBenchmark()
-        
+
         # Register this optimizer instance
         benchmark_framework.register_algorithm("enhanced_optimizer_v2", self)
         benchmark_framework.set_baseline("enhanced_optimizer_v2")
-        
+
         # Load research dataset
         if dataset_name == "standard":
             dataset = create_standard_research_dataset()
@@ -683,7 +677,7 @@ class DockerfileOptimizer:
             # In practice, you would load custom datasets
             dataset = create_standard_research_dataset()
             logger.warning(f"Dataset '{dataset_name}' not found, using standard dataset")
-        
+
         # Run comparative study
         study_name = f"Docker_Optimization_Research_Benchmark_{dataset_name}_2025"
         study = await benchmark_framework.run_comparative_study(
@@ -691,12 +685,12 @@ class DockerfileOptimizer:
             dataset,
             algorithms
         )
-        
+
         logger.info(f"Research benchmark completed: {len(study.results)} results, {len(study.algorithms)} algorithms")
         return study
-    
-    def generate_research_publication(self, 
-                                    study: ComparativeStudy, 
+
+    def generate_research_publication(self,
+                                    study: ComparativeStudy,
                                     output_path: Optional[Path] = None) -> Path:
         """Generate publication-ready research report.
         
@@ -709,14 +703,14 @@ class DockerfileOptimizer:
         """
         if output_path is None:
             output_path = Path(f"research_report_{study.study_name}.json")
-        
+
         report_generator = ResearchPublicationGenerator()
         report_generator.generate_research_report(study, output_path)
-        
+
         logger.info(f"Research publication generated: {output_path}")
         return output_path
-    
-    def validate_research_hypothesis(self, 
+
+    def validate_research_hypothesis(self,
                                    hypothesis: str,
                                    expected_improvement: float = 0.1,
                                    confidence_level: float = 0.95) -> Dict[str, Any]:
@@ -731,7 +725,7 @@ class DockerfileOptimizer:
             Hypothesis validation results with statistical analysis
         """
         logger.info(f"Validating research hypothesis: {hypothesis}")
-        
+
         return {
             "hypothesis": hypothesis,
             "validation_approach": "Comparative benchmarking with statistical significance testing",
@@ -751,14 +745,14 @@ class DockerfileOptimizer:
             },
             "next_steps": [
                 "Design controlled experiment",
-                "Collect baseline measurements", 
+                "Collect baseline measurements",
                 "Implement hypothesis-driven optimization",
                 "Run comparative benchmark study",
                 "Validate statistical significance",
                 "Generate publication-ready report"
             ]
         }
-    
+
     def optimize_dockerfile_globally(self,
                                    dockerfile_content: str,
                                    target_region: Optional[Region] = None,
@@ -775,13 +769,13 @@ class DockerfileOptimizer:
         """
         # Get standard optimization results first
         standard_result = self.optimize_dockerfile(dockerfile_content)
-        
+
         # Apply global optimizations if global engine is available
         if self.global_engine:
             global_results = self.global_engine.optimize_dockerfile_with_global_context(
                 dockerfile_content, target_region, language
             )
-            
+
             # Combine results
             return {
                 "standard_optimization": standard_result.model_dump() if hasattr(standard_result, 'model_dump') else standard_result.dict(),
@@ -800,7 +794,7 @@ class DockerfileOptimizer:
                 "deployment_ready": False,
                 "global_features_enabled": False
             }
-    
+
     def get_global_capabilities(self) -> Dict[str, Any]:
         """Get information about global optimization capabilities."""
         if self.global_engine:
@@ -813,7 +807,7 @@ class DockerfileOptimizer:
                 "available_languages": [l.value for l in SupportedLanguage],
                 "available_compliance": [c.value for c in ComplianceFramework]
             }
-    
+
     def validate_compliance_for_region(self,
                                      dockerfile_content: str,
                                      region: Region,
@@ -833,28 +827,28 @@ class DockerfileOptimizer:
                 "error": "Global features not configured",
                 "solution": "Initialize optimizer with GlobalizationConfig to enable compliance validation"
             }
-        
+
         if frameworks is None:
             frameworks = self.global_engine.config.compliance_frameworks
-        
+
         if not frameworks:
             return {
                 "warning": "No compliance frameworks configured",
                 "region": region.value,
                 "suggestion": "Configure compliance frameworks in GlobalizationConfig"
             }
-        
+
         # Validate compliance for each framework
         results = {}
         for framework in frameworks:
             results[framework.value] = self.global_engine.compliance_engine.validate_compliance(
                 framework, dockerfile_content, region
             )
-        
+
         # Calculate overall compliance status
         overall_compliant = all(result["compliant"] for result in results.values())
         total_violations = sum(len(result["violations"]) for result in results.values())
-        
+
         return {
             "overall_compliant": overall_compliant,
             "total_violations": total_violations,
@@ -862,8 +856,8 @@ class DockerfileOptimizer:
             "framework_results": results,
             "summary": f"{'Compliant' if overall_compliant else 'Non-compliant'} across {len(frameworks)} frameworks"
         }
-    
-    def get_localized_messages(self, 
+
+    def get_localized_messages(self,
                              language: SupportedLanguage,
                              message_context: Optional[Dict[str, Any]] = None) -> Dict[str, str]:
         """Get localized messages for optimization results.
@@ -880,10 +874,10 @@ class DockerfileOptimizer:
                 "error": "Global features not configured for localization",
                 "fallback_language": "en"
             }
-        
+
         context = message_context or {}
         i18n = self.global_engine.i18n_engine
-        
+
         return {
             "optimization_complete": i18n.get_message("optimization_complete", language),
             "security_issues_found": i18n.get_message("security_issues_found", language, **context),
@@ -903,12 +897,12 @@ class DockerfileOptimizer:
 def create_optimizer_for_region(region: Region) -> DockerfileOptimizer:
     """Create a DockerfileOptimizer configured for a specific region."""
     from .global_features import create_global_config_for_region
-    
+
     global_config = create_global_config_for_region(region)
     return DockerfileOptimizer(global_config=global_config)
 
 
-def create_optimizer_for_compliance(frameworks: List[ComplianceFramework], 
+def create_optimizer_for_compliance(frameworks: List[ComplianceFramework],
                                   region: Optional[Region] = None) -> DockerfileOptimizer:
     """Create a DockerfileOptimizer configured for specific compliance frameworks."""
     config = GlobalizationConfig(

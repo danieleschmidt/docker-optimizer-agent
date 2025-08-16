@@ -14,7 +14,7 @@ from .advanced_security import AdvancedSecurityEngine
 from .ai_optimization_engine import (
     AIOptimizationEngine,
     AIOptimizationRequest,
-    OptimizationStrategy
+    OptimizationStrategy,
 )
 from .external_security import ExternalSecurityScanner
 from .language_optimizer import LanguageOptimizer, analyze_project_language
@@ -316,7 +316,7 @@ def main(
                 except Exception as e:
                     click.echo(f"Error loading custom preset: {e}", err=True)
                     sys.exit(1)
-        
+
         # Initialize AI optimization engine if requested
         ai_engine = None
         if ai_optimization:
@@ -353,18 +353,18 @@ def main(
 
             try:
                 dockerfile_content = dockerfile_path.read_text(encoding="utf-8")
-                
+
                 # Validate Dockerfile content
                 if not dockerfile_content.strip():
                     click.echo(f"Error: Dockerfile is empty: {dockerfile_path}", err=True)
                     sys.exit(1)
-                    
+
                 if not dockerfile_content.upper().startswith("FROM") and format != "json":
                     click.echo(f"Warning: Dockerfile should start with FROM instruction: {dockerfile_path}", err=True)
-                
+
                 # Sanitize content for security
                 dockerfile_content = SecurityAnalyzer.sanitize_dockerfile_content(dockerfile_content)
-                    
+
             except PermissionError:
                 click.echo(f"Error: Permission denied reading {dockerfile_path}", err=True)
                 sys.exit(1)
@@ -437,13 +437,13 @@ def main(
                         performance_requirements=[] if not performance else ["minimal-size", "layer-optimization"],
                         compliance_frameworks=[compliance_check] if compliance_check else []
                     )
-                    
+
                     if verbose:
                         click.echo("🔍 Running AI-powered optimization analysis...")
-                    
+
                     ai_result = asyncio.run(ai_engine.optimize_dockerfile_with_ai(ai_request))
                     _output_ai_optimization_result(ai_result, output, format, verbose)
-                    
+
                 except Exception as e:
                     click.echo(f"❌ AI optimization failed: {e}", err=True)
                     if verbose:
@@ -1861,18 +1861,18 @@ async def _run_research_benchmark_mode(dataset_name: str, format: str, verbose: 
     """Run research benchmark mode with statistical analysis."""
     click.echo("🔬 Starting Research Benchmark Mode")
     click.echo("=" * 50)
-    
+
     from .optimizer import DockerfileOptimizer
-    
+
     try:
         optimizer = DockerfileOptimizer()
-        
+
         # Run benchmark study
         study = await optimizer.run_research_benchmark(dataset_name)
-        
+
         # Generate publication-ready report
         report_path = optimizer.generate_research_publication(study)
-        
+
         # Display results
         if format == "json":
             import json
@@ -1891,7 +1891,7 @@ async def _run_research_benchmark_mode(dataset_name: str, format: str, verbose: 
             click.echo(f"📁 Dockerfiles processed: {len(study.docker_files)}")
             click.echo(f"📈 Total benchmark runs: {len(study.results)}")
             click.echo(f"📄 Research report: {report_path}")
-            
+
             if verbose and study.statistical_summary:
                 click.echo("\n📊 Statistical Summary:")
                 for algorithm, stats in study.statistical_summary.items():
@@ -1900,10 +1900,10 @@ async def _run_research_benchmark_mode(dataset_name: str, format: str, verbose: 
                         click.echo(f"    Success rate: {stats.get('success_rate', 0):.2%}")
                         if 'execution_time_ms' in stats:
                             click.echo(f"    Avg execution: {stats['execution_time_ms']['mean']:.1f}ms")
-        
-        click.echo(f"\n✅ Research benchmark completed successfully")
+
+        click.echo("\n✅ Research benchmark completed successfully")
         click.echo(f"📄 Full report available at: {report_path}")
-        
+
     except Exception as e:
         click.echo(f"❌ Research benchmark failed: {e}", err=True)
         if verbose:
@@ -1912,7 +1912,7 @@ async def _run_research_benchmark_mode(dataset_name: str, format: str, verbose: 
         sys.exit(1)
 
 
-async def _process_high_throughput_batch(dockerfiles: List[str], 
+async def _process_high_throughput_batch(dockerfiles: List[str],
                                        scaling_config: str,
                                        output_path: Optional[str],
                                        format: str,
@@ -1920,14 +1920,14 @@ async def _process_high_throughput_batch(dockerfiles: List[str],
     """Process dockerfiles using high-throughput engine."""
     click.echo(f"🚀 High-Throughput Mode: Processing {len(dockerfiles)} dockerfiles")
     click.echo("=" * 60)
-    
+
     from .scaling_engine import (
-        HighThroughputOptimizer, 
+        HighThroughputOptimizer,
+        ScalingConfiguration,
         create_high_performance_config,
         create_memory_optimized_config,
-        ScalingConfiguration
     )
-    
+
     # Select scaling configuration
     if scaling_config == "high_performance":
         config = create_high_performance_config()
@@ -1935,18 +1935,18 @@ async def _process_high_throughput_batch(dockerfiles: List[str],
         config = create_memory_optimized_config()
     else:  # balanced
         config = ScalingConfiguration()
-    
+
     if verbose:
         click.echo(f"📊 Scaling Config: {scaling_config}")
         click.echo(f"👥 Workers: {config.min_workers}-{config.max_workers}")
         click.echo(f"🧠 Memory threshold: {config.memory_threshold_mb}MB")
         click.echo(f"⚡ Adaptive batching: {config.adaptive_batch_sizing}")
-    
+
     try:
         # Read all dockerfile contents
         dockerfile_contents = []
         valid_paths = []
-        
+
         for dockerfile_path in dockerfiles:
             path = Path(dockerfile_path)
             if path.exists():
@@ -1958,28 +1958,28 @@ async def _process_high_throughput_batch(dockerfiles: List[str],
                     click.echo(f"⚠️  Warning: Could not read {dockerfile_path}: {e}", err=True)
             else:
                 click.echo(f"⚠️  Warning: Dockerfile not found at {dockerfile_path}", err=True)
-        
+
         if not dockerfile_contents:
             click.echo("❌ No valid dockerfiles found for processing", err=True)
             sys.exit(1)
-        
+
         # Initialize high-throughput optimizer
         ht_optimizer = HighThroughputOptimizer(config)
-        
+
         # Process batch
         start_time = time.time()
         results = await ht_optimizer.optimize_dockerfiles_batch(dockerfile_contents)
         end_time = time.time()
-        
+
         # Calculate performance metrics
         execution_time = (end_time - start_time)
         throughput = len(results) / execution_time * 60  # files per minute
         success_count = sum(1 for r in results if r.get('success', True))
         success_rate = success_count / len(results)
-        
+
         # Get system status
         system_status = await ht_optimizer.get_system_status()
-        
+
         # Display results
         if format == "json":
             import json
@@ -1998,29 +1998,29 @@ async def _process_high_throughput_batch(dockerfiles: List[str],
             click.echo(json.dumps(output_data, indent=2, default=str))
         else:
             # Text output
-            click.echo(f"\n🎯 High-Throughput Processing Results:")
+            click.echo("\n🎯 High-Throughput Processing Results:")
             click.echo("-" * 40)
             click.echo(f"📁 Files processed: {len(results)}")
             click.echo(f"✅ Successful: {success_count} ({success_rate:.1%})")
             click.echo(f"⏱️  Execution time: {execution_time:.2f}s")
             click.echo(f"🚀 Throughput: {throughput:.1f} files/minute")
-            
+
             if verbose:
-                click.echo(f"\n📊 System Performance:")
+                click.echo("\n📊 System Performance:")
                 load_balancer = system_status.get('load_balancer', {})
                 click.echo(f"  Active workers: {load_balancer.get('active_workers', 0)}")
                 click.echo(f"  Avg execution time: {load_balancer.get('average_execution_time_ms', 0):.1f}ms")
                 click.echo(f"  Memory usage: {load_balancer.get('average_memory_usage_mb', 0):.1f}MB")
-                
+
                 cache_stats = system_status.get('cache', {})
                 if cache_stats:
                     click.echo(f"  Cache hit rate: {cache_stats.get('hit_rate', 0):.1%}")
-            
+
             # Save results if output path specified
             if output_path:
                 output_file = Path(output_path)
                 summary_file = output_file.parent / f"{output_file.stem}_high_throughput_summary.json"
-                
+
                 with open(summary_file, 'w') as f:
                     json.dump({
                         "summary": {
@@ -2033,14 +2033,14 @@ async def _process_high_throughput_batch(dockerfiles: List[str],
                         "system_status": system_status,
                         "results": results
                     }, f, indent=2, default=str)
-                
+
                 click.echo(f"\n💾 Results saved to: {summary_file}")
-        
+
         # Shutdown optimizer
         await ht_optimizer.shutdown()
-        
-        click.echo(f"\n✅ High-throughput processing completed successfully")
-        
+
+        click.echo("\n✅ High-throughput processing completed successfully")
+
     except Exception as e:
         click.echo(f"❌ High-throughput processing failed: {e}", err=True)
         if verbose:
@@ -2056,7 +2056,7 @@ def _output_ai_optimization_result(
     verbose: bool
 ) -> None:
     """Output AI optimization results in the specified format."""
-    
+
     if format == "json":
         result_data = {
             "optimized_dockerfile": ai_result.optimized_dockerfile,
@@ -2073,13 +2073,13 @@ def _output_ai_optimization_result(
             },
             "alternative_approaches": ai_result.alternative_approaches
         }
-        
+
         if output_path:
             with open(output_path, 'w') as f:
                 json.dump(result_data, f, indent=2)
         else:
             click.echo(json.dumps(result_data, indent=2))
-    
+
     elif format == "yaml":
         import yaml
         result_data = {
@@ -2097,13 +2097,13 @@ def _output_ai_optimization_result(
             },
             "alternative_approaches": ai_result.alternative_approaches
         }
-        
+
         if output_path:
             with open(output_path, 'w') as f:
                 yaml.dump(result_data, f, default_flow_style=False)
         else:
             click.echo(yaml.dump(result_data, default_flow_style=False))
-    
+
     else:  # text format
         if verbose:
             click.echo("🤖 AI-Powered Dockerfile Optimization Results")
@@ -2115,34 +2115,34 @@ def _output_ai_optimization_result(
             click.echo(f"📦 Est. size reduction: {ai_result.metrics.size_reduction_estimate:.1%}")
             click.echo(f"🚀 Est. performance gain: {ai_result.metrics.performance_gain_estimate:.1%}")
             click.echo()
-        
+
         if ai_result.explanations:
             click.echo("📋 Key Optimizations Applied:")
             for i, explanation in enumerate(ai_result.explanations, 1):
                 click.echo(f"  {i}. {explanation}")
             click.echo()
-        
+
         if ai_result.security_improvements:
             click.echo("🔒 Security Improvements:")
             for improvement in ai_result.security_improvements:
                 click.echo(f"  ✅ {improvement}")
             click.echo()
-        
+
         if ai_result.performance_enhancements:
             click.echo("⚡ Performance Enhancements:")
             for enhancement in ai_result.performance_enhancements:
                 click.echo(f"  🚀 {enhancement}")
             click.echo()
-        
+
         if verbose and ai_result.alternative_approaches:
             click.echo("💡 Alternative Optimization Approaches:")
             for approach in ai_result.alternative_approaches:
                 click.echo(f"  • {approach}")
             click.echo()
-        
+
         click.echo("🐳 Optimized Dockerfile:")
         click.echo("-" * 40)
-        
+
         if output_path:
             with open(output_path, 'w') as f:
                 f.write(ai_result.optimized_dockerfile)

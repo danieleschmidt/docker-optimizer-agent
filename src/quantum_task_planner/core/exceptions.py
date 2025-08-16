@@ -1,11 +1,11 @@
 """Custom exceptions for quantum task planner."""
 
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
 
 
 class QuantumTaskPlannerError(Exception):
     """Base exception for all quantum task planner errors."""
-    
+
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         """Initialize with message and optional details.
         
@@ -16,7 +16,7 @@ class QuantumTaskPlannerError(Exception):
         super().__init__(message)
         self.message = message
         self.details = details or {}
-    
+
     def __str__(self) -> str:
         """String representation with details."""
         if self.details:
@@ -27,8 +27,8 @@ class QuantumTaskPlannerError(Exception):
 
 class ValidationError(QuantumTaskPlannerError):
     """Raised when validation fails."""
-    
-    def __init__(self, message: str, validation_errors: Optional[List[str]] = None, 
+
+    def __init__(self, message: str, validation_errors: Optional[List[str]] = None,
                  details: Optional[Dict[str, Any]] = None):
         """Initialize validation error.
         
@@ -39,7 +39,7 @@ class ValidationError(QuantumTaskPlannerError):
         """
         super().__init__(message, details)
         self.validation_errors = validation_errors or []
-    
+
     def __str__(self) -> str:
         """String representation with validation errors."""
         base_str = super().__str__()
@@ -51,7 +51,7 @@ class ValidationError(QuantumTaskPlannerError):
 
 class OptimizationError(QuantumTaskPlannerError):
     """Raised when optimization fails."""
-    
+
     def __init__(self, message: str, algorithm: Optional[str] = None,
                  iteration: Optional[int] = None, details: Optional[Dict[str, Any]] = None):
         """Initialize optimization error.
@@ -68,7 +68,7 @@ class OptimizationError(QuantumTaskPlannerError):
             details['algorithm'] = algorithm
         if iteration is not None:
             details['iteration'] = iteration
-        
+
         super().__init__(message, details)
         self.algorithm = algorithm
         self.iteration = iteration
@@ -76,7 +76,7 @@ class OptimizationError(QuantumTaskPlannerError):
 
 class ResourceAllocationError(QuantumTaskPlannerError):
     """Raised when resource allocation fails."""
-    
+
     def __init__(self, message: str, resource_id: Optional[str] = None,
                  task_id: Optional[str] = None, details: Optional[Dict[str, Any]] = None):
         """Initialize resource allocation error.
@@ -93,7 +93,7 @@ class ResourceAllocationError(QuantumTaskPlannerError):
             details['resource_id'] = resource_id
         if task_id:
             details['task_id'] = task_id
-        
+
         super().__init__(message, details)
         self.resource_id = resource_id
         self.task_id = task_id
@@ -101,7 +101,7 @@ class ResourceAllocationError(QuantumTaskPlannerError):
 
 class SchedulingError(QuantumTaskPlannerError):
     """Raised when scheduling fails."""
-    
+
     def __init__(self, message: str, schedule_id: Optional[str] = None,
                  constraint_violations: Optional[List[str]] = None,
                  details: Optional[Dict[str, Any]] = None):
@@ -117,7 +117,7 @@ class SchedulingError(QuantumTaskPlannerError):
             details = {}
         if schedule_id:
             details['schedule_id'] = schedule_id
-        
+
         super().__init__(message, details)
         self.schedule_id = schedule_id
         self.constraint_violations = constraint_violations or []
@@ -125,7 +125,7 @@ class SchedulingError(QuantumTaskPlannerError):
 
 class DependencyError(QuantumTaskPlannerError):
     """Raised when task dependency issues occur."""
-    
+
     def __init__(self, message: str, task_id: Optional[str] = None,
                  dependency_id: Optional[str] = None, cycle_path: Optional[List[str]] = None,
                  details: Optional[Dict[str, Any]] = None):
@@ -146,7 +146,7 @@ class DependencyError(QuantumTaskPlannerError):
             details['dependency_id'] = dependency_id
         if cycle_path:
             details['cycle_path'] = cycle_path
-        
+
         super().__init__(message, details)
         self.task_id = task_id
         self.dependency_id = dependency_id
@@ -155,9 +155,9 @@ class DependencyError(QuantumTaskPlannerError):
 
 class QuantumAlgorithmError(QuantumTaskPlannerError):
     """Raised when quantum algorithm operations fail."""
-    
+
     def __init__(self, message: str, algorithm_type: Optional[str] = None,
-                 quantum_parameter: Optional[str] = None, 
+                 quantum_parameter: Optional[str] = None,
                  details: Optional[Dict[str, Any]] = None):
         """Initialize quantum algorithm error.
         
@@ -173,7 +173,7 @@ class QuantumAlgorithmError(QuantumTaskPlannerError):
             details['algorithm_type'] = algorithm_type
         if quantum_parameter:
             details['quantum_parameter'] = quantum_parameter
-        
+
         super().__init__(message, details)
         self.algorithm_type = algorithm_type
         self.quantum_parameter = quantum_parameter
@@ -181,9 +181,9 @@ class QuantumAlgorithmError(QuantumTaskPlannerError):
 
 class ConfigurationError(QuantumTaskPlannerError):
     """Raised when configuration is invalid."""
-    
+
     def __init__(self, message: str, config_key: Optional[str] = None,
-                 config_value: Optional[Any] = None, 
+                 config_value: Optional[Any] = None,
                  details: Optional[Dict[str, Any]] = None):
         """Initialize configuration error.
         
@@ -199,7 +199,7 @@ class ConfigurationError(QuantumTaskPlannerError):
             details['config_key'] = config_key
         if config_value is not None:
             details['config_value'] = config_value
-        
+
         super().__init__(message, details)
         self.config_key = config_key
         self.config_value = config_value
@@ -207,9 +207,9 @@ class ConfigurationError(QuantumTaskPlannerError):
 
 class TimeoutError(QuantumTaskPlannerError):
     """Raised when operations timeout."""
-    
+
     def __init__(self, message: str, timeout_seconds: Optional[float] = None,
-                 operation: Optional[str] = None, 
+                 operation: Optional[str] = None,
                  details: Optional[Dict[str, Any]] = None):
         """Initialize timeout error.
         
@@ -225,7 +225,7 @@ class TimeoutError(QuantumTaskPlannerError):
             details['timeout_seconds'] = timeout_seconds
         if operation:
             details['operation'] = operation
-        
+
         super().__init__(message, details)
         self.timeout_seconds = timeout_seconds
         self.operation = operation
@@ -233,9 +233,9 @@ class TimeoutError(QuantumTaskPlannerError):
 
 class ConvergenceError(QuantumTaskPlannerError):
     """Raised when optimization fails to converge."""
-    
+
     def __init__(self, message: str, max_iterations: Optional[int] = None,
-                 final_energy: Optional[float] = None, 
+                 final_energy: Optional[float] = None,
                  convergence_threshold: Optional[float] = None,
                  details: Optional[Dict[str, Any]] = None):
         """Initialize convergence error.
@@ -255,7 +255,7 @@ class ConvergenceError(QuantumTaskPlannerError):
             details['final_energy'] = final_energy
         if convergence_threshold is not None:
             details['convergence_threshold'] = convergence_threshold
-        
+
         super().__init__(message, details)
         self.max_iterations = max_iterations
         self.final_energy = final_energy
@@ -264,8 +264,8 @@ class ConvergenceError(QuantumTaskPlannerError):
 
 class ResourceCapacityError(ResourceAllocationError):
     """Raised when resource capacity is exceeded."""
-    
-    def __init__(self, message: str, resource_id: str, 
+
+    def __init__(self, message: str, resource_id: str,
                  requested_capacity: float, available_capacity: float,
                  details: Optional[Dict[str, Any]] = None):
         """Initialize resource capacity error.
@@ -283,7 +283,7 @@ class ResourceCapacityError(ResourceAllocationError):
             'requested_capacity': requested_capacity,
             'available_capacity': available_capacity
         })
-        
+
         super().__init__(message, resource_id=resource_id, details=details)
         self.requested_capacity = requested_capacity
         self.available_capacity = available_capacity
@@ -291,7 +291,7 @@ class ResourceCapacityError(ResourceAllocationError):
 
 class TaskNotFoundError(QuantumTaskPlannerError):
     """Raised when a task cannot be found."""
-    
+
     def __init__(self, task_id: str, details: Optional[Dict[str, Any]] = None):
         """Initialize task not found error.
         
@@ -303,14 +303,14 @@ class TaskNotFoundError(QuantumTaskPlannerError):
         if not details:
             details = {}
         details['task_id'] = task_id
-        
+
         super().__init__(message, details)
         self.task_id = task_id
 
 
 class ResourceNotFoundError(QuantumTaskPlannerError):
     """Raised when a resource cannot be found."""
-    
+
     def __init__(self, resource_id: str, details: Optional[Dict[str, Any]] = None):
         """Initialize resource not found error.
         
@@ -322,14 +322,14 @@ class ResourceNotFoundError(QuantumTaskPlannerError):
         if not details:
             details = {}
         details['resource_id'] = resource_id
-        
+
         super().__init__(message, details)
         self.resource_id = resource_id
 
 
 class ScheduleNotFoundError(QuantumTaskPlannerError):
     """Raised when a schedule cannot be found."""
-    
+
     def __init__(self, schedule_id: str, details: Optional[Dict[str, Any]] = None):
         """Initialize schedule not found error.
         
@@ -341,6 +341,6 @@ class ScheduleNotFoundError(QuantumTaskPlannerError):
         if not details:
             details = {}
         details['schedule_id'] = schedule_id
-        
+
         super().__init__(message, details)
         self.schedule_id = schedule_id

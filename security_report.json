@@ -1,17 +1,17 @@
 {
   "errors": [],
-  "generated_at": "2025-08-10T07:27:39Z",
+  "generated_at": "2025-08-18T02:00:12Z",
   "metrics": {
     "_totals": {
-      "CONFIDENCE.HIGH": 61,
+      "CONFIDENCE.HIGH": 90,
       "CONFIDENCE.LOW": 0,
-      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.MEDIUM": 3,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 0,
-      "SEVERITY.LOW": 61,
-      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.HIGH": 4,
+      "SEVERITY.LOW": 86,
+      "SEVERITY.MEDIUM": 3,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 15605,
+      "loc": 25261,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -41,6 +41,19 @@
       "nosec": 0,
       "skipped_tests": 0
     },
+    "src/docker_optimizer/adaptive_intelligence.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 494,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
     "src/docker_optimizer/adaptive_scaling_engine.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
@@ -50,7 +63,20 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 415,
+      "loc": 412,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/docker_optimizer/advanced_resilience.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 485,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -89,7 +115,20 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 452,
+      "loc": 449,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/docker_optimizer/auto_scaling.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 471,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -119,16 +158,29 @@
       "nosec": 0,
       "skipped_tests": 0
     },
-    "src/docker_optimizer/error_handling.py": {
+    "src/docker_optimizer/enhanced_observability.py": {
       "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 665,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/docker_optimizer/error_handling.py": {
+      "CONFIDENCE.HIGH": 1,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 2,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
-      "SEVERITY.LOW": 0,
+      "SEVERITY.LOW": 1,
       "SEVERITY.MEDIUM": 2,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 459,
+      "loc": 597,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -141,7 +193,7 @@
       "SEVERITY.LOW": 5,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 314,
+      "loc": 321,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -154,7 +206,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 609,
+      "loc": 606,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -167,7 +219,33 @@
       "SEVERITY.LOW": 6,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 204,
+      "loc": 240,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/docker_optimizer/health_monitor.py": {
+      "CONFIDENCE.HIGH": 9,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 9,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 406,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/docker_optimizer/intelligent_caching.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 412,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -223,6 +301,32 @@
       "nosec": 0,
       "skipped_tests": 0
     },
+    "src/docker_optimizer/monitoring_integration.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 292,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/docker_optimizer/multilingual_optimizer.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 525,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
     "src/docker_optimizer/multistage.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
@@ -258,7 +362,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 723,
+      "loc": 717,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -276,6 +380,32 @@
       "skipped_tests": 0
     },
     "src/docker_optimizer/performance.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 520,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/docker_optimizer/production_readiness.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 808,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/docker_optimizer/quantum_scale_optimizer.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
@@ -284,7 +414,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 325,
+      "loc": 559,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -323,7 +453,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 463,
+      "loc": 462,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -336,7 +466,7 @@
       "SEVERITY.LOW": 1,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 339,
+      "loc": 338,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -349,7 +479,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 505,
+      "loc": 504,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -405,6 +535,45 @@
       "nosec": 0,
       "skipped_tests": 0
     },
+    "src/quantum_task_planner/algorithms/bioneuro_olfactory_fusion.py": {
+      "CONFIDENCE.HIGH": 4,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 630,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/quantum_task_planner/algorithms/olfactory_data_pipeline.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 594,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/quantum_task_planner/algorithms/performance_optimizer.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 981,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
     "src/quantum_task_planner/algorithms/qaoa_allocator.py": {
       "CONFIDENCE.HIGH": 6,
       "CONFIDENCE.LOW": 0,
@@ -414,7 +583,7 @@
       "SEVERITY.LOW": 6,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 592,
+      "loc": 599,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -427,7 +596,7 @@
       "SEVERITY.LOW": 9,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 333,
+      "loc": 337,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -440,7 +609,7 @@
       "SEVERITY.LOW": 2,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 658,
+      "loc": 659,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -453,7 +622,7 @@
       "SEVERITY.LOW": 16,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 395,
+      "loc": 394,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -492,7 +661,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 468,
+      "loc": 475,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -505,7 +674,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 20,
+      "loc": 27,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -545,6 +714,32 @@
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
       "loc": 138,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/quantum_task_planner/monitoring/olfactory_observability.py": {
+      "CONFIDENCE.HIGH": 3,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 2,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 861,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/quantum_task_planner/research/benchmarking_framework.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 1090,
       "nosec": 0,
       "skipped_tests": 0
     }
@@ -709,7 +904,68 @@
       "test_name": "subprocess_without_shell_equals_true"
     },
     {
-      "code": "348             # Check for absolute paths\n349             if '/tmp' in volume_line or '/var/tmp' in volume_line:\n350                 issues[\"warnings\"].append(\"Mounting /tmp as volume may cause issues\")\n",
+      "code": "4 import logging\n5 import pickle\n6 import time\n",
+      "col_offset": 0,
+      "end_col_offset": 13,
+      "filename": "src/docker_optimizer/adaptive_intelligence.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 502,
+        "link": "https://cwe.mitre.org/data/definitions/502.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with pickle module.",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b403-import-pickle",
+      "test_id": "B403",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "575                 return accuracy_score(y, predictions)\n576         except Exception:\n577             pass\n578         \n",
+      "col_offset": 8,
+      "end_col_offset": 16,
+      "filename": "src/docker_optimizer/adaptive_intelligence.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 576,
+      "line_range": [
+        576,
+        577
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "618                 with open(patterns_file, 'rb') as f:\n619                     data = pickle.load(f)\n620                     self.learned_patterns = data.get('patterns', {})\n",
+      "col_offset": 27,
+      "end_col_offset": 41,
+      "filename": "src/docker_optimizer/adaptive_intelligence.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 502,
+        "link": "https://cwe.mitre.org/data/definitions/502.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue.",
+      "line_number": 619,
+      "line_range": [
+        619
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b301-pickle",
+      "test_id": "B301",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "349             # Check for absolute paths\n350             if '/tmp' in volume_line or '/var/tmp' in volume_line:\n351                 issues[\"warnings\"].append(\"Mounting /tmp as volume may cause issues\")\n",
       "col_offset": 15,
       "end_col_offset": 21,
       "filename": "src/docker_optimizer/error_handling.py",
@@ -720,16 +976,16 @@
       },
       "issue_severity": "MEDIUM",
       "issue_text": "Probable insecure usage of temp file/directory.",
-      "line_number": 349,
+      "line_number": 350,
       "line_range": [
-        349
+        350
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b108_hardcoded_tmp_directory.html",
       "test_id": "B108",
       "test_name": "hardcoded_tmp_directory"
     },
     {
-      "code": "348             # Check for absolute paths\n349             if '/tmp' in volume_line or '/var/tmp' in volume_line:\n350                 issues[\"warnings\"].append(\"Mounting /tmp as volume may cause issues\")\n",
+      "code": "349             # Check for absolute paths\n350             if '/tmp' in volume_line or '/var/tmp' in volume_line:\n351                 issues[\"warnings\"].append(\"Mounting /tmp as volume may cause issues\")\n",
       "col_offset": 40,
       "end_col_offset": 50,
       "filename": "src/docker_optimizer/error_handling.py",
@@ -740,13 +996,33 @@
       },
       "issue_severity": "MEDIUM",
       "issue_text": "Probable insecure usage of temp file/directory.",
-      "line_number": 349,
+      "line_number": 350,
       "line_range": [
-        349
+        350
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b108_hardcoded_tmp_directory.html",
       "test_id": "B108",
       "test_name": "hardcoded_tmp_directory"
+    },
+    {
+      "code": "756                     import random\n757                     delay *= (0.5 + random.random() * 0.5)\n758 \n",
+      "col_offset": 36,
+      "end_col_offset": 51,
+      "filename": "src/docker_optimizer/error_handling.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 757,
+      "line_range": [
+        757
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
     },
     {
       "code": "4 import logging\n5 import subprocess\n6 import tempfile\n",
@@ -769,7 +1045,7 @@
       "test_name": "blacklist"
     },
     {
-      "code": "59 \n60                     result = subprocess.run(\n61                         cmd,\n62                         capture_output=True,\n63                         text=True,\n64                         timeout=60\n65                     )\n66 \n",
+      "code": "65 \n66                     result = subprocess.run(\n67                         cmd,\n68                         capture_output=True,\n69                         text=True,\n70                         timeout=60\n71                     )\n72 \n",
       "col_offset": 29,
       "end_col_offset": 21,
       "filename": "src/docker_optimizer/external_security.py",
@@ -780,21 +1056,21 @@
       },
       "issue_severity": "LOW",
       "issue_text": "subprocess call - check for execution of untrusted input.",
-      "line_number": 60,
+      "line_number": 66,
       "line_range": [
-        60,
-        61,
-        62,
-        63,
-        64,
-        65
+        66,
+        67,
+        68,
+        69,
+        70,
+        71
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html",
       "test_id": "B603",
       "test_name": "subprocess_without_shell_equals_true"
     },
     {
-      "code": "116 \n117             result = subprocess.run(\n118                 cmd,\n119                 capture_output=True,\n120                 text=True,\n121                 timeout=120\n122             )\n123 \n",
+      "code": "123 \n124             result = subprocess.run(\n125                 cmd,\n126                 capture_output=True,\n127                 text=True,\n128                 timeout=120\n129             )\n130 \n",
       "col_offset": 21,
       "end_col_offset": 13,
       "filename": "src/docker_optimizer/external_security.py",
@@ -805,21 +1081,21 @@
       },
       "issue_severity": "LOW",
       "issue_text": "subprocess call - check for execution of untrusted input.",
-      "line_number": 117,
+      "line_number": 124,
       "line_range": [
-        117,
-        118,
-        119,
-        120,
-        121,
-        122
+        124,
+        125,
+        126,
+        127,
+        128,
+        129
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html",
       "test_id": "B603",
       "test_name": "subprocess_without_shell_equals_true"
     },
     {
-      "code": "138         try:\n139             result = subprocess.run(\n140                 [\"trivy\", \"--version\"],\n141                 capture_output=True,\n142                 timeout=10\n143             )\n144             return result.returncode == 0\n",
+      "code": "145         try:\n146             result = subprocess.run(\n147                 [\"trivy\", \"--version\"],\n148                 capture_output=True,\n149                 timeout=10\n150             )\n151             return result.returncode == 0\n",
       "col_offset": 21,
       "end_col_offset": 13,
       "filename": "src/docker_optimizer/external_security.py",
@@ -830,20 +1106,20 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Starting a process with a partial executable path",
-      "line_number": 139,
+      "line_number": 146,
       "line_range": [
-        139,
-        140,
-        141,
-        142,
-        143
+        146,
+        147,
+        148,
+        149,
+        150
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b607_start_process_with_partial_path.html",
       "test_id": "B607",
       "test_name": "start_process_with_partial_path"
     },
     {
-      "code": "138         try:\n139             result = subprocess.run(\n140                 [\"trivy\", \"--version\"],\n141                 capture_output=True,\n142                 timeout=10\n143             )\n144             return result.returncode == 0\n",
+      "code": "145         try:\n146             result = subprocess.run(\n147                 [\"trivy\", \"--version\"],\n148                 capture_output=True,\n149                 timeout=10\n150             )\n151             return result.returncode == 0\n",
       "col_offset": 21,
       "end_col_offset": 13,
       "filename": "src/docker_optimizer/external_security.py",
@@ -854,20 +1130,20 @@
       },
       "issue_severity": "LOW",
       "issue_text": "subprocess call - check for execution of untrusted input.",
-      "line_number": 139,
+      "line_number": 146,
       "line_range": [
-        139,
-        140,
-        141,
-        142,
-        143
+        146,
+        147,
+        148,
+        149,
+        150
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html",
       "test_id": "B603",
       "test_name": "subprocess_without_shell_equals_true"
     },
     {
-      "code": "188         try:\n189             import subprocess\n190             result = subprocess.run(['trivy', '--version'], \n",
+      "code": "195         try:\n196             import subprocess\n197             result = subprocess.run(['trivy', '--version'],\n",
       "col_offset": 12,
       "end_col_offset": 29,
       "filename": "src/docker_optimizer/health.py",
@@ -878,16 +1154,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Consider possible security implications associated with the subprocess module.",
-      "line_number": 189,
+      "line_number": 196,
       "line_range": [
-        189
+        196
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b404-import-subprocess",
       "test_id": "B404",
       "test_name": "blacklist"
     },
     {
-      "code": "189             import subprocess\n190             result = subprocess.run(['trivy', '--version'], \n191                                   capture_output=True, text=True, timeout=5)\n192             services[\"trivy\"] = {\n",
+      "code": "196             import subprocess\n197             result = subprocess.run(['trivy', '--version'],\n198                                   capture_output=True, text=True, timeout=5)\n199             services[\"trivy\"] = {\n",
       "col_offset": 21,
       "end_col_offset": 76,
       "filename": "src/docker_optimizer/health.py",
@@ -898,17 +1174,17 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Starting a process with a partial executable path",
-      "line_number": 190,
+      "line_number": 197,
       "line_range": [
-        190,
-        191
+        197,
+        198
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b607_start_process_with_partial_path.html",
       "test_id": "B607",
       "test_name": "start_process_with_partial_path"
     },
     {
-      "code": "189             import subprocess\n190             result = subprocess.run(['trivy', '--version'], \n191                                   capture_output=True, text=True, timeout=5)\n192             services[\"trivy\"] = {\n",
+      "code": "196             import subprocess\n197             result = subprocess.run(['trivy', '--version'],\n198                                   capture_output=True, text=True, timeout=5)\n199             services[\"trivy\"] = {\n",
       "col_offset": 21,
       "end_col_offset": 76,
       "filename": "src/docker_optimizer/health.py",
@@ -919,17 +1195,17 @@
       },
       "issue_severity": "LOW",
       "issue_text": "subprocess call - check for execution of untrusted input.",
-      "line_number": 190,
+      "line_number": 197,
       "line_range": [
-        190,
-        191
+        197,
+        198
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html",
       "test_id": "B603",
       "test_name": "subprocess_without_shell_equals_true"
     },
     {
-      "code": "203         try:\n204             import subprocess\n205             result = subprocess.run(['docker', 'version', '--format', '{{.Server.Version}}'],\n",
+      "code": "210         try:\n211             import subprocess\n212             result = subprocess.run(['docker', 'version', '--format', '{{.Server.Version}}'],\n",
       "col_offset": 12,
       "end_col_offset": 29,
       "filename": "src/docker_optimizer/health.py",
@@ -940,16 +1216,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Consider possible security implications associated with the subprocess module.",
-      "line_number": 204,
+      "line_number": 211,
       "line_range": [
-        204
+        211
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b404-import-subprocess",
       "test_id": "B404",
       "test_name": "blacklist"
     },
     {
-      "code": "204             import subprocess\n205             result = subprocess.run(['docker', 'version', '--format', '{{.Server.Version}}'],\n206                                   capture_output=True, text=True, timeout=5)\n207             services[\"docker\"] = {\n",
+      "code": "211             import subprocess\n212             result = subprocess.run(['docker', 'version', '--format', '{{.Server.Version}}'],\n213                                   capture_output=True, text=True, timeout=5)\n214             services[\"docker\"] = {\n",
       "col_offset": 21,
       "end_col_offset": 76,
       "filename": "src/docker_optimizer/health.py",
@@ -960,17 +1236,17 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Starting a process with a partial executable path",
-      "line_number": 205,
+      "line_number": 212,
       "line_range": [
-        205,
-        206
+        212,
+        213
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b607_start_process_with_partial_path.html",
       "test_id": "B607",
       "test_name": "start_process_with_partial_path"
     },
     {
-      "code": "204             import subprocess\n205             result = subprocess.run(['docker', 'version', '--format', '{{.Server.Version}}'],\n206                                   capture_output=True, text=True, timeout=5)\n207             services[\"docker\"] = {\n",
+      "code": "211             import subprocess\n212             result = subprocess.run(['docker', 'version', '--format', '{{.Server.Version}}'],\n213                                   capture_output=True, text=True, timeout=5)\n214             services[\"docker\"] = {\n",
       "col_offset": 21,
       "end_col_offset": 76,
       "filename": "src/docker_optimizer/health.py",
@@ -981,14 +1257,217 @@
       },
       "issue_severity": "LOW",
       "issue_text": "subprocess call - check for execution of untrusted input.",
-      "line_number": 205,
+      "line_number": 212,
       "line_range": [
-        205,
-        206
+        212,
+        213
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html",
       "test_id": "B603",
       "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "359         \"\"\"Attempt to recover Docker daemon issues.\"\"\"\n360         import subprocess\n361         try:\n",
+      "col_offset": 8,
+      "end_col_offset": 25,
+      "filename": "src/docker_optimizer/health_monitor.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 360,
+      "line_range": [
+        360
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "362             # Try to start Docker daemon (this might need sudo)\n363             subprocess.run([\"systemctl\", \"start\", \"docker\"], check=True, capture_output=True)\n364             logger.info(\"Docker daemon started successfully\")\n",
+      "col_offset": 12,
+      "end_col_offset": 93,
+      "filename": "src/docker_optimizer/health_monitor.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 363,
+      "line_range": [
+        363
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "362             # Try to start Docker daemon (this might need sudo)\n363             subprocess.run([\"systemctl\", \"start\", \"docker\"], check=True, capture_output=True)\n364             logger.info(\"Docker daemon started successfully\")\n",
+      "col_offset": 12,
+      "end_col_offset": 93,
+      "filename": "src/docker_optimizer/health_monitor.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 363,
+      "line_range": [
+        363
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "380                 optimizer.clear_caches()\n381         except Exception:\n382             pass\n383 \n",
+      "col_offset": 8,
+      "end_col_offset": 16,
+      "filename": "src/docker_optimizer/health_monitor.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 381,
+      "line_range": [
+        381,
+        382
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "398                     shutil.rmtree(temp_file)\n399             except Exception:\n400                 pass\n401 \n",
+      "col_offset": 12,
+      "end_col_offset": 20,
+      "filename": "src/docker_optimizer/health_monitor.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 399,
+      "line_range": [
+        399,
+        400
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "409             # Clear DNS cache (platform specific)\n410             import subprocess\n411             subprocess.run([\"systemctl\", \"flush-dns\"], capture_output=True, timeout=10)\n",
+      "col_offset": 12,
+      "end_col_offset": 29,
+      "filename": "src/docker_optimizer/health_monitor.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 410,
+      "line_range": [
+        410
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "410             import subprocess\n411             subprocess.run([\"systemctl\", \"flush-dns\"], capture_output=True, timeout=10)\n412         except Exception:\n",
+      "col_offset": 12,
+      "end_col_offset": 87,
+      "filename": "src/docker_optimizer/health_monitor.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 411,
+      "line_range": [
+        411
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "410             import subprocess\n411             subprocess.run([\"systemctl\", \"flush-dns\"], capture_output=True, timeout=10)\n412         except Exception:\n",
+      "col_offset": 12,
+      "end_col_offset": 87,
+      "filename": "src/docker_optimizer/health_monitor.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 411,
+      "line_range": [
+        411
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "411             subprocess.run([\"systemctl\", \"flush-dns\"], capture_output=True, timeout=10)\n412         except Exception:\n413             pass\n414 \n",
+      "col_offset": 8,
+      "end_col_offset": 16,
+      "filename": "src/docker_optimizer/health_monitor.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 412,
+      "line_range": [
+        412,
+        413
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "3 import logging\n4 import pickle\n5 import threading\n",
+      "col_offset": 0,
+      "end_col_offset": 13,
+      "filename": "src/docker_optimizer/intelligent_caching.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 502,
+        "link": "https://cwe.mitre.org/data/definitions/502.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with pickle module.",
+      "line_number": 4,
+      "line_range": [
+        4
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b403-import-pickle",
+      "test_id": "B403",
+      "test_name": "blacklist"
     },
     {
       "code": "3 import re\n4 import subprocess\n5 from typing import Dict, List\n",
@@ -1201,7 +1680,109 @@
       "test_name": "subprocess_without_shell_equals_true"
     },
     {
-      "code": "141             base_delay = self.config.base_delay * (2 ** (attempt - 1))\n142             jitter = random.uniform(0, base_delay * 0.1) if self.config.jitter else 0\n143             delay = base_delay + jitter\n",
+      "code": "698 \n699         return random.choices(nodes, weights=weights)[0]\n700 \n",
+      "col_offset": 15,
+      "end_col_offset": 53,
+      "filename": "src/docker_optimizer/performance.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 699,
+      "line_range": [
+        699
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "6 import platform\n7 import subprocess\n8 import sys\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "src/docker_optimizer/production_readiness.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 7,
+      "line_range": [
+        7
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "33     \"\"\"Status of readiness checks.\"\"\"\n34     PASS = \"pass\"\n35     WARN = \"warning\" \n",
+      "col_offset": 11,
+      "end_col_offset": 17,
+      "filename": "src/docker_optimizer/production_readiness.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'pass'",
+      "line_number": 34,
+      "line_range": [
+        34
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "714         try:\n715             result = subprocess.run([\"docker\", \"version\"], \n716                                   capture_output=True, text=True, timeout=10)\n717             if result.returncode == 0:\n",
+      "col_offset": 21,
+      "end_col_offset": 77,
+      "filename": "src/docker_optimizer/production_readiness.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 715,
+      "line_range": [
+        715,
+        716
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "714         try:\n715             result = subprocess.run([\"docker\", \"version\"], \n716                                   capture_output=True, text=True, timeout=10)\n717             if result.returncode == 0:\n",
+      "col_offset": 21,
+      "end_col_offset": 77,
+      "filename": "src/docker_optimizer/production_readiness.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 715,
+      "line_range": [
+        715,
+        716
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "139             base_delay = self.config.base_delay * (2 ** (attempt - 1))\n140             jitter = random.uniform(0, base_delay * 0.1) if self.config.jitter else 0\n141             delay = base_delay + jitter\n",
       "col_offset": 21,
       "end_col_offset": 56,
       "filename": "src/docker_optimizer/resilience_engine.py",
@@ -1212,16 +1793,157 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 142,
+      "line_number": 140,
       "line_range": [
-        142
+        140
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "441                 # Apply change based on gamma parameter\n442                 if best_alternative and random.random() < abs(math.sin(gamma)):\n443                     new_resource_id, new_allocation = best_alternative\n",
+      "code": "345             # Initialize quantum state with random phase\n346             initial_phase = random.uniform(0, 2 * math.pi)\n347             quantum_state = complex(math.cos(initial_phase), math.sin(initial_phase))\n",
+      "col_offset": 28,
+      "end_col_offset": 58,
+      "filename": "src/quantum_task_planner/algorithms/bioneuro_olfactory_fusion.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 346,
+      "line_range": [
+        346
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "352                 quantum_state=quantum_state,\n353                 activation_threshold=random.uniform(0.3, 0.7)\n354             )\n",
+      "col_offset": 37,
+      "end_col_offset": 61,
+      "filename": "src/quantum_task_planner/algorithms/bioneuro_olfactory_fusion.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 353,
+      "line_range": [
+        353
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "439                     if entanglement_strength > 0.1:  # Only significant entanglements\n440                         phase = random.uniform(0, 2 * math.pi)\n441                         entanglement = complex(\n",
+      "col_offset": 32,
+      "end_col_offset": 62,
+      "filename": "src/quantum_task_planner/algorithms/bioneuro_olfactory_fusion.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 440,
+      "line_range": [
+        440
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "636                 # Apply time evolution\n637                 phase_evolution = cmath.exp(1j * 0.05 * random.uniform(-1, 1))\n638                 new_state.quantum_entanglements[(task1, task2)] = entanglement * phase_evolution\n",
+      "col_offset": 56,
+      "end_col_offset": 77,
+      "filename": "src/quantum_task_planner/algorithms/bioneuro_olfactory_fusion.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 637,
+      "line_range": [
+        637
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "157         signature_str = json.dumps(signature_data, sort_keys=True)\n158         return hashlib.md5(signature_str.encode()).hexdigest()[:12]\n159 \n",
+      "col_offset": 15,
+      "end_col_offset": 50,
+      "filename": "src/quantum_task_planner/algorithms/olfactory_data_pipeline.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 158,
+      "line_range": [
+        158
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
+    },
+    {
+      "code": "496                             affinity = 0.3 + 0.4 * abs(correlation)\n497                     except:\n498                         pass\n499 \n",
+      "col_offset": 20,
+      "end_col_offset": 28,
+      "filename": "src/quantum_task_planner/algorithms/performance_optimizer.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 497,
+      "line_range": [
+        497,
+        498
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "858             schedule_str = json.dumps(schedule_data, sort_keys=True)\n859             return hashlib.md5(schedule_str.encode()).hexdigest()\n860 \n",
+      "col_offset": 19,
+      "end_col_offset": 53,
+      "filename": "src/quantum_task_planner/algorithms/performance_optimizer.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 859,
+      "line_range": [
+        859
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
+    },
+    {
+      "code": "447                 # Apply change based on gamma parameter\n448                 if best_alternative and random.random() < abs(math.sin(gamma)):\n449                     new_resource_id, new_allocation = best_alternative\n",
       "col_offset": 40,
       "end_col_offset": 55,
       "filename": "src/quantum_task_planner/algorithms/qaoa_allocator.py",
@@ -1232,16 +1954,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 442,
+      "line_number": 448,
       "line_range": [
-        442
+        448
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "469                     \n470                     task_id = random.choice(task_ids)\n471                     task = schedule.get_task(task_id)\n",
+      "code": "475 \n476                     task_id = random.choice(task_ids)\n477                     task = schedule.get_task(task_id)\n",
       "col_offset": 30,
       "end_col_offset": 53,
       "filename": "src/quantum_task_planner/algorithms/qaoa_allocator.py",
@@ -1252,16 +1974,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 470,
+      "line_number": 476,
       "line_range": [
-        470
+        476
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "481                     if available_resources:\n482                         new_resource = random.choice(available_resources)\n483                         new_allocation = self._calculate_allocation_amount(task, new_resource)\n",
+      "code": "487                     if available_resources:\n488                         new_resource = random.choice(available_resources)\n489                         new_allocation = self._calculate_allocation_amount(task, new_resource)\n",
       "col_offset": 39,
       "end_col_offset": 73,
       "filename": "src/quantum_task_planner/algorithms/qaoa_allocator.py",
@@ -1272,16 +1994,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 482,
+      "line_number": 488,
       "line_range": [
-        482
+        488
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "608         # Initialize with small random values\n609         return [random.uniform(-0.5, 0.5) for _ in range(self.params.layers * 2)]\n610     \n",
+      "code": "614         # Initialize with small random values\n615         return [random.uniform(-0.5, 0.5) for _ in range(self.params.layers * 2)]\n616 \n",
       "col_offset": 16,
       "end_col_offset": 41,
       "filename": "src/quantum_task_planner/algorithms/qaoa_allocator.py",
@@ -1292,16 +2014,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 609,
+      "line_number": 615,
       "line_range": [
-        609
+        615
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "619                 for i in range(len(new_params)):\n620                     new_params[i] += random.uniform(-0.1, 0.1)\n621             else:\n",
+      "code": "625                 for i in range(len(new_params)):\n626                     new_params[i] += random.uniform(-0.1, 0.1)\n627             else:\n",
       "col_offset": 37,
       "end_col_offset": 62,
       "filename": "src/quantum_task_planner/algorithms/qaoa_allocator.py",
@@ -1312,16 +2034,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 620,
+      "line_number": 626,
       "line_range": [
-        620
+        626
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "623                 for i in range(len(new_params)):\n624                     new_params[i] += random.uniform(-0.3, 0.3)\n625             \n",
+      "code": "629                 for i in range(len(new_params)):\n630                     new_params[i] += random.uniform(-0.3, 0.3)\n631 \n",
       "col_offset": 37,
       "end_col_offset": 62,
       "filename": "src/quantum_task_planner/algorithms/qaoa_allocator.py",
@@ -1332,16 +2054,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 624,
+      "line_number": 630,
       "line_range": [
-        624
+        630
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "188         # Select quantum move type\n189         move_type = random.choice(['reassign', 'reschedule', 'swap', 'quantum_tunnel'])\n190         \n",
+      "code": "191         # Select quantum move type\n192         move_type = random.choice(['reassign', 'reschedule', 'swap', 'quantum_tunnel'])\n193 \n",
       "col_offset": 20,
       "end_col_offset": 87,
       "filename": "src/quantum_task_planner/algorithms/quantum_annealing.py",
@@ -1352,16 +2074,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 189,
+      "line_number": 192,
       "line_range": [
-        189
+        192
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "192             # Reassign random task to different resource\n193             task_id = random.choice(list(new_assignments.keys()))\n194             available_resources = [r.id for r in schedule.resources \n",
+      "code": "195             # Reassign random task to different resource\n196             task_id = random.choice(list(new_assignments.keys()))\n197             available_resources = [r.id for r in schedule.resources\n",
       "col_offset": 22,
       "end_col_offset": 65,
       "filename": "src/quantum_task_planner/algorithms/quantum_annealing.py",
@@ -1372,16 +2094,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 193,
+      "line_number": 196,
       "line_range": [
-        193
+        196
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "196             if available_resources:\n197                 new_resource_id = random.choice(available_resources)\n198                 new_assignments[task_id] = new_resource_id\n",
+      "code": "199             if available_resources:\n200                 new_resource_id = random.choice(available_resources)\n201                 new_assignments[task_id] = new_resource_id\n",
       "col_offset": 34,
       "end_col_offset": 68,
       "filename": "src/quantum_task_planner/algorithms/quantum_annealing.py",
@@ -1392,16 +2114,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 197,
+      "line_number": 200,
       "line_range": [
-        197
+        200
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "210             # Adjust start time of random task\n211             task_id = random.choice(list(new_start_times.keys()))\n212             current_start = new_start_times[task_id]\n",
+      "code": "213             # Adjust start time of random task\n214             task_id = random.choice(list(new_start_times.keys()))\n215             current_start = new_start_times[task_id]\n",
       "col_offset": 22,
       "end_col_offset": 65,
       "filename": "src/quantum_task_planner/algorithms/quantum_annealing.py",
@@ -1412,16 +2134,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 211,
+      "line_number": 214,
       "line_range": [
-        211
+        214
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "215             max_shift = timedelta(hours=2)\n216             shift = timedelta(seconds=random.randint(-max_shift.total_seconds(), \n217                                                    max_shift.total_seconds()))\n218             new_start_times[task_id] = max(schedule.start_time, current_start + shift)\n",
+      "code": "218             max_shift = timedelta(hours=2)\n219             shift = timedelta(seconds=random.randint(-max_shift.total_seconds(),\n220                                                    max_shift.total_seconds()))\n221             new_start_times[task_id] = max(schedule.start_time, current_start + shift)\n",
       "col_offset": 38,
       "end_col_offset": 77,
       "filename": "src/quantum_task_planner/algorithms/quantum_annealing.py",
@@ -1432,17 +2154,17 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 216,
+      "line_number": 219,
       "line_range": [
-        216,
-        217
+        219,
+        220
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "223             if len(task_ids) >= 2:\n224                 task1, task2 = random.sample(task_ids, 2)\n225                 new_assignments[task1], new_assignments[task2] = \\\n",
+      "code": "226             if len(task_ids) >= 2:\n227                 task1, task2 = random.sample(task_ids, 2)\n228                 new_assignments[task1], new_assignments[task2] = \\\n",
       "col_offset": 31,
       "end_col_offset": 57,
       "filename": "src/quantum_task_planner/algorithms/quantum_annealing.py",
@@ -1453,16 +2175,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 224,
+      "line_number": 227,
       "line_range": [
-        224
+        227
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "229             # Quantum tunneling: large energy barrier jump\n230             task_id = random.choice(list(new_assignments.keys()))\n231             \n",
+      "code": "232             # Quantum tunneling: large energy barrier jump\n233             task_id = random.choice(list(new_assignments.keys()))\n234 \n",
       "col_offset": 22,
       "end_col_offset": 65,
       "filename": "src/quantum_task_planner/algorithms/quantum_annealing.py",
@@ -1473,16 +2195,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 230,
+      "line_number": 233,
       "line_range": [
-        230
+        233
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "250                     probabilities = [w / total_weight for w in weights]\n251                     selected_resource = random.choices(\n252                         [res_id for res_id, _ in tunnel_candidates],\n253                         weights=probabilities\n254                     )[0]\n255                     new_assignments[task_id] = selected_resource\n",
+      "code": "253                     probabilities = [w / total_weight for w in weights]\n254                     selected_resource = random.choices(\n255                         [res_id for res_id, _ in tunnel_candidates],\n256                         weights=probabilities\n257                     )[0]\n258                     new_assignments[task_id] = selected_resource\n",
       "col_offset": 40,
       "end_col_offset": 21,
       "filename": "src/quantum_task_planner/algorithms/quantum_annealing.py",
@@ -1493,19 +2215,19 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 251,
+      "line_number": 254,
       "line_range": [
-        251,
-        252,
-        253,
-        254
+        254,
+        255,
+        256,
+        257
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "285             \n286             return random.random() < acceptance_prob\n287         \n",
+      "code": "288 \n289             return random.random() < acceptance_prob\n290 \n",
       "col_offset": 19,
       "end_col_offset": 34,
       "filename": "src/quantum_task_planner/algorithms/quantum_annealing.py",
@@ -1516,16 +2238,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 286,
+      "line_number": 289,
       "line_range": [
-        286
+        289
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "657         swap_probability = (1 + np.cos(entangling_angle)) / 2\n658         return random.random() < swap_probability\n659     \n",
+      "code": "658         swap_probability = (1 + np.cos(entangling_angle)) / 2\n659         return random.random() < swap_probability\n660 \n",
       "col_offset": 15,
       "end_col_offset": 30,
       "filename": "src/quantum_task_planner/algorithms/vqe_dependencies.py",
@@ -1536,16 +2258,16 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 658,
+      "line_number": 659,
       "line_range": [
-        658
+        659
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "665         # actual cluster and schedule objects\n666         return random.uniform(0, 100)  # Placeholder\n667     \n",
+      "code": "666         # actual cluster and schedule objects\n667         return random.uniform(0, 100)  # Placeholder\n668 \n",
       "col_offset": 15,
       "end_col_offset": 37,
       "filename": "src/quantum_task_planner/algorithms/vqe_dependencies.py",
@@ -1556,18 +2278,38 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 666,
+      "line_number": 667,
       "line_range": [
-        666
+        667
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "439         dependencies = []\n440         if i > 0 and random.random() < params['dependencies']:\n441             num_deps = random.randint(1, min(3, i))\n",
+      "code": "438         dependencies = []\n439         if i > 0 and random.random() < params['dependencies']:\n440             num_deps = random.randint(1, min(3, i))\n",
       "col_offset": 21,
       "end_col_offset": 36,
+      "filename": "src/quantum_task_planner/cli.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 439,
+      "line_range": [
+        439
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "439         if i > 0 and random.random() < params['dependencies']:\n440             num_deps = random.randint(1, min(3, i))\n441             dependencies = random.sample(task_ids[:i], num_deps)\n",
+      "col_offset": 23,
+      "end_col_offset": 51,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1585,9 +2327,9 @@
       "test_name": "blacklist"
     },
     {
-      "code": "440         if i > 0 and random.random() < params['dependencies']:\n441             num_deps = random.randint(1, min(3, i))\n442             dependencies = random.sample(task_ids[:i], num_deps)\n",
-      "col_offset": 23,
-      "end_col_offset": 51,
+      "code": "440             num_deps = random.randint(1, min(3, i))\n441             dependencies = random.sample(task_ids[:i], num_deps)\n442 \n",
+      "col_offset": 27,
+      "end_col_offset": 64,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1605,9 +2347,9 @@
       "test_name": "blacklist"
     },
     {
-      "code": "441             num_deps = random.randint(1, min(3, i))\n442             dependencies = random.sample(task_ids[:i], num_deps)\n443         \n",
-      "col_offset": 27,
-      "end_col_offset": 64,
+      "code": "447             'description': f\"Example task {i+1} for quantum planning\",\n448             'duration_seconds': random.randint(1800, 14400),  # 30min to 4h\n449             'priority': random.choice(['low', 'medium', 'high', 'critical']),\n",
+      "col_offset": 32,
+      "end_col_offset": 59,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1616,18 +2358,18 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 442,
+      "line_number": 448,
       "line_range": [
-        442
+        448
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "448             'description': f\"Example task {i+1} for quantum planning\",\n449             'duration_seconds': random.randint(1800, 14400),  # 30min to 4h\n450             'priority': random.choice(['low', 'medium', 'high', 'critical']),\n",
-      "col_offset": 32,
-      "end_col_offset": 59,
+      "code": "448             'duration_seconds': random.randint(1800, 14400),  # 30min to 4h\n449             'priority': random.choice(['low', 'medium', 'high', 'critical']),\n450             'dependencies': dependencies,\n",
+      "col_offset": 24,
+      "end_col_offset": 76,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1645,9 +2387,9 @@
       "test_name": "blacklist"
     },
     {
-      "code": "449             'duration_seconds': random.randint(1800, 14400),  # 30min to 4h\n450             'priority': random.choice(['low', 'medium', 'high', 'critical']),\n451             'dependencies': dependencies,\n",
-      "col_offset": 24,
-      "end_col_offset": 76,
+      "code": "451             'resource_requirements': {\n452                 'cpu': random.uniform(0.1, 2.0),\n453                 'memory': random.uniform(0.5, 4.0)\n",
+      "col_offset": 23,
+      "end_col_offset": 47,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1656,18 +2398,18 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 450,
+      "line_number": 452,
       "line_range": [
-        450
+        452
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "452             'resource_requirements': {\n453                 'cpu': random.uniform(0.1, 2.0),\n454                 'memory': random.uniform(0.5, 4.0)\n",
-      "col_offset": 23,
-      "end_col_offset": 47,
+      "code": "452                 'cpu': random.uniform(0.1, 2.0),\n453                 'memory': random.uniform(0.5, 4.0)\n454             },\n",
+      "col_offset": 26,
+      "end_col_offset": 50,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1685,9 +2427,9 @@
       "test_name": "blacklist"
     },
     {
-      "code": "453                 'cpu': random.uniform(0.1, 2.0),\n454                 'memory': random.uniform(0.5, 4.0)\n455             },\n",
-      "col_offset": 26,
-      "end_col_offset": 50,
+      "code": "454             },\n455             'quantum_weight': random.uniform(*params['quantum_weights']),\n456             'entanglement_factor': random.uniform(*params['entanglement']),\n",
+      "col_offset": 30,
+      "end_col_offset": 72,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1696,18 +2438,18 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 454,
+      "line_number": 455,
       "line_range": [
-        454
+        455
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "455             },\n456             'quantum_weight': random.uniform(*params['quantum_weights']),\n457             'entanglement_factor': random.uniform(*params['entanglement']),\n",
-      "col_offset": 30,
-      "end_col_offset": 72,
+      "code": "455             'quantum_weight': random.uniform(*params['quantum_weights']),\n456             'entanglement_factor': random.uniform(*params['entanglement']),\n457             'tags': [\"example\", f\"complexity_{complexity}\"]\n",
+      "col_offset": 35,
+      "end_col_offset": 74,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1725,27 +2467,7 @@
       "test_name": "blacklist"
     },
     {
-      "code": "456             'quantum_weight': random.uniform(*params['quantum_weights']),\n457             'entanglement_factor': random.uniform(*params['entanglement']),\n458             'tags': [f\"example\", f\"complexity_{complexity}\"]\n",
-      "col_offset": 35,
-      "end_col_offset": 74,
-      "filename": "src/quantum_task_planner/cli.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 330,
-        "link": "https://cwe.mitre.org/data/definitions/330.html"
-      },
-      "issue_severity": "LOW",
-      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 457,
-      "line_range": [
-        457
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
-      "test_id": "B311",
-      "test_name": "blacklist"
-    },
-    {
-      "code": "467     for i in range(num_resources):\n468         resource_type = random.choice(resource_types)\n469         resource = {\n",
+      "code": "466     for i in range(num_resources):\n467         resource_type = random.choice(resource_types)\n468         resource = {\n",
       "col_offset": 24,
       "end_col_offset": 53,
       "filename": "src/quantum_task_planner/cli.py",
@@ -1756,18 +2478,38 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 468,
+      "line_number": 467,
       "line_range": [
-        468
+        467
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "472             'type': resource_type,\n473             'total_capacity': random.uniform(2.0, 10.0),\n474             'available_capacity': random.uniform(1.0, 8.0),\n",
+      "code": "471             'type': resource_type,\n472             'total_capacity': random.uniform(2.0, 10.0),\n473             'available_capacity': random.uniform(1.0, 8.0),\n",
       "col_offset": 30,
       "end_col_offset": 55,
+      "filename": "src/quantum_task_planner/cli.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 472,
+      "line_range": [
+        472
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "472             'total_capacity': random.uniform(2.0, 10.0),\n473             'available_capacity': random.uniform(1.0, 8.0),\n474             'status': 'available',\n",
+      "col_offset": 34,
+      "end_col_offset": 58,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1785,9 +2527,9 @@
       "test_name": "blacklist"
     },
     {
-      "code": "473             'total_capacity': random.uniform(2.0, 10.0),\n474             'available_capacity': random.uniform(1.0, 8.0),\n475             'status': 'available',\n",
-      "col_offset": 34,
-      "end_col_offset": 58,
+      "code": "474             'status': 'available',\n475             'cost_per_unit': random.uniform(0.1, 2.0),\n476             'efficiency_rating': random.uniform(0.7, 1.0),\n",
+      "col_offset": 29,
+      "end_col_offset": 53,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1796,18 +2538,18 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 474,
+      "line_number": 475,
       "line_range": [
-        474
+        475
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
       "test_id": "B311",
       "test_name": "blacklist"
     },
     {
-      "code": "475             'status': 'available',\n476             'cost_per_unit': random.uniform(0.1, 2.0),\n477             'efficiency_rating': random.uniform(0.7, 1.0),\n",
-      "col_offset": 29,
-      "end_col_offset": 53,
+      "code": "475             'cost_per_unit': random.uniform(0.1, 2.0),\n476             'efficiency_rating': random.uniform(0.7, 1.0),\n477             'quantum_coherence': random.uniform(0.5, 1.0),\n",
+      "col_offset": 33,
+      "end_col_offset": 57,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1825,7 +2567,7 @@
       "test_name": "blacklist"
     },
     {
-      "code": "476             'cost_per_unit': random.uniform(0.1, 2.0),\n477             'efficiency_rating': random.uniform(0.7, 1.0),\n478             'quantum_coherence': random.uniform(0.5, 1.0),\n",
+      "code": "476             'efficiency_rating': random.uniform(0.7, 1.0),\n477             'quantum_coherence': random.uniform(0.5, 1.0),\n478             'superposition_factor': random.uniform(0.0, 0.3),\n",
       "col_offset": 33,
       "end_col_offset": 57,
       "filename": "src/quantum_task_planner/cli.py",
@@ -1845,9 +2587,9 @@
       "test_name": "blacklist"
     },
     {
-      "code": "477             'efficiency_rating': random.uniform(0.7, 1.0),\n478             'quantum_coherence': random.uniform(0.5, 1.0),\n479             'superposition_factor': random.uniform(0.0, 0.3),\n",
-      "col_offset": 33,
-      "end_col_offset": 57,
+      "code": "477             'quantum_coherence': random.uniform(0.5, 1.0),\n478             'superposition_factor': random.uniform(0.0, 0.3),\n479             'tags': ['example', f\"type_{resource_type}\"]\n",
+      "col_offset": 36,
+      "end_col_offset": 60,
       "filename": "src/quantum_task_planner/cli.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
@@ -1865,24 +2607,85 @@
       "test_name": "blacklist"
     },
     {
-      "code": "478             'quantum_coherence': random.uniform(0.5, 1.0),\n479             'superposition_factor': random.uniform(0.0, 0.3),\n480             'tags': ['example', f\"type_{resource_type}\"]\n",
-      "col_offset": 36,
-      "end_col_offset": 60,
-      "filename": "src/quantum_task_planner/cli.py",
+      "code": "25 import logging\n26 import pickle\n27 import threading\n",
+      "col_offset": 0,
+      "end_col_offset": 13,
+      "filename": "src/quantum_task_planner/monitoring/olfactory_observability.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
-        "id": 330,
-        "link": "https://cwe.mitre.org/data/definitions/330.html"
+        "id": 502,
+        "link": "https://cwe.mitre.org/data/definitions/502.html"
       },
       "issue_severity": "LOW",
-      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
-      "line_number": 479,
+      "issue_text": "Consider possible security implications associated with pickle module.",
+      "line_number": 26,
       "line_range": [
-        479
+        26
       ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random",
-      "test_id": "B311",
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b403-import-pickle",
+      "test_id": "B403",
       "test_name": "blacklist"
+    },
+    {
+      "code": "313             timestamp = datetime.utcnow().strftime(\"%Y%m%d_%H%M%S\")\n314             experiment_hash = hashlib.md5(experiment_name.encode()).hexdigest()[:8]\n315             experiment_id = f\"{experiment_name}_{timestamp}_{experiment_hash}\"\n",
+      "col_offset": 30,
+      "end_col_offset": 67,
+      "filename": "src/quantum_task_planner/monitoring/olfactory_observability.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 314,
+      "line_range": [
+        314
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
+    },
+    {
+      "code": "1067         try:\n1068             alert_id = hashlib.md5(f\"{title}_{source}_{datetime.utcnow()}\".encode()).hexdigest()[:12]\n1069 \n",
+      "col_offset": 23,
+      "end_col_offset": 84,
+      "filename": "src/quantum_task_planner/monitoring/olfactory_observability.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 1068,
+      "line_range": [
+        1068
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
+    },
+    {
+      "code": "1256                             label=f\"{alg} (trend)\")\n1257                 except:\n1258                     pass\n1259 \n",
+      "col_offset": 16,
+      "end_col_offset": 24,
+      "filename": "src/quantum_task_planner/research/benchmarking_framework.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 1257,
+      "line_range": [
+        1257,
+        1258
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
     }
   ]
 }

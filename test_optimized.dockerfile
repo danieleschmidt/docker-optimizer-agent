@@ -10,7 +10,7 @@ Explanation: Applied 2 security improvements; Applied 1 layer optimizations
 
 📄 Optimized Dockerfile:
 ------------------------------
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 RUN apt-get update && \
     apt-get install --no-install-recommends -y curl wget && rm -rf /var/lib/apt/lists/*
 COPY . /app

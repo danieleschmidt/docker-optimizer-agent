@@ -1,0 +1,53 @@
+{
+  "validation_timestamp": 1755661740.0244439,
+  "feature_validation": {
+    "basic_optimization": true,
+    "json_output": true,
+    "security_scanning": true,
+    "batch_processing": true
+  },
+  "performance_benchmark": {
+    "benchmark_results": [
+      {
+        "test_name": "simple",
+        "dockerfile": "test_simple.dockerfile",
+        "success_rate": 100.0,
+        "avg_time": 0.6022804260253907,
+        "min_time": 0.5889956951141357,
+        "max_time": 0.6181035041809082,
+        "std_dev": 0.013143608740659944,
+        "total_runs": 5,
+        "successful_runs": 5
+      },
+      {
+        "test_name": "complex",
+        "dockerfile": "Dockerfile",
+        "success_rate": 100.0,
+        "avg_time": 0.5755396366119385,
+        "min_time": 0.5494096279144287,
+        "max_time": 0.5930311679840088,
+        "std_dev": 0.019145246289488282,
+        "total_runs": 5,
+        "successful_runs": 5
+      },
+      {
+        "test_name": "node",
+        "dockerfile": "node-example.dockerfile",
+        "success_rate": 100.0,
+        "avg_time": 0.5471898078918457,
+        "min_time": 0.5425448417663574,
+        "max_time": 0.5547652244567871,
+        "std_dev": 0.004585608661693855,
+        "total_runs": 5,
+        "successful_runs": 5
+      }
+    ],
+    "timestamp": 1755661737.7269607
+  },
+  "summary": {
+    "feature_success_rate": 100.0,
+    "performance_success_rate": 100.0,
+    "avg_optimization_time": 0.5750032901763916,
+    "overall_status": "PASS"
+  }
+}

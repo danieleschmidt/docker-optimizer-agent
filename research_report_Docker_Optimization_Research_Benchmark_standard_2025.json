@@ -32,7 +32,7 @@
     "performance_ranking": [
       {
         "algorithm": "enhanced_optimizer_v2",
-        "mean_execution_time": 0.2888515000023517,
+        "mean_execution_time": 0.3022207500151808,
         "success_rate": 1.0,
         "mean_layer_reduction": 0
       }
@@ -46,10 +46,10 @@
     "enhanced_optimizer_v2": {
       "success_rate": 1.0,
       "execution_time_ms": {
-        "mean": 0.2888515000023517,
-        "stdev": 0.13224932055330146,
-        "min": 0.14416400000527574,
-        "max": 0.42328600000018923
+        "mean": 0.3022207500151808,
+        "stdev": 0.1068709300744966,
+        "min": 0.14311500001440436,
+        "max": 0.36631800003306125
       },
       "layer_reduction": {
         "mean": 0,
@@ -80,7 +80,7 @@
         "dockerfile": "python_basic",
         "original_size": "100MB",
         "optimized_size": "100MB",
-        "execution_time_ms": 0.42328600000018923,
+        "execution_time_ms": 0.36252699999295146,
         "security_score": null,
         "layer_count_reduction": 0,
         "success": true,
@@ -97,7 +97,7 @@
         "dockerfile": "python_complex_multi_stage",
         "original_size": "100MB",
         "optimized_size": "100MB",
-        "execution_time_ms": 0.2120940000054361,
+        "execution_time_ms": 0.33692300002030606,
         "security_score": null,
         "layer_count_reduction": 0,
         "success": true,
@@ -114,7 +114,7 @@
         "dockerfile": "nodejs_basic",
         "original_size": "150MB",
         "optimized_size": "150MB",
-        "execution_time_ms": 0.14416400000527574,
+        "execution_time_ms": 0.14311500001440436,
         "security_score": null,
         "layer_count_reduction": 0,
         "success": true,
@@ -131,7 +131,7 @@
         "dockerfile": "multi_language_complex",
         "original_size": "110MB",
         "optimized_size": "110MB",
-        "execution_time_ms": 0.3758619999985058,
+        "execution_time_ms": 0.36631800003306125,
         "security_score": null,
         "layer_count_reduction": 0,
         "success": true,

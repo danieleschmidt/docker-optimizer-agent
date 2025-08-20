@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from .health_monitor import get_health_monitor
-from .resilience_engine import ResilienceEngine, ResilienceConfig
+from .resilience_engine import ResilienceConfig, ResilienceEngine
 
 logger = logging.getLogger(__name__)
 

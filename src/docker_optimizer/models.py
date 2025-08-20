@@ -16,13 +16,13 @@ except ImportError:
             for key, value in kwargs.items():
                 setattr(self, key, value)
 
-    def Field(default=None, description="", **kwargs):
+    def Field(default=None, description="", **kwargs) -> None:
         """Fallback Field function that handles all pydantic Field parameters."""
         if 'default_factory' in kwargs:
             return kwargs['default_factory']()
         return default
 
-    def validator(*args, **kwargs):
+    def validator(*args, **kwargs) -> None:
         """Fallback validator decorator."""
         def decorator(func):
             return func

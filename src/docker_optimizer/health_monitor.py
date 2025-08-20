@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 import psutil
 
-from .resilience_engine import ResilienceEngine, ResilienceConfig
+from .resilience_engine import ResilienceConfig, ResilienceEngine
 
 logger = logging.getLogger(__name__)
 

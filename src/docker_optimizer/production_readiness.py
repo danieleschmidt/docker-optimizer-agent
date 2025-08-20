@@ -10,13 +10,14 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
+
 import pkg_resources
 
-from .health_monitor import get_health_monitor
-from .monitoring_integration import get_monitoring_integration
 from .auto_scaling import get_autoscaler
+from .health_monitor import get_health_monitor
 from .intelligent_caching import get_cache_manager
+from .monitoring_integration import get_monitoring_integration
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 class ReadinessLevel(str, Enum):
     """Production readiness levels."""
     DEVELOPMENT = "development"
-    STAGING = "staging"  
+    STAGING = "staging"
     PRODUCTION = "production"
     ENTERPRISE = "enterprise"
 
@@ -32,7 +33,7 @@ class ReadinessLevel(str, Enum):
 class CheckStatus(str, Enum):
     """Status of readiness checks."""
     PASS = "pass"
-    WARN = "warning" 
+    WARN = "warning"
     FAIL = "critical"
     SKIP = "skipped"
 
@@ -66,14 +67,14 @@ class ReadinessReport:
 
 class ProductionReadinessAssessment:
     """Comprehensive production readiness assessment system."""
-    
+
     def __init__(self):
         self.checks = []
         self.health_monitor = get_health_monitor()
         self.monitoring = get_monitoring_integration()
         self.autoscaler = get_autoscaler()
         self.cache_manager = get_cache_manager()
-        
+
         # Readiness criteria by level
         self.level_requirements = {
             ReadinessLevel.DEVELOPMENT: {"min_score": 60, "critical_max": 2},
@@ -81,41 +82,41 @@ class ProductionReadinessAssessment:
             ReadinessLevel.PRODUCTION: {"min_score": 85, "critical_max": 0},
             ReadinessLevel.ENTERPRISE: {"min_score": 95, "critical_max": 0}
         }
-    
+
     def assess_readiness(self, target_level: ReadinessLevel = ReadinessLevel.PRODUCTION) -> ReadinessReport:
         """Perform comprehensive production readiness assessment."""
         logger.info(f"Starting production readiness assessment for {target_level.value} level")
-        
+
         self.checks = []
-        
+
         # Core infrastructure checks
         self._check_system_requirements()
         self._check_dependencies()
         self._check_configuration()
-        
+
         # Security checks
         self._check_security_configuration()
         self._check_secrets_management()
         self._check_network_security()
-        
+
         # Performance checks
         self._check_performance_configuration()
         self._check_caching_readiness()
         self._check_scaling_readiness()
-        
+
         # Monitoring and observability
         self._check_monitoring_setup()
         self._check_health_checks()
         self._check_logging_configuration()
-        
+
         # Deployment checks
         self._check_deployment_artifacts()
         self._check_database_readiness()
         self._check_external_dependencies()
-        
+
         # Generate report
         return self._generate_report(target_level)
-    
+
     def _check_system_requirements(self) -> None:
         """Check system requirements and compatibility."""
         # Python version check
@@ -138,7 +139,7 @@ class ProductionReadinessAssessment:
                 impact="critical",
                 fix_command="# Update Python to 3.9 or later"
             ))
-        
+
         # Platform check
         current_platform = platform.system()
         supported_platforms = ["Linux", "Darwin", "Windows"]
@@ -159,7 +160,7 @@ class ProductionReadinessAssessment:
                 recommendation="Test thoroughly on target platform",
                 impact="medium"
             ))
-        
+
         # Memory check
         try:
             import psutil
@@ -167,7 +168,7 @@ class ProductionReadinessAssessment:
             if total_memory_gb >= 4:
                 self.checks.append(ReadinessCheck(
                     name="System Memory",
-                    category="system", 
+                    category="system",
                     status=CheckStatus.PASS,
                     message=f"{total_memory_gb:.1f}GB memory available",
                     impact="medium"
@@ -189,7 +190,7 @@ class ProductionReadinessAssessment:
                 message="psutil not available for memory check",
                 impact="low"
             ))
-    
+
     def _check_dependencies(self) -> None:
         """Check required dependencies and versions."""
         required_packages = [
@@ -199,7 +200,7 @@ class ProductionReadinessAssessment:
             ("pyyaml", "6.0"),
             ("rich", "13.0.0")
         ]
-        
+
         for package_name, min_version in required_packages:
             try:
                 installed_version = pkg_resources.get_distribution(package_name).version
@@ -231,7 +232,7 @@ class ProductionReadinessAssessment:
                     impact="critical",
                     fix_command=f"pip install '{package_name}>={min_version}'"
                 ))
-        
+
         # Optional dependencies check
         optional_packages = ["docker", "numpy", "matplotlib", "scikit-learn"]
         for package_name in optional_packages:
@@ -254,7 +255,7 @@ class ProductionReadinessAssessment:
                     impact="low",
                     fix_command=f"pip install {package_name}"
                 ))
-    
+
     def _check_configuration(self) -> None:
         """Check configuration and environment setup."""
         # Environment variables check
@@ -263,7 +264,7 @@ class ProductionReadinessAssessment:
             ("DOCKER_OPTIMIZER_CACHE_SIZE", "100", "Cache size configuration"),
             ("DOCKER_OPTIMIZER_MAX_WORKERS", "4", "Worker pool configuration")
         ]
-        
+
         for env_var, default_value, description in important_env_vars:
             if env_var in os.environ:
                 self.checks.append(ReadinessCheck(
@@ -283,14 +284,14 @@ class ProductionReadinessAssessment:
                     impact="low",
                     fix_command=f"export {env_var}={default_value}"
                 ))
-        
+
         # Configuration files check
         config_files = [
             Path("config/production.yml"),
             Path("config/logging.yml"),
             Path("docker-compose.yml")
         ]
-        
+
         for config_file in config_files:
             if config_file.exists():
                 self.checks.append(ReadinessCheck(
@@ -309,7 +310,7 @@ class ProductionReadinessAssessment:
                     recommendation=f"Create {config_file} for production deployment",
                     impact="medium"
                 ))
-    
+
     def _check_security_configuration(self) -> None:
         """Check security configuration and settings."""
         # Debug mode check
@@ -332,7 +333,7 @@ class ProductionReadinessAssessment:
                 impact="critical",
                 fix_command="export DEBUG=false"
             ))
-        
+
         # SSL/TLS check
         ssl_enabled = os.environ.get("SSL_ENABLED", "false").lower() == "true"
         if ssl_enabled:
@@ -353,13 +354,13 @@ class ProductionReadinessAssessment:
                 impact="high",
                 fix_command="export SSL_ENABLED=true"
             ))
-    
+
     def _check_secrets_management(self) -> None:
         """Check secrets management configuration."""
         # Check for hardcoded secrets in environment
         sensitive_patterns = ["password", "secret", "key", "token", "credential"]
         env_vars = dict(os.environ)
-        
+
         for var_name, value in env_vars.items():
             if any(pattern in var_name.lower() for pattern in sensitive_patterns):
                 if len(value) < 20:  # Likely a placeholder or weak secret
@@ -379,13 +380,13 @@ class ProductionReadinessAssessment:
                         message="Secret appears properly configured",
                         impact="high"
                     ))
-        
+
         # Secrets management system check
         secrets_provider = os.environ.get("SECRETS_PROVIDER", "environment")
         if secrets_provider in ["vault", "k8s-secrets", "aws-secrets", "azure-keyvault"]:
             self.checks.append(ReadinessCheck(
                 name="Secrets Provider",
-                category="security", 
+                category="security",
                 status=CheckStatus.PASS,
                 message=f"Using external secrets provider: {secrets_provider}",
                 impact="high"
@@ -399,7 +400,7 @@ class ProductionReadinessAssessment:
                 recommendation="Consider external secrets management for production",
                 impact="medium"
             ))
-    
+
     def _check_network_security(self) -> None:
         """Check network security configuration."""
         # Firewall check (basic)
@@ -411,7 +412,7 @@ class ProductionReadinessAssessment:
             recommendation="Ensure firewall rules and network policies are configured",
             impact="high"
         ))
-    
+
     def _check_performance_configuration(self) -> None:
         """Check performance-related configuration."""
         # Worker pool configuration
@@ -434,7 +435,7 @@ class ProductionReadinessAssessment:
                 impact="medium",
                 fix_command="export DOCKER_OPTIMIZER_MAX_WORKERS=4"
             ))
-        
+
         # Memory limits check
         memory_limit = os.environ.get("MEMORY_LIMIT", None)
         if memory_limit:
@@ -454,7 +455,7 @@ class ProductionReadinessAssessment:
                 recommendation="Set memory limits for production deployment",
                 impact="medium"
             ))
-    
+
     def _check_caching_readiness(self) -> None:
         """Check caching system readiness."""
         try:
@@ -487,7 +488,7 @@ class ProductionReadinessAssessment:
                 recommendation="Fix caching system configuration",
                 impact="medium"
             ))
-    
+
     def _check_scaling_readiness(self) -> None:
         """Check auto-scaling readiness."""
         try:
@@ -519,7 +520,7 @@ class ProductionReadinessAssessment:
                 recommendation="Fix auto-scaling configuration",
                 impact="medium"
             ))
-    
+
     def _check_monitoring_setup(self) -> None:
         """Check monitoring and observability setup."""
         try:
@@ -540,7 +541,7 @@ class ProductionReadinessAssessment:
                 recommendation="Fix monitoring system configuration",
                 impact="high"
             ))
-        
+
         # Prometheus metrics check
         try:
             prometheus_metrics = self.monitoring.export_prometheus_metrics()
@@ -570,7 +571,7 @@ class ProductionReadinessAssessment:
                 recommendation="Configure Prometheus metrics endpoint",
                 impact="medium"
             ))
-    
+
     def _check_health_checks(self) -> None:
         """Check health monitoring configuration."""
         try:
@@ -602,7 +603,7 @@ class ProductionReadinessAssessment:
                 recommendation="Fix health monitoring configuration",
                 impact="high"
             ))
-    
+
     def _check_logging_configuration(self) -> None:
         """Check logging configuration."""
         log_level = os.environ.get("DOCKER_OPTIMIZER_LOG_LEVEL", "INFO")
@@ -633,7 +634,7 @@ class ProductionReadinessAssessment:
                 recommendation="Set valid log level (INFO, WARNING, ERROR)",
                 impact="medium"
             ))
-        
+
         # Log aggregation check
         log_aggregation = os.environ.get("LOG_AGGREGATION", None)
         if log_aggregation:
@@ -653,7 +654,7 @@ class ProductionReadinessAssessment:
                 recommendation="Configure log aggregation for production",
                 impact="medium"
             ))
-    
+
     def _check_deployment_artifacts(self) -> None:
         """Check deployment artifacts and files."""
         required_files = [
@@ -662,7 +663,7 @@ class ProductionReadinessAssessment:
             ("requirements.txt", "Python dependencies"),
             ("pyproject.toml", "Package configuration")
         ]
-        
+
         for filename, description in required_files:
             if Path(filename).exists():
                 self.checks.append(ReadinessCheck(
@@ -682,12 +683,12 @@ class ProductionReadinessAssessment:
                     recommendation=f"Create {filename} for deployment",
                     impact=impact
                 ))
-    
+
     def _check_database_readiness(self) -> None:
         """Check database and persistence readiness."""
         # For this application, we don't use a traditional database
         # but we can check for data persistence configuration
-        
+
         data_dir = os.environ.get("DATA_DIRECTORY", "./data")
         if Path(data_dir).exists():
             self.checks.append(ReadinessCheck(
@@ -707,12 +708,12 @@ class ProductionReadinessAssessment:
                 impact="medium",
                 fix_command=f"mkdir -p {data_dir}"
             ))
-    
+
     def _check_external_dependencies(self) -> None:
         """Check external service dependencies."""
         # Docker daemon check
         try:
-            result = subprocess.run(["docker", "version"], 
+            result = subprocess.run(["docker", "version"],
                                   capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
                 self.checks.append(ReadinessCheck(
@@ -740,7 +741,7 @@ class ProductionReadinessAssessment:
                 recommendation="Verify Docker installation and daemon status",
                 impact="high"
             ))
-        
+
         # Network connectivity check
         try:
             import socket
@@ -761,7 +762,7 @@ class ProductionReadinessAssessment:
                 recommendation="Verify network configuration and firewall rules",
                 impact="medium"
             ))
-    
+
     def _generate_report(self, target_level: ReadinessLevel) -> ReadinessReport:
         """Generate comprehensive readiness report."""
         # Calculate scores and status
@@ -769,13 +770,13 @@ class ProductionReadinessAssessment:
         pass_count = len([c for c in self.checks if c.status == CheckStatus.PASS])
         warn_count = len([c for c in self.checks if c.status == CheckStatus.WARN])
         fail_count = len([c for c in self.checks if c.status == CheckStatus.FAIL])
-        
+
         # Calculate score (0-100)
         if total_checks == 0:
             score = 0.0
         else:
             score = (pass_count + (warn_count * 0.5)) / total_checks * 100
-        
+
         # Determine overall status
         requirements = self.level_requirements[target_level]
         if fail_count > requirements["critical_max"]:
@@ -784,12 +785,12 @@ class ProductionReadinessAssessment:
             overall_status = CheckStatus.WARN
         else:
             overall_status = CheckStatus.PASS
-        
+
         # Generate recommendations
         deployment_recs = []
         security_recs = []
         performance_recs = []
-        
+
         for check in self.checks:
             if check.status in [CheckStatus.FAIL, CheckStatus.WARN] and check.recommendation:
                 if check.category == "security":
@@ -798,7 +799,7 @@ class ProductionReadinessAssessment:
                     performance_recs.append(check.recommendation)
                 else:
                     deployment_recs.append(check.recommendation)
-        
+
         # Environment info
         environment_info = {
             "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
@@ -814,7 +815,7 @@ class ProductionReadinessAssessment:
                 "skipped": len([c for c in self.checks if c.status == CheckStatus.SKIP])
             }
         }
-        
+
         return ReadinessReport(
             overall_status=overall_status,
             readiness_level=target_level,
@@ -825,7 +826,7 @@ class ProductionReadinessAssessment:
             security_recommendations=security_recs,
             performance_recommendations=performance_recs
         )
-    
+
     def export_report(self, report: ReadinessReport, output_path: Path) -> None:
         """Export readiness report to file."""
         report_data = {
@@ -853,10 +854,10 @@ class ProductionReadinessAssessment:
                 "performance": report.performance_recommendations
             }
         }
-        
+
         with open(output_path, 'w') as f:
             json.dump(report_data, f, indent=2)
-        
+
         logger.info(f"Production readiness report exported to: {output_path}")
 
 
@@ -869,7 +870,7 @@ def assess_production_readiness(target_level: ReadinessLevel = ReadinessLevel.PR
 def generate_deployment_checklist(report: ReadinessReport) -> List[str]:
     """Generate deployment checklist from readiness report."""
     checklist = []
-    
+
     # Critical issues first
     critical_checks = [c for c in report.checks if c.status == CheckStatus.FAIL]
     if critical_checks:
@@ -881,7 +882,7 @@ def generate_deployment_checklist(report: ReadinessReport) -> List[str]:
             if check.fix_command:
                 checklist.append(f"      💻 {check.fix_command}")
         checklist.append("")
-    
+
     # Warnings
     warning_checks = [c for c in report.checks if c.status == CheckStatus.WARN]
     if warning_checks:
@@ -891,30 +892,30 @@ def generate_deployment_checklist(report: ReadinessReport) -> List[str]:
             if check.recommendation:
                 checklist.append(f"      → {check.recommendation}")
         checklist.append("")
-    
+
     # Final recommendations
     if report.deployment_recommendations:
         checklist.append("📋 DEPLOYMENT RECOMMENDATIONS:")
         for rec in report.deployment_recommendations:
             checklist.append(f"   • {rec}")
         checklist.append("")
-    
+
     if report.security_recommendations:
         checklist.append("🔒 SECURITY RECOMMENDATIONS:")
         for rec in report.security_recommendations:
             checklist.append(f"   • {rec}")
         checklist.append("")
-    
+
     if report.performance_recommendations:
         checklist.append("⚡ PERFORMANCE RECOMMENDATIONS:")
         for rec in report.performance_recommendations:
             checklist.append(f"   • {rec}")
         checklist.append("")
-    
+
     # Summary
-    checklist.append(f"📊 READINESS SUMMARY:")
+    checklist.append("📊 READINESS SUMMARY:")
     checklist.append(f"   Score: {report.score:.1f}/100")
     checklist.append(f"   Target Level: {report.readiness_level.value}")
     checklist.append(f"   Overall Status: {report.overall_status.value.upper()}")
-    
+
     return checklist

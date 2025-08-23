@@ -1,0 +1,62 @@
+{
+  "summary": {
+    "total_gates": 4,
+    "passed_gates": 2,
+    "failed_gates": 2,
+    "overall_score": 45.45454545454545,
+    "execution_time": 0.11192440986633301,
+    "timestamp": "2025-08-23T01:01:04.923816+00:00"
+  },
+  "results": [
+    {
+      "name": "tests",
+      "passed": false,
+      "score": 0.0,
+      "message": "No tests found or executed",
+      "execution_time": 0.10705900192260742,
+      "timestamp": "2025-08-23T01:01:04.919020+00:00",
+      "metadata": {
+        "output": "/usr/bin/python3: No module named pytest"
+      }
+    },
+    {
+      "name": "security",
+      "passed": true,
+      "score": 100,
+      "message": "Security OK: 0H/0M/0L",
+      "execution_time": 0.0988459587097168,
+      "timestamp": "2025-08-23T01:01:04.912160+00:00",
+      "metadata": {
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "score": 100
+      }
+    },
+    {
+      "name": "linting",
+      "passed": true,
+      "score": 100,
+      "message": "Linting OK: 0E/0W",
+      "execution_time": 0.10970902442932129,
+      "timestamp": "2025-08-23T01:01:04.923730+00:00",
+      "metadata": {
+        "errors": 0,
+        "warnings": 0,
+        "total": 0,
+        "score": 100
+      }
+    },
+    {
+      "name": "functionality",
+      "passed": false,
+      "score": 0.0,
+      "message": "CLI test failed: unexpected output",
+      "execution_time": 0.09368419647216797,
+      "timestamp": "2025-08-23T01:01:04.918752+00:00",
+      "metadata": {
+        "output": "/usr/bin/python3: Error while finding module specification for 'docker_optimizer.cli' (ModuleNotFoundError: No module named 'docker_optimizer')"
+      }
+    }
+  ]
+}

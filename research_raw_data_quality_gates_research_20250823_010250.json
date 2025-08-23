@@ -1,0 +1,3970 @@
+{
+  "baseline": [
+    {
+      "iteration": 1,
+      "condition": "baseline",
+      "avg_execution_time": 8.456879369302467,
+      "avg_success_rate": 0.948440933948127,
+      "avg_score": 96.5167377547874,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 13.784973134372525,
+          "success_rate": 0.85734950775744,
+          "score": 90.74348166239729,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.516928183308627,
+          "success_rate": 0.9879732940869409,
+          "score": 98.84797367610068,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.068736790226248,
+          "success_rate": 1.0,
+          "score": 99.95875792586425,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 2,
+      "condition": "baseline",
+      "avg_execution_time": 8.321453611242024,
+      "avg_success_rate": 0.8950997162719381,
+      "avg_score": 92.86410797229045,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.85422142057771,
+          "success_rate": 0.871489278121498,
+          "score": 92.29171661615823,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 9.272690465927477,
+          "success_rate": 0.9373586210630771,
+          "score": 94.85148919485891,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.837448947220884,
+          "success_rate": 0.8764512496312391,
+          "score": 91.44911810585421,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 3,
+      "condition": "baseline",
+      "avg_execution_time": 9.564756799178877,
+      "avg_success_rate": 0.8477343578324287,
+      "avg_score": 88.80255096876267,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.73904867172662,
+          "success_rate": 0.7532290416215889,
+          "score": 81.68260371047525,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 9.104256942311324,
+          "success_rate": 0.9128100549593199,
+          "score": 93.2341496817656,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.850964783498685,
+          "success_rate": 0.8771639769163772,
+          "score": 91.49089951404719,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 4,
+      "condition": "baseline",
+      "avg_execution_time": 8.334841047226078,
+      "avg_success_rate": 0.8903222033023539,
+      "avg_score": 92.52164960282913,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.748534635122288,
+          "success_rate": 0.8050720634970668,
+          "score": 87.70592366372131,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.688822033628343,
+          "success_rate": 0.865894546409995,
+          "score": 90.19932502852264,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.567166472927606,
+          "success_rate": 1.0,
+          "score": 99.65970011624344,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 5,
+      "condition": "baseline",
+      "avg_execution_time": 9.936322797009652,
+      "avg_success_rate": 0.8883121247867565,
+      "avg_score": 91.42005505686716,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.74499783390362,
+          "success_rate": 0.8375364426168952,
+          "score": 86.98055228284049,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.714547121628353,
+          "success_rate": 0.8847947249999589,
+          "score": 91.5069024770201,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.3494234354969805,
+          "success_rate": 0.9426052067434153,
+          "score": 95.77271041074087,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 6,
+      "condition": "baseline",
+      "avg_execution_time": 8.154389450115145,
+      "avg_success_rate": 0.8889335806860263,
+      "avg_score": 92.53271697795276,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 14.063073933580657,
+          "success_rate": 0.8397451725510676,
+          "score": 89.34431771842634,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.470321308786533,
+          "success_rate": 0.8490960436523995,
+          "score": 89.75453027039605,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.929773107978245,
+          "success_rate": 0.9779595258546119,
+          "score": 98.4993029450359,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 7,
+      "condition": "baseline",
+      "avg_execution_time": 7.782584884252404,
+      "avg_success_rate": 0.9507709412136697,
+      "avg_score": 97.08441495440543,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 13.08920480016319,
+          "success_rate": 0.9081644855621095,
+          "score": 94.71799110924975,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.011580051162047,
+          "success_rate": 0.9441483380788995,
+          "score": 96.68343563482574,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.246969801431975,
+          "success_rate": 1.0,
+          "score": 99.85181811914082,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 8,
+      "condition": "baseline",
+      "avg_execution_time": 10.216277834931354,
+      "avg_success_rate": 0.9379520814539598,
+      "avg_score": 94.72687900081837,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.976253559050093,
+          "success_rate": 0.8835286234328341,
+          "score": 90.06125150486834,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 9.370725042409637,
+          "success_rate": 0.9303276209290452,
+          "score": 94.30049843958737,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.301854903334335,
+          "success_rate": 1.0,
+          "score": 99.8188870579994,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 9,
+      "condition": "baseline",
+      "avg_execution_time": 8.592985619453342,
+      "avg_success_rate": 0.8758515322666534,
+      "avg_score": 91.35381588699373,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 14.081498846566715,
+          "success_rate": 0.7960379889229027,
+          "score": 86.27375991666315,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.679469544019872,
+          "success_rate": 0.8467275040377014,
+          "score": 88.86324355622718,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.017988467773441,
+          "success_rate": 0.9847891038393561,
+          "score": 98.92444418809086,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 10,
+      "condition": "baseline",
+      "avg_execution_time": 8.673584755640414,
+      "avg_success_rate": 0.9073135243270953,
+      "avg_score": 93.50779584951242,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 14.532870141811808,
+          "success_rate": 0.8953236491294461,
+          "score": 92.95293335397415,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.182115372186287,
+          "success_rate": 0.9052059388345531,
+          "score": 93.25514649510694,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.3057687529231483,
+          "success_rate": 0.9214109850172868,
+          "score": 94.31530769945618,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 11,
+      "condition": "baseline",
+      "avg_execution_time": 7.279154467179937,
+      "avg_success_rate": 0.898682470827755,
+      "avg_score": 93.74028027763488,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.572114796726149,
+          "success_rate": 0.9388093380863457,
+          "score": 97.1733847880085,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.732601679476216,
+          "success_rate": 0.8623891965001708,
+          "score": 91.12768274732622,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.532746925337446,
+          "success_rate": 0.8948488778967486,
+          "score": 92.91977329756993,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 12,
+      "condition": "baseline",
+      "avg_execution_time": 7.479450888797661,
+      "avg_success_rate": 0.9313618154454247,
+      "avg_score": 95.90765654790113,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.533448300426528,
+          "success_rate": 0.8372872896255973,
+          "score": 90.09004129353589,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.966856528331353,
+          "success_rate": 0.9567981567106768,
+          "score": 97.59575705274855,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.938047837635104,
+          "success_rate": 1.0,
+          "score": 100.03717129741894,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 13,
+      "condition": "baseline",
+      "avg_execution_time": 9.188999111627712,
+      "avg_success_rate": 0.9281330523739949,
+      "avg_score": 94.65591419920302,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 14.65079860447823,
+          "success_rate": 0.9351047939589469,
+          "score": 95.66685641443935,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 9.37851172583085,
+          "success_rate": 0.8631323915143245,
+          "score": 89.5921603705042,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.537687004574058,
+          "success_rate": 0.9861619716487134,
+          "score": 98.7087258126655,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 14,
+      "condition": "baseline",
+      "avg_execution_time": 7.8669052551445535,
+      "avg_success_rate": 0.856619537218712,
+      "avg_score": 90.4432244522231,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.591931617607086,
+          "success_rate": 0.7944729927535946,
+          "score": 87.05795052218737,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.111684566105948,
+          "success_rate": 0.9250763560177595,
+          "score": 94.68833418157959,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.897099581720627,
+          "success_rate": 0.8503092628847819,
+          "score": 89.58338865290236,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 15,
+      "condition": "baseline",
+      "avg_execution_time": 8.028400215482849,
+      "avg_success_rate": 0.924320082760993,
+      "avg_score": 95.0853656639798,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 13.38293414648304,
+          "success_rate": 0.9078717430609264,
+          "score": 94.52126152637503,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.533066205070442,
+          "success_rate": 0.9322560859560645,
+          "score": 95.53808629388224,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.1692002948950666,
+          "success_rate": 0.9328324192659881,
+          "score": 95.19674917168213,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 16,
+      "condition": "baseline",
+      "avg_execution_time": 9.39659639897037,
+      "avg_success_rate": 0.8677360359161972,
+      "avg_score": 90.30356467475158,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.06113486245104,
+          "success_rate": 0.8593858866970052,
+          "score": 89.52033115131974,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.914968776674716,
+          "success_rate": 0.8550424204557172,
+          "score": 89.30398816589538,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.213685557785353,
+          "success_rate": 0.888779800595869,
+          "score": 92.08637470703962,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 17,
+      "condition": "baseline",
+      "avg_execution_time": 9.10619303106771,
+      "avg_success_rate": 0.9212361536151663,
+      "avg_score": 94.22281493442101,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.114926509709884,
+          "success_rate": 0.8484020907782699,
+          "score": 89.31919044865296,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.974412453128858,
+          "success_rate": 0.9895906567847116,
+          "score": 98.6866985030525,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.2292401303643863,
+          "success_rate": 0.9257157132825173,
+          "score": 94.66255585155757,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 18,
+      "condition": "baseline",
+      "avg_execution_time": 7.635424261232315,
+      "avg_success_rate": 0.8913364618608334,
+      "avg_score": 93.01229777351895,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.208268933000605,
+          "success_rate": 0.9495183453355929,
+          "score": 98.14132281369115,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.27170909402459,
+          "success_rate": 0.8610819747916473,
+          "score": 90.11271277900056,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.4262947566717514,
+          "success_rate": 0.8634090654552601,
+          "score": 90.78285772786515,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 19,
+      "condition": "baseline",
+      "avg_execution_time": 9.536423498761373,
+      "avg_success_rate": 0.8788134605174657,
+      "avg_score": 90.99508813696578,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.232145205700895,
+          "success_rate": 0.8738930799762515,
+          "score": 89.83322847491708,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.44249800339768,
+          "success_rate": 0.8219882733529564,
+          "score": 87.27368033266833,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.9346272871855446,
+          "success_rate": 0.9405590282231892,
+          "score": 95.87835560331192,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 20,
+      "condition": "baseline",
+      "avg_execution_time": 7.491395072019189,
+      "avg_success_rate": 0.8878905819334905,
+      "avg_score": 92.85750369213282,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 13.189400416330063,
+          "success_rate": 0.7602551095403047,
+          "score": 84.3042174180233,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.4064066065991225,
+          "success_rate": 0.9819276495088411,
+          "score": 99.6910915016594,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.8783781931283805,
+          "success_rate": 0.9214889867513255,
+          "score": 94.57720215671576,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 21,
+      "condition": "baseline",
+      "avg_execution_time": 8.126631873554807,
+      "avg_success_rate": 0.9538768444145891,
+      "avg_score": 97.09539998488835,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 14.008424059924264,
+          "success_rate": 0.896256359829698,
+          "score": 93.3328907521243,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.279936475722101,
+          "success_rate": 0.9987866996824514,
+          "score": 100.34710709233833,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.091535085018058,
+          "success_rate": 0.9665874737316178,
+          "score": 97.6062021102024,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 22,
+      "condition": "baseline",
+      "avg_execution_time": 9.267430159400355,
+      "avg_success_rate": 0.8724453292543736,
+      "avg_score": 90.71071495216593,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.792523892640197,
+          "success_rate": 0.8852361147293357,
+          "score": 90.89101369546938,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.591544001733173,
+          "success_rate": 0.8579136747046987,
+          "score": 90.299030828289,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.418222583827693,
+          "success_rate": 0.8741861983290862,
+          "score": 90.94210033273941,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 23,
+      "condition": "baseline",
+      "avg_execution_time": 10.101412969406113,
+      "avg_success_rate": 0.8747369377429014,
+      "avg_score": 90.37073786035943,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.971405505321243,
+          "success_rate": 0.7962141873518082,
+          "score": 83.95214981143383,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 9.145350860157437,
+          "success_rate": 0.8299346221850292,
+          "score": 87.40821303685759,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.1874825427396547,
+          "success_rate": 0.9980620036918668,
+          "score": 99.75185073278688,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 24,
+      "condition": "baseline",
+      "avg_execution_time": 9.74968233222155,
+      "avg_success_rate": 0.8687841398855597,
+      "avg_score": 90.16508039265625,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.766358718451055,
+          "success_rate": 0.8125709443358408,
+          "score": 85.22015087243823,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.83450847354858,
+          "success_rate": 0.8092275682322684,
+          "score": 86.14522469212963,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.6481798046650162,
+          "success_rate": 0.9845539070885698,
+          "score": 99.12986561340088,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 25,
+      "condition": "baseline",
+      "avg_execution_time": 9.195946538846906,
+      "avg_success_rate": 0.905037367646914,
+      "avg_score": 93.03504781197583,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.902492836879446,
+          "success_rate": 0.7727482527298859,
+          "score": 83.55088198896433,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.149927383711253,
+          "success_rate": 0.976706538851298,
+          "score": 98.2795012893641,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.5354193959500204,
+          "success_rate": 0.9656573113595582,
+          "score": 97.27476015759906,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 26,
+      "condition": "baseline",
+      "avg_execution_time": 8.89330605148978,
+      "avg_success_rate": 0.9240220387820971,
+      "avg_score": 94.54555908385292,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.407337082670148,
+          "success_rate": 0.947585508416207,
+          "score": 96.0865833395324,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.736251746150192,
+          "success_rate": 0.8438716502919665,
+          "score": 88.62926447274754,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.536329325649,
+          "success_rate": 0.9806089576381177,
+          "score": 98.92082943927883,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 27,
+      "condition": "baseline",
+      "avg_execution_time": 9.566374093681844,
+      "avg_success_rate": 0.8956893227156723,
+      "avg_score": 92.15842813388795,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.11453626250958,
+          "success_rate": 0.9090725875854944,
+          "score": 92.96635937347885,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 9.538860064937612,
+          "success_rate": 0.8542766200240405,
+          "score": 88.87604736272027,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.04572595359834,
+          "success_rate": 0.9237187605374819,
+          "score": 94.63287766546473,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 28,
+      "condition": "baseline",
+      "avg_execution_time": 8.30506269343664,
+      "avg_success_rate": 0.9309300195249491,
+      "avg_score": 95.38206375068445,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 14.204069796195094,
+          "success_rate": 0.8697967168808405,
+          "score": 91.36332830394178,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.696461334882148,
+          "success_rate": 0.9229933416940068,
+          "score": 94.7916571176512,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.0146569492326734,
+          "success_rate": 1.0,
+          "score": 99.99120583046039,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 29,
+      "condition": "baseline",
+      "avg_execution_time": 8.258113577330374,
+      "avg_success_rate": 0.9097644286104859,
+      "avg_score": 93.92864185633579,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.098342406829726,
+          "success_rate": 0.7770984824281992,
+          "score": 84.33788832587611,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.951493473515102,
+          "success_rate": 0.9521948034032586,
+          "score": 97.28274015411904,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.7245048516462913,
+          "success_rate": 1.0,
+          "score": 100.16529708901223,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    },
+    {
+      "iteration": 30,
+      "condition": "baseline",
+      "avg_execution_time": 8.789726333368016,
+      "avg_success_rate": 0.903502065682181,
+      "avg_score": 93.17130879773187,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.308034749806176,
+          "success_rate": 0.9285466291035802,
+          "score": 94.21344318736692,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.25869879142768,
+          "success_rate": 0.9194632125455915,
+          "score": 94.8072056033348,
+          "passed": true,
+          "conditions": "baseline"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.8024454588701895,
+          "success_rate": 0.8624963553973716,
+          "score": 90.49327760249389,
+          "passed": true,
+          "conditions": "baseline"
+        }
+      ]
+    }
+  ],
+  "basic_optimization": [
+    {
+      "iteration": 1,
+      "condition": "basic_optimization",
+      "avg_execution_time": 19.576166726097433,
+      "avg_success_rate": 0.9547237847074708,
+      "avg_score": 90.2849648938645,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 36.73178264900894,
+          "success_rate": 0.9068695721712067,
+          "score": 80.4418004625791,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.165198406961865,
+          "success_rate": 1.0,
+          "score": 95.70088095582288,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.831519122321499,
+          "success_rate": 0.9573017819512057,
+          "score": 94.7122132631915,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 2,
+      "condition": "basic_optimization",
+      "avg_execution_time": 19.93791971534185,
+      "avg_success_rate": 0.9466485894648382,
+      "avg_score": 89.50264943333356,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 37.5761938020327,
+          "success_rate": 0.8952417523247213,
+          "score": 79.12120638151086,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 16.862691542924345,
+          "success_rate": 0.997446247661148,
+          "score": 94.50362241052575,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.3748738010685,
+          "success_rate": 0.9472577684086453,
+          "score": 94.88311950796407,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 3,
+      "condition": "basic_optimization",
+      "avg_execution_time": 17.341571273343874,
+      "avg_success_rate": 0.9709339855010009,
+      "avg_score": 92.76043622106374,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 27.991136872552932,
+          "success_rate": 0.9263898832637774,
+          "score": 87.05260970493266,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 18.043126259046595,
+          "success_rate": 0.9864120732392251,
+          "score": 93.0229693713178,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.990450688432093,
+          "success_rate": 1.0,
+          "score": 98.20572958694075,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 4,
+      "condition": "basic_optimization",
+      "avg_execution_time": 18.114316956611386,
+      "avg_success_rate": 0.9836325435792438,
+      "avg_score": 93.18568787658023,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 31.33935609158566,
+          "success_rate": 1.0,
+          "score": 90.19638634504861,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 17.795455459731883,
+          "success_rate": 0.9508976307377314,
+          "score": 90.68556087580207,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.2081393185166185,
+          "success_rate": 1.0,
+          "score": 98.67511640889003,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 5,
+      "condition": "basic_optimization",
+      "avg_execution_time": 20.731577555140436,
+      "avg_success_rate": 0.9705469585590639,
+      "avg_score": 90.69934056605021,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 37.47926571728137,
+          "success_rate": 0.9369145822962109,
+          "score": 82.09646133036594,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 19.190599574656776,
+          "success_rate": 1.0,
+          "score": 93.28564025520593,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.524867373483165,
+          "success_rate": 0.9747262933809807,
+          "score": 96.71592011257876,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 6,
+      "condition": "basic_optimization",
+      "avg_execution_time": 17.805581963303503,
+      "avg_success_rate": 0.9134133586616848,
+      "avg_score": 88.45558592833584,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 31.81722589001797,
+          "success_rate": 0.8744977568206314,
+          "score": 81.12450744343342,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 14.991547868692084,
+          "success_rate": 1.0,
+          "score": 95.80507127878475,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.607972131200455,
+          "success_rate": 0.865742319164423,
+          "score": 88.43717906278934,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 7,
+      "condition": "basic_optimization",
+      "avg_execution_time": 15.939634048571381,
+      "avg_success_rate": 0.9835198668685148,
+      "avg_score": 94.4826102516532,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 26.889183019499725,
+          "success_rate": 0.9505596006055442,
+          "score": 89.40566223068826,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.192427116656454,
+          "success_rate": 1.0,
+          "score": 95.68454373000613,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.7372920095579625,
+          "success_rate": 1.0,
+          "score": 98.35762479426522,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 8,
+      "condition": "basic_optimization",
+      "avg_execution_time": 17.10079630160633,
+      "avg_success_rate": 0.9490080400573111,
+      "avg_score": 91.37008502304798,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 31.631401660570106,
+          "success_rate": 0.9196826252666906,
+          "score": 84.39894277232628,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 13.646498760204764,
+          "success_rate": 0.9273414949052426,
+          "score": 91.52600538724413,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.024488484044122,
+          "success_rate": 1.0,
+          "score": 98.18530690957353,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 9,
+      "condition": "basic_optimization",
+      "avg_execution_time": 15.358581094655719,
+      "avg_success_rate": 0.9177044316981637,
+      "avg_score": 90.22416156207802,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 26.409330492796222,
+          "success_rate": 0.9188463611790685,
+          "score": 87.47364698685706,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 13.849854045800043,
+          "success_rate": 0.860356360219086,
+          "score": 86.71503278785599,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.816558745370889,
+          "success_rate": 0.9739105736963366,
+          "score": 96.48380491152102,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 10,
+      "condition": "basic_optimization",
+      "avg_execution_time": 18.780683311758,
+      "avg_success_rate": 0.9131934334225817,
+      "avg_score": 87.85513035252592,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 33.59915115062574,
+          "success_rate": 0.9031593064358622,
+          "score": 82.06166076013491,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.764124324476173,
+          "success_rate": 0.9414338368484778,
+          "score": 91.24189398470774,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.9787744601720965,
+          "success_rate": 0.8949871569834053,
+          "score": 90.26183631273511,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 11,
+      "condition": "basic_optimization",
+      "avg_execution_time": 17.66828241564221,
+      "avg_success_rate": 0.9258061944295345,
+      "avg_score": 89.40546416068209,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 31.875306429200254,
+          "success_rate": 0.9485318290684585,
+          "score": 86.27204417727194,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.792733568180283,
+          "success_rate": 0.868636339167019,
+          "score": 86.12890360078316,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.336807249546091,
+          "success_rate": 0.960250415053126,
+          "score": 95.81544470399116,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 12,
+      "condition": "basic_optimization",
+      "avg_execution_time": 17.085644449850353,
+      "avg_success_rate": 0.8862707775252473,
+      "avg_score": 86.98756775685709,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 28.301545602698575,
+          "success_rate": 0.9277501662754538,
+          "score": 86.96158427766261,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 17.1563154373632,
+          "success_rate": 0.864188710435634,
+          "score": 84.99942046807647,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.799072309489284,
+          "success_rate": 0.866873455864654,
+          "score": 89.00169852483221,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 13,
+      "condition": "basic_optimization",
+      "avg_execution_time": 17.365824876864664,
+      "avg_success_rate": 0.953078553658463,
+      "avg_score": 91.4960038299736,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 30.362905121550874,
+          "success_rate": 0.9964245677201143,
+          "score": 90.53197666747747,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 14.687484101878164,
+          "success_rate": 0.8634556755292897,
+          "score": 86.42940682592338,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 7.047085407164951,
+          "success_rate": 0.9993554177259849,
+          "score": 97.52662799651998,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 14,
+      "condition": "basic_optimization",
+      "avg_execution_time": 16.25730213570192,
+      "avg_success_rate": 0.9344611874911873,
+      "avg_score": 90.85790184296197,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 29.23155102612747,
+          "success_rate": 1.0,
+          "score": 91.46106938432352,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 14.449513825240935,
+          "success_rate": 0.9176238714112268,
+          "score": 90.36396270364132,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.090841555737354,
+          "success_rate": 0.8857596910623353,
+          "score": 90.74867344092105,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 15,
+      "condition": "basic_optimization",
+      "avg_execution_time": 17.155212480638625,
+      "avg_success_rate": 0.9521192401072369,
+      "avg_score": 91.5552193191234,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 29.322987806044107,
+          "success_rate": 1.0,
+          "score": 91.40620731637352,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 16.841702048838265,
+          "success_rate": 0.941495873161053,
+          "score": 90.59968989197074,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.300947587033501,
+          "success_rate": 0.9148618471606577,
+          "score": 92.65976074902593,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 16,
+      "condition": "basic_optimization",
+      "avg_execution_time": 17.504323478855014,
+      "avg_success_rate": 0.8942890244254117,
+      "avg_score": 87.29763762246581,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 32.577699129475,
+          "success_rate": 0.8681715520016076,
+          "score": 80.22538916242753,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 13.489660933340094,
+          "success_rate": 0.8896680583603357,
+          "score": 88.98296752521944,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.445610373749951,
+          "success_rate": 0.9250274629142917,
+          "score": 92.68455617975046,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 17,
+      "condition": "basic_optimization",
+      "avg_execution_time": 18.13486630494456,
+      "avg_success_rate": 0.9487819618968841,
+      "avg_score": 90.73381754981516,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 29.087385697490042,
+          "success_rate": 0.8544547526617603,
+          "score": 81.3594012678292,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 18.35534222484656,
+          "success_rate": 0.9918911330288922,
+          "score": 93.21917397711451,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.961870992497079,
+          "success_rate": 1.0,
+          "score": 97.62287740450175,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 18,
+      "condition": "basic_optimization",
+      "avg_execution_time": 16.486373614212845,
+      "avg_success_rate": 0.9065046628734473,
+      "avg_score": 88.7635022326136,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 25.778521890886168,
+          "success_rate": 0.899454933474337,
+          "score": 86.49473220867189,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 16.464851815879264,
+          "success_rate": 0.8771719624286398,
+          "score": 86.32312628047723,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 7.215747135873097,
+          "success_rate": 0.9428870927173653,
+          "score": 93.47264820869171,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 19,
+      "condition": "basic_optimization",
+      "avg_execution_time": 16.628280365792392,
+      "avg_success_rate": 0.9479867916697295,
+      "avg_score": 91.58210719740563,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 26.273163306861814,
+          "success_rate": 0.9415679987159674,
+          "score": 89.14586192600062,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 17.90495627367376,
+          "success_rate": 0.9023923762932212,
+          "score": 87.22449257632123,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.706721516841606,
+          "success_rate": 1.0,
+          "score": 98.37596708989504,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 20,
+      "condition": "basic_optimization",
+      "avg_execution_time": 19.247168306756553,
+      "avg_success_rate": 0.9123865305808934,
+      "avg_score": 87.5187561566086,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 32.77339097705179,
+          "success_rate": 0.8737276316718601,
+          "score": 80.49689963079913,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 18.829463715496537,
+          "success_rate": 1.0,
+          "score": 93.50232177070208,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.138650227721327,
+          "success_rate": 0.86343196007082,
+          "score": 88.55704706832461,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 21,
+      "condition": "basic_optimization",
+      "avg_execution_time": 19.273562663373657,
+      "avg_success_rate": 0.9388438259109664,
+      "avg_score": 89.35493021574345,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 31.966130928698824,
+          "success_rate": 0.917022278251602,
+          "score": 84.01188092039285,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 20.026364605121454,
+          "success_rate": 0.9285788253312732,
+          "score": 87.78469901011626,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.828192456300693,
+          "success_rate": 0.9709303741500238,
+          "score": 96.26821071672126,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 22,
+      "condition": "basic_optimization",
+      "avg_execution_time": 16.564127541221247,
+      "avg_success_rate": 0.9764143707975614,
+      "avg_score": 93.61052943109655,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 25.77736561350999,
+          "success_rate": 0.9561549803454532,
+          "score": 90.46442925607573,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 18.081217382780313,
+          "success_rate": 1.0,
+          "score": 93.95126957033182,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.833799627373433,
+          "success_rate": 0.9730881320472311,
+          "score": 96.41588946688212,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 23,
+      "condition": "basic_optimization",
+      "avg_execution_time": 18.64746202024468,
+      "avg_success_rate": 0.966167838793217,
+      "avg_score": 91.64327150337837,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 29.675245055915603,
+          "success_rate": 0.9550123209173377,
+          "score": 88.04571543066427,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 20.12223367314243,
+          "success_rate": 0.9434911954623133,
+          "score": 88.77104347847646,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.144907331676015,
+          "success_rate": 1.0,
+          "score": 98.11305560099439,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 24,
+      "condition": "basic_optimization",
+      "avg_execution_time": 18.993217797830567,
+      "avg_success_rate": 0.9333657389036698,
+      "avg_score": 89.13967104455854,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 30.76689893469317,
+          "success_rate": 0.9715124819798716,
+          "score": 88.5457343777751,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 19.9877149483462,
+          "success_rate": 0.8920022604313038,
+          "score": 85.24752926118354,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.225039510452337,
+          "success_rate": 0.936582474299834,
+          "score": 93.62574949471698,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 25,
+      "condition": "basic_optimization",
+      "avg_execution_time": 18.356792902648607,
+      "avg_success_rate": 0.900926278824417,
+      "avg_score": 87.25076377612002,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 33.132171751304,
+          "success_rate": 0.8963114148781909,
+          "score": 81.86249599069096,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 16.119375565345265,
+          "success_rate": 0.9319531637476852,
+          "score": 90.36509612313081,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.818831391296556,
+          "success_rate": 0.8745142578473748,
+          "score": 89.5246992145383,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 26,
+      "condition": "basic_optimization",
+      "avg_execution_time": 16.94646201969541,
+      "avg_success_rate": 0.9949579796578665,
+      "avg_score": 94.67918136423341,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 27.652636426840324,
+          "success_rate": 0.9848739389735994,
+          "score": 91.34959387204776,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 17.031255406640604,
+          "success_rate": 1.0,
+          "score": 94.58124675601564,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.1554942256053025,
+          "success_rate": 1.0,
+          "score": 98.10670346463682,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 27,
+      "condition": "basic_optimization",
+      "avg_execution_time": 19.48325506096208,
+      "avg_success_rate": 0.96978453850474,
+      "avg_score": 91.39496465875455,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 32.96094287653893,
+          "success_rate": 0.90935361551422,
+          "score": 82.87818736007205,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 18.01304443622105,
+          "success_rate": 1.0,
+          "score": 93.99217333826736,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 7.475777870126261,
+          "success_rate": 1.0,
+          "score": 97.31453327792424,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 28,
+      "condition": "basic_optimization",
+      "avg_execution_time": 18.708622137884554,
+      "avg_success_rate": 0.8786360916360707,
+      "avg_score": 85.47935313179421,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 32.69166592241963,
+          "success_rate": 0.8807609856365933,
+          "score": 81.03826944110976,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 16.80498154641104,
+          "success_rate": 0.8657873128709029,
+          "score": 85.32212297311658,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 6.62921894482299,
+          "success_rate": 0.8893599764007157,
+          "score": 90.07766698115631,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 29,
+      "condition": "basic_optimization",
+      "avg_execution_time": 19.28282011472256,
+      "avg_success_rate": 0.9536887873553824,
+      "avg_score": 90.38852304604323,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 33.275918782870285,
+          "success_rate": 0.9439067311747555,
+          "score": 85.10791991251072,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 17.532367454276567,
+          "success_rate": 1.0,
+          "score": 94.28057952743406,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 7.040174107020827,
+          "success_rate": 0.9171596308913916,
+          "score": 91.77706969818492,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 30,
+      "condition": "basic_optimization",
+      "avg_execution_time": 18.539278804501,
+      "avg_success_rate": 0.8860842423572359,
+      "avg_score": 86.10232968230592,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 32.650025258293084,
+          "success_rate": 0.8742603476207774,
+          "score": 80.60820917847857,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.620459411384385,
+          "success_rate": 0.893069388539921,
+          "score": 87.94258155096384,
+          "passed": true,
+          "conditions": "basic_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 7.3473517438255245,
+          "success_rate": 0.8909229909110093,
+          "score": 89.75619831747534,
+          "passed": true,
+          "conditions": "basic_optimization"
+        }
+      ]
+    }
+  ],
+  "concurrent_execution": [
+    {
+      "iteration": 1,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 7.4074418243946365,
+      "avg_success_rate": 0.8850101213276418,
+      "avg_score": 92.70624339829814,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.8874530230216,
+          "success_rate": 0.8016097196402832,
+          "score": 87.38020856100687,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.800068005593896,
+          "success_rate": 1.0,
+          "score": 100.71995919664366,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.534804444568414,
+          "success_rate": 0.8534206443426421,
+          "score": 90.0185624372439,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 2,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 7.683061134379711,
+      "avg_success_rate": 0.9832134190415558,
+      "avg_score": 99.41510265228108,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 13.20946013126248,
+          "success_rate": 0.9850700315384046,
+          "score": 100.02922612893083,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.975074815316891,
+          "success_rate": 0.9830081470814331,
+          "score": 99.42552540651019,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.8646484565597636,
+          "success_rate": 0.9815620785048298,
+          "score": 98.79055642140223,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 3,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.300252484195303,
+      "avg_success_rate": 0.9097999120201309,
+      "avg_score": 93.90584235089197,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 13.748823238531493,
+          "success_rate": 0.8986932364818375,
+          "score": 93.65923261060973,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.898893573399059,
+          "success_rate": 0.9792273342872535,
+          "score": 98.6065772560683,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.2530406406553585,
+          "success_rate": 0.8514791652913015,
+          "score": 89.4517171859979,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 4,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.980186077438237,
+      "avg_success_rate": 0.9122292569753695,
+      "avg_score": 93.66793634181292,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.285048362766027,
+          "success_rate": 0.9963972974164651,
+          "score": 98.97678180149295,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.206489987610109,
+          "success_rate": 0.8589824596158104,
+          "score": 90.00487818054066,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.449019881938574,
+          "success_rate": 0.8813080138938328,
+          "score": 92.02214904340515,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 5,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.546803804024211,
+      "avg_success_rate": 0.9450693621194934,
+      "avg_score": 96.22677306595001,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 14.03594377254466,
+          "success_rate": 0.9582252229589054,
+          "score": 97.65419934359659,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.943905172651759,
+          "success_rate": 1.0,
+          "score": 99.43365689640893,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.660562466876216,
+          "success_rate": 0.876982863399575,
+          "score": 91.59246295784452,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 6,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.949578133710794,
+      "avg_success_rate": 0.9544167066439092,
+      "avg_score": 96.63942258484717,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.17565504874678,
+          "success_rate": 0.9083099431286614,
+          "score": 92.87630298975823,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.959423534298106,
+          "success_rate": 0.9549401768030661,
+          "score": 96.87015825563576,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.713655818087499,
+          "success_rate": 1.0,
+          "score": 100.1718065091475,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 7,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.107601680409354,
+      "avg_success_rate": 0.9443700922399635,
+      "avg_score": 95.84134544855183,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.178080523418615,
+          "success_rate": 0.876258729389764,
+          "score": 90.03126274323232,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.733464169726942,
+          "success_rate": 1.0,
+          "score": 100.75992149816383,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.4112603480825068,
+          "success_rate": 0.9568515473301266,
+          "score": 96.73285210425935,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 8,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 7.868331906759736,
+      "avg_success_rate": 0.9573013533241918,
+      "avg_score": 97.49009558863759,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 14.082258022347238,
+          "success_rate": 0.9906990097861558,
+          "score": 99.89957587162256,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.9302947092256035,
+          "success_rate": 1.0,
+          "score": 100.64182317446463,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.592442988706367,
+          "success_rate": 0.8812050501864196,
+          "score": 91.92888771982555,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 9,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.236648824758648,
+      "avg_success_rate": 0.9250315702245702,
+      "avg_score": 94.41022062086472,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.49211956015677,
+          "success_rate": 0.9732622396951045,
+          "score": 97.23308504256326,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.788783906945165,
+          "success_rate": 0.937935803071118,
+          "score": 95.18223587081116,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.4290430071740094,
+          "success_rate": 0.8638966679074879,
+          "score": 90.81534094921975,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 10,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.509506985995335,
+      "avg_success_rate": 0.9012778930210765,
+      "avg_score": 92.58374831987815,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.66945500539831,
+          "success_rate": 0.9107299594997904,
+          "score": 92.14942416174635,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.536116226637276,
+          "success_rate": 0.921020413664588,
+          "score": 94.74975922053878,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.3229497259504233,
+          "success_rate": 0.8720833058988513,
+          "score": 90.85206157734933,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 11,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.345987137673882,
+      "avg_success_rate": 0.9728154576547974,
+      "avg_score": 97.6894897532315,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.242865924695142,
+          "success_rate": 0.9939225503066543,
+          "score": 98.82885896664872,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.76206924191243,
+          "success_rate": 0.9815486914543878,
+          "score": 98.2511668566597,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.033026246414073,
+          "success_rate": 0.94297513120335,
+          "score": 95.98844343638606,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 12,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.529065150373608,
+      "avg_success_rate": 0.9627386424155924,
+      "avg_score": 96.87426587886729,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.629860503076596,
+          "success_rate": 0.9118410355340011,
+          "score": 92.25095618553411,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.9244716564594535,
+          "success_rate": 1.0,
+          "score": 100.04531700612432,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.032863291584773,
+          "success_rate": 0.9763748917127759,
+          "score": 98.32652444494344,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 13,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 7.394679915984311,
+      "avg_success_rate": 0.8826662315737174,
+      "avg_score": 92.54982826056963,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.540410642312665,
+          "success_rate": 0.8362644693813663,
+          "score": 90.01426647130805,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.740097685354915,
+          "success_rate": 0.9449971344734706,
+          "score": 96.90574080193,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.903531420285353,
+          "success_rate": 0.8667370908663152,
+          "score": 90.72947750847085,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 14,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.101523924478473,
+      "avg_success_rate": 0.954165720380841,
+      "avg_score": 97.13068607197178,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.666528167621395,
+          "success_rate": 0.9373604782680017,
+          "score": 97.01531657818728,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 9.080821182300102,
+          "success_rate": 0.9789352147448279,
+          "score": 97.8769723227579,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.5572224235139207,
+          "success_rate": 0.9462014681296934,
+          "score": 96.49976931497018,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 15,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.740295295525227,
+      "avg_success_rate": 0.9069436466477998,
+      "avg_score": 92.84187808803085,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.342996148668668,
+          "success_rate": 0.8703868031317967,
+          "score": 89.52127853002457,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.74605267662805,
+          "success_rate": 0.9029100823928797,
+          "score": 92.75607416152475,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.1318370612789654,
+          "success_rate": 0.947534054418723,
+          "score": 96.24828157254322,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 16,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.409800784230937,
+      "avg_success_rate": 0.9711939745577518,
+      "avg_score": 97.53769774850407,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.832505661696331,
+          "success_rate": 0.9599391610214033,
+          "score": 96.69623787448043,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 9.037399592141869,
+          "success_rate": 1.0,
+          "score": 99.37756024471489,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.35949709885461,
+          "success_rate": 0.9536427626518522,
+          "score": 96.53929512631689,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 17,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.007139788113577,
+      "avg_success_rate": 0.9235356349095617,
+      "avg_score": 94.44321057080117,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 17.5310225947202,
+          "success_rate": 0.9018076734068128,
+          "score": 91.60792358164477,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.698240386464067,
+          "success_rate": 1.0,
+          "score": 100.78105576812156,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.792156383156464,
+          "success_rate": 0.8687992313218722,
+          "score": 90.94065236263717,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 18,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.214373505086153,
+      "avg_success_rate": 0.9022148902241822,
+      "avg_score": 93.42641821264105,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.251224529323633,
+          "success_rate": 0.8391397023490738,
+          "score": 88.58904444684097,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.834121702602812,
+          "success_rate": 0.8753227208458166,
+          "score": 91.97211743764548,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.5577742833320123,
+          "success_rate": 0.9921822474776563,
+          "score": 99.71809275343672,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 19,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.934533364014344,
+      "avg_success_rate": 0.9253048029267015,
+      "avg_score": 94.6106161864605,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.454417450846481,
+          "success_rate": 0.953280695904222,
+          "score": 96.45699824278766,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.375358840253362,
+          "success_rate": 0.8713608323496573,
+          "score": 90.77004296032399,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.973823800943189,
+          "success_rate": 0.951272880526225,
+          "score": 96.60480735626984,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 20,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.729327831117073,
+      "avg_success_rate": 0.9713182227355481,
+      "avg_score": 97.95467889281812,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.453078008802077,
+          "success_rate": 0.9142872021302165,
+          "score": 93.72825734383392,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.203178111623226,
+          "success_rate": 0.9996674660764278,
+          "score": 100.454815758376,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.5317273729259187,
+          "success_rate": 1.0,
+          "score": 99.68096357624444,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 21,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.393148826493375,
+      "avg_success_rate": 0.8979281517268721,
+      "avg_score": 92.41908132498502,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.160490710523508,
+          "success_rate": 0.8283167679801102,
+          "score": 87.2858793322936,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.581458648525873,
+          "success_rate": 0.8654676872005063,
+          "score": 90.23386291491991,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.4374971204307436,
+          "success_rate": 1.0,
+          "score": 99.73750172774155,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 22,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.263602568297001,
+      "avg_success_rate": 0.9327807984771218,
+      "avg_score": 95.53649435242032,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.067114638006384,
+          "success_rate": 0.8549053506025346,
+          "score": 89.80310575937358,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.588504346383794,
+          "success_rate": 0.9857113004375656,
+          "score": 99.84668842279932,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.1351887205008233,
+          "success_rate": 0.9577257443912651,
+          "score": 96.95968887508806,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 23,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.664882555965738,
+      "avg_success_rate": 0.8979237797800391,
+      "avg_score": 92.85573505102329,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.249030642534587,
+          "success_rate": 0.8174224979176934,
+          "score": 87.07015646871778,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.16117232898387,
+          "success_rate": 0.8906547176121357,
+          "score": 92.84912683545917,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.5844446963787577,
+          "success_rate": 0.9856941238102883,
+          "score": 98.64792184889292,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 24,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 9.276540304009416,
+      "avg_success_rate": 0.9825365252234296,
+      "avg_score": 98.41163258323442,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 16.663279920059317,
+          "success_rate": 0.9710709186126344,
+          "score": 96.97699635084881,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.092352834016344,
+          "success_rate": 1.0,
+          "score": 99.9445882995902,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.073988157952588,
+          "success_rate": 0.9765386570576544,
+          "score": 98.31331309926426,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 25,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 10.341822385877448,
+      "avg_success_rate": 0.9492521880747911,
+      "avg_score": 95.4425597337089,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 18.072856152382748,
+          "success_rate": 0.8477565642243732,
+          "score": 87.49924580427648,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 9.687118796944528,
+          "success_rate": 1.0,
+          "score": 98.98772872183328,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.265492208305068,
+          "success_rate": 1.0,
+          "score": 99.84070467501695,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 26,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 7.617204624932505,
+      "avg_success_rate": 0.9455930627062091,
+      "avg_score": 96.82119161447514,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.563204052976308,
+          "success_rate": 0.9252014822822753,
+          "score": 96.22618132797348,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.824637591506018,
+          "success_rate": 1.0,
+          "score": 100.10521744509639,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 2.4637722303151883,
+          "success_rate": 0.9115777058363522,
+          "score": 94.13217607035554,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 27,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 7.7154757039417285,
+      "avg_success_rate": 0.9102031635412802,
+      "avg_score": 94.28493602552457,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 13.176643102496852,
+          "success_rate": 0.926045811055693,
+          "score": 95.9172209124004,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.664439029989002,
+          "success_rate": 0.8734012145809616,
+          "score": 91.93942160267392,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.3053449793393317,
+          "success_rate": 0.931162464987186,
+          "score": 94.99816556149942,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 28,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.446352956236703,
+      "avg_success_rate": 0.9679672479431191,
+      "avg_score": 97.88989558227631,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 15.711575621728024,
+          "success_rate": 0.9438351050157808,
+          "score": 95.64151197806784,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 6.4788139601201715,
+          "success_rate": 0.9706832316110154,
+          "score": 98.86053783669897,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.148669286861915,
+          "success_rate": 0.9893834072025609,
+          "score": 99.16763693206211,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 29,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 7.796352152033875,
+      "avg_success_rate": 0.8809418006422656,
+      "avg_score": 92.18811475373828,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 13.041580244570758,
+          "success_rate": 0.810510364314552,
+          "score": 87.9107773552762,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 7.215449375212817,
+          "success_rate": 0.9632135661448487,
+          "score": 97.89568000501171,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.1320268363180492,
+          "success_rate": 0.8691014714673961,
+          "score": 90.7578869009269,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    },
+    {
+      "iteration": 30,
+      "condition": "concurrent_execution",
+      "avg_execution_time": 8.07838259081604,
+      "avg_success_rate": 0.9541287296352565,
+      "avg_score": 97.14198151997833,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 12.25967754658984,
+          "success_rate": 0.8623861889057696,
+          "score": 92.01122669544996,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 8.881962143313931,
+          "success_rate": 1.0,
+          "score": 99.47082271401165,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.093508082544345,
+          "success_rate": 1.0,
+          "score": 99.9438951504734,
+          "passed": true,
+          "conditions": "concurrent_execution"
+        }
+      ]
+    }
+  ],
+  "advanced_optimization": [
+    {
+      "iteration": 1,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 13.474223316086716,
+      "avg_success_rate": 0.9753202382488326,
+      "avg_score": 95.38788268776625,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 22.879369070602408,
+          "success_rate": 0.9259607147464978,
+          "score": 90.08962858989341,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 12.650143459416782,
+          "success_rate": 1.0,
+          "score": 97.20991392434993,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.893157418240957,
+          "success_rate": 1.0,
+          "score": 98.86410554905542,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 2,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 15.760508061999106,
+      "avg_success_rate": 0.9184801228975328,
+      "avg_score": 90.03730376562783,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 28.166390910100088,
+          "success_rate": 0.9273082512085411,
+          "score": 87.01174303853782,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 13.741882777421381,
+          "success_rate": 0.870640104059624,
+          "score": 87.49967761772085,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.373250498475849,
+          "success_rate": 0.9574920134244334,
+          "score": 95.60049064062483,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 3,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 13.407552236114075,
+      "avg_success_rate": 0.970970045402567,
+      "avg_score": 95.12337183651125,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 24.438719679684933,
+          "success_rate": 0.9904446677917168,
+          "score": 93.66789493760922,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 11.837851049155976,
+          "success_rate": 1.0,
+          "score": 97.69728937050641,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.946085979501313,
+          "success_rate": 0.9224654684159843,
+          "score": 94.00493120141812,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 4,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 13.12779916177498,
+      "avg_success_rate": 0.962241791782701,
+      "avg_score": 94.68024592772409,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 19.609699950256548,
+          "success_rate": 1.0,
+          "score": 97.23418002984607,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 14.068558463492181,
+          "success_rate": 0.886725375348103,
+          "score": 88.4296411962719,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.705139071576211,
+          "success_rate": 1.0,
+          "score": 98.37691655705427,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 5,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 11.888364615115169,
+      "avg_success_rate": 0.9700902573421649,
+      "avg_score": 95.97329924488244,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 19.532233147025767,
+          "success_rate": 0.9102707720264949,
+          "score": 90.99961415363919,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 11.461365641994723,
+          "success_rate": 1.0,
+          "score": 97.92318061480316,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.671495056325018,
+          "success_rate": 1.0,
+          "score": 98.99710296620499,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 6,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 15.429302559151278,
+      "avg_success_rate": 0.9280698701097256,
+      "avg_score": 90.90730937219003,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 27.30159679543222,
+          "success_rate": 0.9874397705272437,
+          "score": 91.73982585964772,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.150866959040272,
+          "success_rate": 0.9154263968507048,
+          "score": 89.78932760412518,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.835443922981343,
+          "success_rate": 0.8813434429512282,
+          "score": 91.19277465279717,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 7,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 12.833980376935658,
+      "avg_success_rate": 0.9480911091527328,
+      "avg_score": 93.8659894145299,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 21.348238962893888,
+          "success_rate": 0.8877122754112862,
+          "score": 88.3309159010537,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 13.122727279504439,
+          "success_rate": 0.9565610520469122,
+          "score": 93.88563727558119,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.030974888408647,
+          "success_rate": 1.0,
+          "score": 99.38141506695482,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 8,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 15.163576079654913,
+      "avg_success_rate": 0.9217564149777021,
+      "avg_score": 90.6248034006462,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 25.33405773418242,
+          "success_rate": 0.8735443921476098,
+          "score": 84.94767280982323,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.216795785188456,
+          "success_rate": 0.9138959458145595,
+          "score": 89.64263873590609,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.939874719593865,
+          "success_rate": 0.9778289069709369,
+          "score": 97.28409865620927,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 9,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 12.875352400733355,
+      "avg_success_rate": 0.9419084704154614,
+      "avg_score": 93.40838148864229,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 21.569120589929184,
+          "success_rate": 0.8640938323916557,
+          "score": 86.54509591345838,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 12.94783232915057,
+          "success_rate": 0.9616315788547286,
+          "score": 94.34551112234067,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.109104283120311,
+          "success_rate": 1.0,
+          "score": 99.33453743012781,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 10,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 14.41776749519714,
+      "avg_success_rate": 0.9383333358267872,
+      "avg_score": 92.23267301075683,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 23.50823357692458,
+          "success_rate": 0.975490028073809,
+          "score": 93.17936181901189,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.032010840770141,
+          "success_rate": 0.9628675449286347,
+          "score": 93.18152164054234,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.713058067896696,
+          "success_rate": 0.8766424344779181,
+          "score": 90.33713557271625,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 11,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 14.250942432157958,
+      "avg_success_rate": 0.935392786120504,
+      "avg_score": 92.1269295691405,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 27.315040786866746,
+          "success_rate": 0.8722983275689383,
+          "score": 83.67185845770564,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 10.914397304741087,
+          "success_rate": 0.9338800307925738,
+          "score": 93.6229637726355,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.523389204866041,
+          "success_rate": 1.0,
+          "score": 99.08596647708038,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 12,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 13.325973587247876,
+      "avg_success_rate": 0.9380502825504619,
+      "avg_score": 92.8679356261836,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 20.219716975326005,
+          "success_rate": 0.9371142762537884,
+          "score": 92.46616915256958,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 14.357893561374622,
+          "success_rate": 1.0,
+          "score": 96.18526386317522,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.400310225043001,
+          "success_rate": 0.877036571397597,
+          "score": 89.952373862806,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 13,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 12.94629151726556,
+      "avg_success_rate": 0.9672956968309103,
+      "avg_score": 95.14292386780438,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 21.755300896460763,
+          "success_rate": 1.0,
+          "score": 95.94681946212354,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 12.216718964984855,
+          "success_rate": 1.0,
+          "score": 97.46996862100909,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.866854690351062,
+          "success_rate": 0.9018870904927311,
+          "score": 92.01198352028054,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 14,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 13.274008499645852,
+      "avg_success_rate": 0.9228789754392711,
+      "avg_score": 91.83712318096147,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 24.405661466875614,
+          "success_rate": 0.9520693855900552,
+          "score": 91.0014601111785,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 10.605841342807167,
+          "success_rate": 0.8503737395685601,
+          "score": 87.96265696411491,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.810522689254775,
+          "success_rate": 0.966193801159198,
+          "score": 96.547252467591,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 15,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 14.96713469637552,
+      "avg_success_rate": 0.9463237012235369,
+      "avg_score": 92.46237826782227,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 27.350718285487744,
+          "success_rate": 0.946304967410184,
+          "score": 88.83091674742022,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 13.194787893174434,
+          "success_rate": 0.8926661362604267,
+          "score": 89.36975680232521,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.355897910464386,
+          "success_rate": 1.0,
+          "score": 99.18646125372138,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 16,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 13.560564352062704,
+      "avg_success_rate": 0.961482894781284,
+      "avg_score": 94.36746402345226,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 22.19986718733232,
+          "success_rate": 0.889471553436597,
+          "score": 87.9430884281624,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 13.9833829645304,
+          "success_rate": 1.0,
+          "score": 96.40997022128175,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.49844290432539,
+          "success_rate": 0.9949771309072551,
+          "score": 98.74933342091262,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 17,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 15.96413251070113,
+      "avg_success_rate": 0.9615007263255885,
+      "avg_score": 92.92657133637051,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 28.14575716714272,
+          "success_rate": 1.0,
+          "score": 92.11254569971436,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.0652633601971,
+          "success_rate": 0.9770377415360686,
+          "score": 94.15348389140655,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.681377004763575,
+          "success_rate": 0.9074644374406968,
+          "score": 92.51368441799063,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 18,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 15.10145516014731,
+      "avg_success_rate": 0.9782328809389588,
+      "avg_score": 94.61542856963872,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 25.825008754791657,
+          "success_rate": 0.9346986428168764,
+          "score": 88.93389974430636,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 14.61979629893968,
+          "success_rate": 1.0,
+          "score": 96.02812222063619,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.859560426710594,
+          "success_rate": 1.0,
+          "score": 98.88426374397363,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 19,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 12.270175544431206,
+      "avg_success_rate": 0.944161642928957,
+      "avg_score": 93.92920967836827,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 20.3650885953106,
+          "success_rate": 0.9050831897117515,
+          "score": 90.13677012263625,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 12.325398270551824,
+          "success_rate": 1.0,
+          "score": 97.4047610376689,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.120039767431196,
+          "success_rate": 0.9274017390751194,
+          "score": 94.24609787479963,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 20,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 14.381875885510969,
+      "avg_success_rate": 0.9198635544883673,
+      "avg_score": 90.96132328287912,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 27.483738149313798,
+          "success_rate": 0.8554571335656087,
+          "score": 82.39175646000433,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 10.717669552143693,
+          "success_rate": 0.9041335298994931,
+          "score": 91.6587453616783,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.944219955075415,
+          "success_rate": 1.0,
+          "score": 98.83346802695475,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 21,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 12.295099004474128,
+      "avg_success_rate": 0.9615889775931988,
+      "avg_score": 95.13416902883944,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 19.332668533928135,
+          "success_rate": 0.8847669327795964,
+          "score": 89.33408417421487,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 12.815992855744922,
+          "success_rate": 1.0,
+          "score": 97.11040428655305,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.736635623749327,
+          "success_rate": 1.0,
+          "score": 98.9580186257504,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 22,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 13.945502591578684,
+      "avg_success_rate": 0.9934981951492473,
+      "avg_score": 96.37757210550011,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 24.610171498297117,
+          "success_rate": 0.980494585447742,
+          "score": 92.86851808236366,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 12.45752169855173,
+          "success_rate": 1.0,
+          "score": 97.32548698086896,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.768814577887205,
+          "success_rate": 1.0,
+          "score": 98.93871125326768,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 23,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 15.141774066844869,
+      "avg_success_rate": 0.9603528547652631,
+      "avg_score": 93.33963539346149,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 25.772518302571953,
+          "success_rate": 0.9425859837858303,
+          "score": 89.51750788346496,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.174041901773927,
+          "success_rate": 0.9433650702558638,
+          "score": 91.7311297768461,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.478761996188726,
+          "success_rate": 0.9951075102540952,
+          "score": 98.77026852007342,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 24,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 14.000626457771446,
+      "avg_success_rate": 0.9224502362918597,
+      "avg_score": 91.37114066576731,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 24.33857364524764,
+          "success_rate": 0.8977463619054213,
+          "score": 87.23910114623091,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 13.394373975659292,
+          "success_rate": 0.8696043469701578,
+          "score": 87.63567990251546,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.268931752407405,
+          "success_rate": 1.0,
+          "score": 99.23864094855556,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 25,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 12.069572242458039,
+      "avg_success_rate": 0.9476372825659942,
+      "avg_score": 94.29286643414477,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 19.062562727221586,
+          "success_rate": 1.0,
+          "score": 97.56246236366704,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 12.490774767622378,
+          "success_rate": 0.9568224366663712,
+          "score": 94.28310570607255,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 4.6553792325301515,
+          "success_rate": 0.8860894110316115,
+          "score": 91.03303123269471,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 26,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 13.942308316486002,
+      "avg_success_rate": 1.0,
+      "avg_score": 96.8346150101084,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 25.750075894400005,
+          "success_rate": 1.0,
+          "score": 93.54995446336,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 10.646679053927057,
+          "success_rate": 1.0,
+          "score": 98.41199256764376,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.430170001130944,
+          "success_rate": 1.0,
+          "score": 98.54189799932144,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 27,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 12.407217543771731,
+      "avg_success_rate": 0.9541136765016222,
+      "avg_score": 94.5436268288505,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 21.791583079357384,
+          "success_rate": 0.8623410295048665,
+          "score": 86.28892221772622,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 11.509035525662076,
+          "success_rate": 1.0,
+          "score": 97.89457868460275,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 3.9210340262957306,
+          "success_rate": 1.0,
+          "score": 99.44737958422256,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 28,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 13.693265607513363,
+      "avg_success_rate": 0.9741289330900725,
+      "avg_score": 95.17306595179706,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 23.988977906126536,
+          "success_rate": 1.0,
+          "score": 94.60661325632408,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 11.938581563238023,
+          "success_rate": 0.9223867992702175,
+          "score": 92.20392701097242,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.152237353175531,
+          "success_rate": 1.0,
+          "score": 98.70865758809468,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 29,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 12.361900658278778,
+      "avg_success_rate": 0.9791301105875075,
+      "avg_score": 96.32196734615826,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 19.23265524087839,
+          "success_rate": 1.0,
+          "score": 97.46040685547297,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 12.289261320059367,
+          "success_rate": 0.9696080270497438,
+          "score": 95.29900510144645,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.5637854138985725,
+          "success_rate": 0.9677823047127787,
+          "score": 96.20649008155537,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    },
+    {
+      "iteration": 30,
+      "condition": "advanced_optimization",
+      "avg_execution_time": 15.779995176806306,
+      "avg_success_rate": 0.9353500891626809,
+      "avg_score": 91.20650913530388,
+      "individual_results": [
+        {
+          "name": "test_gate",
+          "execution_time": 26.941326412690803,
+          "success_rate": 1.0,
+          "score": 92.83520415238551,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "security_gate",
+          "execution_time": 15.166835069594724,
+          "success_rate": 0.9417399969522801,
+          "score": 91.62169874490277,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        },
+        {
+          "name": "linting_gate",
+          "execution_time": 5.231824048133395,
+          "success_rate": 0.8643102705357627,
+          "score": 89.16262450862335,
+          "passed": true,
+          "conditions": "advanced_optimization"
+        }
+      ]
+    }
+  ]
+}

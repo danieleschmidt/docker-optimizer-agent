@@ -1,0 +1,17 @@
+🚀 Multi-Stage Build Optimization Results
+=============================================
+Estimated Size Reduction: 0MB
+Security Improvements: 0
+Number of Stages: 0
+Explanation: Multi-stage build not recommended for this Dockerfile
+
+📄 Optimized Multi-Stage Dockerfile:
+----------------------------------------
+FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y python3 python3-pip curl
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+COPY . /app
+WORKDIR /app
+CMD ["python3", "app.py"]

@@ -31,6 +31,7 @@ from .models import (
 from .multistage import MultiStageOptimizer
 from .optimization_presets import PresetManager, PresetType
 from .optimizer import DockerfileOptimizer
+from .progressive_optimizer import ProgressiveDockerOptimizer
 from .performance import PerformanceOptimizer
 from .registry_integration import RegistryIntegrator
 from .security import SecurityAnalyzer
@@ -198,6 +199,17 @@ from .security import SecurityAnalyzer
     default="production",
     help="Target environment for AI optimization (default: production)",
 )
+@click.option(
+    "--progressive-generations",
+    type=click.IntRange(1, 3),
+    default=3,
+    help="Progressive enhancement generations to execute (1=Simple, 2=Robust, 3=Optimized, default: 3)",
+)
+@click.option(
+    "--autonomous-execution",
+    is_flag=True,
+    help="Execute all generations autonomously without user intervention",
+)
 def main(
     dockerfile: str,
     output: Optional[str],
@@ -231,6 +243,8 @@ def main(
     ai_optimization: bool,
     ai_strategy: str,
     ai_target_env: str,
+    progressive_generations: int,
+    autonomous_execution: bool,
 ) -> None:
     """Docker Optimizer Agent - Optimize Dockerfiles for security and size.
 
@@ -257,7 +271,14 @@ def main(
         return
 
     try:
-        optimizer = DockerfileOptimizer()
+        # Initialize the appropriate optimizer based on flags
+        if autonomous_execution or progressive_generations < 3:
+            optimizer = ProgressiveDockerOptimizer()
+            if verbose:
+                click.echo(f"🚀 Using Progressive Optimizer (Generations 1-{progressive_generations})")
+        else:
+            optimizer = DockerfileOptimizer()
+            
         multistage_optimizer = MultiStageOptimizer()
         security_scanner = ExternalSecurityScanner(obs_manager=obs_manager)
 
@@ -586,9 +607,30 @@ def main(
                         perf_optimizer.get_performance_report(), format
                     )
             else:
-                # Full optimization
-                opt_result = optimizer.optimize_dockerfile(dockerfile_content)
-                _output_result(opt_result, output, format, verbose)
+                # Progressive or regular optimization
+                if autonomous_execution and isinstance(optimizer, ProgressiveDockerOptimizer):
+                    # Autonomous execution through all generations
+                    if verbose:
+                        click.echo("🤖 Starting autonomous progressive enhancement...")
+                    opt_result = optimizer.optimize_dockerfile_autonomous(dockerfile_content, progressive_generations)
+                    _output_progressive_result(opt_result, optimizer, output, format, verbose)
+                elif isinstance(optimizer, ProgressiveDockerOptimizer):
+                    # Execute specific generation
+                    if verbose:
+                        click.echo(f"🚀 Executing Generation {progressive_generations} optimization...")
+                    
+                    if progressive_generations == 1:
+                        opt_result = optimizer.optimize_dockerfile_generation_1(dockerfile_content)
+                    elif progressive_generations == 2:
+                        opt_result = optimizer.optimize_dockerfile_generation_2(dockerfile_content)
+                    else:
+                        opt_result = optimizer.optimize_dockerfile_generation_3(dockerfile_content)
+                    
+                    _output_progressive_result(opt_result, optimizer, output, format, verbose)
+                else:
+                    # Full optimization
+                    opt_result = optimizer.optimize_dockerfile(dockerfile_content)
+                    _output_result(opt_result, output, format, verbose)
         else:
             # Batch processing
             if performance and perf_optimizer:
@@ -653,6 +695,35 @@ def _output_analysis(analysis: DockerfileAnalysis, format: str, verbose: bool) -
         else:
             click.echo("\n✅ No obvious optimization opportunities")
 
+
+def _output_progressive_result(result: OptimizationResult, optimizer: ProgressiveDockerOptimizer, output: Optional[str], format: str, verbose: bool) -> None:
+    """Output progressive optimization results with metrics."""
+    if format == "json":
+        import json
+        result_dict = result.model_dump() if hasattr(result, 'model_dump') else result.dict()
+        result_dict["progressive_metrics"] = optimizer.get_performance_metrics()
+        click.echo(json.dumps(result_dict, indent=2))
+    else:
+        # Text format with enhanced output
+        click.echo("🎯 Progressive Enhancement Results")
+        click.echo("=" * 50)
+        click.echo(result.explanation)
+        
+        # Show performance metrics
+        metrics = optimizer.get_performance_metrics()
+        if metrics["metrics"]:
+            click.echo("\n⚡ Performance Metrics:")
+            for gen, time_taken in metrics["metrics"].items():
+                click.echo(f"  {gen}: {time_taken:.2f}s")
+        
+        if output:
+            with open(output, 'w') as f:
+                f.write(result.optimized_dockerfile)
+            click.echo(f"\n✅ Progressive Dockerfile written to {output}")
+        else:
+            click.echo("\n📄 Optimized Dockerfile:")
+            click.echo("-" * 30)
+            click.echo(result.optimized_dockerfile)
 
 def _output_result(
     result: OptimizationResult, output_path: Optional[str], format: str, verbose: bool

@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  docker-optimizer:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      target: production
+    ports:
+      - "8000:8000"
+      - "8080:8080"  # Health checks
+      - "9090:9090"  # Metrics
+    environment:
+      - PERFORMANCE_MODE=high_throughput
+      - CONNECTION_POOL_SIZE=20
+      - WORKER_PROCESSES=auto
+      - CACHE_ENABLED=true
+      - CACHE_TTL=3600
+      - CACHE_MAX_SIZE=512MB
+      - DB_POOL_MIN=5
+      - DB_POOL_MAX=20
+      - DB_POOL_TIMEOUT=30
+      - HEALTH_CHECK_PATH=/health
+      - GRACEFUL_SHUTDOWN_TIMEOUT=30
+      - METRICS_ENABLED=true
+      - METRICS_PORT=9090
+      - LOG_LEVEL=INFO
+      - TRACING_ENABLED=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+      update_config:
+        parallelism: 1
+        delay: 30s
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  default:
+    driver: bridge

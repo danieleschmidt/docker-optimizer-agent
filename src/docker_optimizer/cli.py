@@ -35,6 +35,7 @@ from .progressive_optimizer import ProgressiveDockerOptimizer
 from .performance import PerformanceOptimizer
 from .registry_integration import RegistryIntegrator
 from .security import SecurityAnalyzer
+from .autonomous_coordinator import AutonomousCoordinator
 
 
 @click.command()
@@ -608,8 +609,18 @@ def main(
                     )
             else:
                 # Progressive or regular optimization
-                if autonomous_execution and isinstance(optimizer, ProgressiveDockerOptimizer):
-                    # Autonomous execution through all generations
+                if autonomous_execution:
+                    # Full autonomous SDLC execution
+                    if verbose:
+                        click.echo("🤖 Starting full autonomous SDLC execution...")
+                    
+                    coordinator = AutonomousCoordinator()
+                    autonomous_result = asyncio.run(
+                        coordinator.execute_autonomous_sdlc(dockerfile_content)
+                    )
+                    _output_autonomous_result(autonomous_result, output, format, verbose)
+                elif autonomous_execution and isinstance(optimizer, ProgressiveDockerOptimizer):
+                    # Legacy autonomous execution through all generations
                     if verbose:
                         click.echo("🤖 Starting autonomous progressive enhancement...")
                     opt_result = optimizer.optimize_dockerfile_autonomous(dockerfile_content, progressive_generations)
@@ -2118,6 +2129,76 @@ async def _process_high_throughput_batch(dockerfiles: List[str],
             import traceback
             traceback.print_exc()
         sys.exit(1)
+
+
+def _output_autonomous_result(
+    autonomous_result: Dict[str, Any],
+    output_path: Optional[str],
+    format: str,
+    verbose: bool
+) -> None:
+    """Output autonomous SDLC execution results."""
+    if format == "json":
+        import json
+        if output_path:
+            with open(output_path, 'w') as f:
+                json.dump(autonomous_result, f, indent=2, default=str)
+        else:
+            click.echo(json.dumps(autonomous_result, indent=2, default=str))
+    elif format == "yaml":
+        import yaml
+        if output_path:
+            with open(output_path, 'w') as f:
+                yaml.dump(autonomous_result, f, default_flow_style=False)
+        else:
+            click.echo(yaml.dump(autonomous_result, default_flow_style=False))
+    else:
+        # Text format
+        click.echo("🤖 Autonomous SDLC Execution Results")
+        click.echo("=" * 50)
+        
+        overall_metrics = autonomous_result.get("overall_metrics", {})
+        click.echo(f"⏱️  Total Execution Time: {overall_metrics.get('total_execution_time', 0):.2f}s")
+        click.echo(f"🎯 Generations Completed: {overall_metrics.get('generations_completed', 0)}/3")
+        click.echo(f"✅ All Successful: {overall_metrics.get('all_generations_successful', False)}")
+        click.echo(f"📊 Final Quality Score: {overall_metrics.get('final_quality_score', 0):.1f}/100")
+        click.echo()
+        
+        # Show generation results
+        for i, gen_result in enumerate(autonomous_result.get("generations", []), 1):
+            success_icon = "✅" if gen_result.get("success") else "❌"
+            click.echo(f"{success_icon} Generation {i}: {gen_result.get('generation_name', '')}")
+            if verbose:
+                features = gen_result.get("features", [])
+                if features:
+                    click.echo(f"   Features: {', '.join(features)}")
+                metrics = gen_result.get("metrics", {})
+                if metrics:
+                    click.echo(f"   Time: {metrics.get('execution_time_seconds', 0):.2f}s")
+            click.echo()
+        
+        # Quality validation
+        quality_validation = autonomous_result.get("quality_validation", {})
+        if quality_validation:
+            click.echo("🔍 Quality Validation:")
+            click.echo(f"   Overall Score: {quality_validation.get('overall_score', 0):.1f}%")
+            if verbose:
+                for gate, passed in quality_validation.items():
+                    if isinstance(passed, bool):
+                        icon = "✅" if passed else "❌"
+                        click.echo(f"   {icon} {gate.replace('_', ' ').title()}")
+            click.echo()
+        
+        # Final dockerfile
+        final_dockerfile = autonomous_result.get("final_dockerfile", "")
+        if final_dockerfile and not output_path:
+            click.echo("🐳 Final Optimized Dockerfile:")
+            click.echo("-" * 40)
+            click.echo(final_dockerfile)
+        elif output_path:
+            with open(output_path, 'w') as f:
+                f.write(final_dockerfile)
+            click.echo(f"✅ Final Dockerfile saved to: {output_path}")
 
 
 def _output_ai_optimization_result(

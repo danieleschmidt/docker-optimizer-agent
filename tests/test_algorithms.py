@@ -79,12 +79,14 @@ class TestQuantumAnnealingScheduler:
                     # Setup mock state
                     mock_state = Mock()
                     mock_state.energy = 100.0
+                    mock_state.temperature = 1000.0  # Add temperature attribute
                     mock_state.assignments = {"task1": "res1", "task2": "res2", "task3": "res1"}
                     mock_initial.return_value = mock_state
                     
                     # Setup neighbor state mock
                     mock_neighbor_state = Mock()
                     mock_neighbor_state.energy = 90.0
+                    mock_neighbor_state.temperature = 950.0  # Add temperature attribute
                     mock_neighbor_state.assignments = {"task1": "res1", "task2": "res1", "task3": "res2"}
                     mock_neighbor.return_value = mock_neighbor_state
                     

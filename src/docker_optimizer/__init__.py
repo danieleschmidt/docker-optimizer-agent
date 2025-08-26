@@ -17,7 +17,9 @@ try:
     from .optimizer import DockerfileOptimizer
     __all__.append("DockerfileOptimizer")
     _optional_features['optimizer'] = True
-except ImportError:
+except ImportError as e:
+    logger = __import__('logging').getLogger(__name__)
+    logger.warning(f"DockerfileOptimizer not available: {e}")
     _optional_features['optimizer'] = False
 
 try:

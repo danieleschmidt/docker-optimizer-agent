@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union
 import yaml
 from pydantic import BaseModel, ValidationError, validator
 
-from .enhanced_error_handling import ErrorSeverity
+from .error_handling import ErrorSeverity, ValidationResult
 
 
 class ValidationLevel(Enum):

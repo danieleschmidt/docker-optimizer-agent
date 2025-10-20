@@ -1,4 +1,4 @@
-FROM node:24
+FROM node:25
 COPY package.json .
 RUN npm install
 COPY . .

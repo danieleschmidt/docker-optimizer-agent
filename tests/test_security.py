@@ -1,133 +1,104 @@
-"""Test cases for security analyzer."""
+"""Tests focused on security rules."""
 
-from docker_optimizer.parser import DockerfileParser
-from docker_optimizer.security import SecurityAnalyzer
+import pytest
+from docker_optimizer.rules import (
+    Severity,
+    rule_no_user,
+    rule_secret_in_env,
+    rule_copy_dotenv,
+    rule_run_curl_pipe_sh,
+    run_all,
+)
+from docker_optimizer.parser import parse
 
 
-class TestSecurityAnalyzer:
-    """Test cases for SecurityAnalyzer."""
+def _df(content):
+    return parse(content)
 
-    def setup_method(self):
-        """Set up test fixtures."""
-        self.analyzer = SecurityAnalyzer()
-        self.parser = DockerfileParser()
 
-    def test_analyze_security_basic(self):
-        """Test basic security analysis."""
-        dockerfile_content = """
-FROM ubuntu:latest
-RUN apt-get update && apt-get install -y curl
-"""
+class TestNoUser:
+    def test_no_user_directive(self):
+        df = _df("FROM alpine:3.18\nCMD [\"sh\"]\n")
+        findings = rule_no_user(df)
+        assert len(findings) == 1
+        assert findings[0].severity == Severity.CRITICAL
 
-        parsed = self.parser.parse(dockerfile_content)
-        fixes = self.analyzer.analyze_security(dockerfile_content, parsed)
+    def test_user_root_is_critical(self):
+        df = _df("FROM alpine:3.18\nUSER root\nCMD [\"sh\"]\n")
+        findings = rule_no_user(df)
+        assert len(findings) == 1
+        assert findings[0].severity == Severity.CRITICAL
 
-        assert len(fixes) >= 2  # Should find latest tag and root user issues
-        vulnerabilities = [fix.vulnerability for fix in fixes]
-        assert any("latest" in vuln.lower() for vuln in vulnerabilities)
+    def test_user_0_is_critical(self):
+        df = _df("FROM alpine:3.18\nUSER 0\n")
+        findings = rule_no_user(df)
+        assert len(findings) == 1
 
-    def test_uses_latest_tag(self):
-        """Test detection of latest tag usage."""
-        # Explicit latest tag
-        assert self.analyzer._uses_latest_tag("FROM ubuntu:latest")
+    def test_non_root_user_ok(self):
+        df = _df("FROM alpine:3.18\nUSER appuser\n")
+        findings = rule_no_user(df)
+        assert findings == []
 
-        # Implicit latest tag
-        assert self.analyzer._uses_latest_tag("FROM ubuntu")
+    def test_numeric_nonroot_ok(self):
+        df = _df("FROM alpine:3.18\nUSER 1001:1001\n")
+        findings = rule_no_user(df)
+        assert findings == []
 
-        # No latest tag
-        assert not self.analyzer._uses_latest_tag("FROM ubuntu:20.04")
 
-    def test_runs_as_root(self):
-        """Test detection of root user execution."""
-        # No USER directive (defaults to root)
-        instructions1 = self.parser.parse("FROM ubuntu:20.04\nRUN echo hello")
-        assert self.analyzer._runs_as_root(instructions1)
+class TestSecretInEnv:
+    def test_password_var(self):
+        df = _df("FROM alpine:3.18\nENV DB_PASSWORD=secret\n")
+        findings = rule_secret_in_env(df)
+        assert len(findings) == 1
+        assert findings[0].severity == Severity.CRITICAL
 
-        # Explicit root user
-        instructions2 = self.parser.parse("FROM ubuntu:20.04\nUSER root")
-        assert self.analyzer._runs_as_root(instructions2)
+    def test_api_key_var(self):
+        df = _df("FROM alpine:3.18\nENV API_KEY=abc123\n")
+        findings = rule_secret_in_env(df)
+        assert len(findings) == 1
 
-        # Explicit root user with UID 0
-        instructions3 = self.parser.parse("FROM ubuntu:20.04\nUSER 0")
-        assert self.analyzer._runs_as_root(instructions3)
+    def test_safe_env_var(self):
+        df = _df("FROM alpine:3.18\nENV APP_PORT=8080\n")
+        findings = rule_secret_in_env(df)
+        assert findings == []
 
-        # Non-root user
-        instructions4 = self.parser.parse("FROM ubuntu:20.04\nUSER 1000")
-        assert not self.analyzer._runs_as_root(instructions4)
+    def test_case_insensitive(self):
+        df = _df("FROM alpine:3.18\nENV db_password=x\n")
+        findings = rule_secret_in_env(df)
+        assert len(findings) == 1
 
-    def test_has_uncleaned_package_cache(self):
-        """Test detection of uncleaned package cache."""
-        # Has apt-get update but no cleanup
-        content1 = "RUN apt-get update && apt-get install -y curl"
-        assert self.analyzer._has_uncleaned_package_cache(content1)
 
-        # Has apt-get update with cleanup
-        content2 = "RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*"
-        assert not self.analyzer._has_uncleaned_package_cache(content2)
+class TestCopyDotenv:
+    def test_copy_dotenv(self):
+        df = _df("FROM alpine:3.18\nCOPY .env /app/.env\n")
+        findings = rule_copy_dotenv(df)
+        assert len(findings) == 1
+        assert findings[0].severity == Severity.CRITICAL
 
-        # No apt-get update
-        content3 = "RUN echo hello"
-        assert not self.analyzer._has_uncleaned_package_cache(content3)
+    def test_copy_pem(self):
+        df = _df("FROM alpine:3.18\nCOPY server.pem /certs/server.pem\n")
+        findings = rule_copy_dotenv(df)
+        assert len(findings) == 1
 
-    def test_analyze_security_comprehensive(self):
-        """Test comprehensive security analysis."""
-        dockerfile_content = """
-FROM ubuntu:latest
-USER root
-RUN apt-get update && apt-get install -y curl git
-COPY . /app
-WORKDIR /app
-"""
+    def test_copy_normal_file_ok(self):
+        df = _df("FROM alpine:3.18\nCOPY app.py /app/app.py\n")
+        findings = rule_copy_dotenv(df)
+        assert findings == []
 
-        parsed = self.parser.parse(dockerfile_content)
-        fixes = self.analyzer.analyze_security(dockerfile_content, parsed)
 
-        # Should identify multiple issues
-        assert len(fixes) >= 3
+class TestCurlPipeSh:
+    def test_curl_pipe_bash(self):
+        df = _df("FROM ubuntu:22.04\nRUN curl https://x.com/install.sh | bash\n")
+        findings = rule_run_curl_pipe_sh(df)
+        assert len(findings) == 1
+        assert findings[0].severity == Severity.CRITICAL
 
-        # Check for specific vulnerabilities
-        vulnerability_types = [fix.vulnerability.lower() for fix in fixes]
-        assert any("latest" in vuln for vuln in vulnerability_types)
-        assert any("root" in vuln for vuln in vulnerability_types)
-        assert any("cache" in vuln for vuln in vulnerability_types)
+    def test_wget_pipe_sh(self):
+        df = _df("FROM ubuntu:22.04\nRUN wget -q https://x.com/setup | sh\n")
+        findings = rule_run_curl_pipe_sh(df)
+        assert len(findings) == 1
 
-    def test_analyze_security_secure_dockerfile(self):
-        """Test analysis of already secure Dockerfile."""
-        dockerfile_content = """
-FROM alpine:3.18
-RUN apk add --no-cache curl && rm -rf /var/cache/apk/*
-USER 1000
-"""
-
-        parsed = self.parser.parse(dockerfile_content)
-        fixes = self.analyzer.analyze_security(dockerfile_content, parsed)
-
-        # Should find minimal or no issues
-        assert len(fixes) <= 1  # Might still find some minor issues
-
-    def test_security_fix_severities(self):
-        """Test that security fixes have appropriate severities."""
-        dockerfile_content = """
-FROM ubuntu:latest
-USER root
-RUN apt-get update && apt-get install -y curl
-"""
-
-        parsed = self.parser.parse(dockerfile_content)
-        fixes = self.analyzer.analyze_security(dockerfile_content, parsed)
-
-        # Check that severities are valid
-        valid_severities = {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
-        for fix in fixes:
-            assert fix.severity in valid_severities
-
-    def test_security_fix_descriptions(self):
-        """Test that security fixes have meaningful descriptions."""
-        dockerfile_content = "FROM ubuntu:latest"
-
-        parsed = self.parser.parse(dockerfile_content)
-        fixes = self.analyzer.analyze_security(dockerfile_content, parsed)
-
-        for fix in fixes:
-            assert len(fix.description) > 10  # Should have meaningful description
-            assert len(fix.fix) > 5  # Should have meaningful fix suggestion
+    def test_safe_curl(self):
+        df = _df("FROM ubuntu:22.04\nRUN curl -o /tmp/file.txt https://example.com/data.txt\n")
+        findings = rule_run_curl_pipe_sh(df)
+        assert findings == []

